@@ -1,0 +1,12 @@
+{
+  "registry": "0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD",
+  "raribleRoyaltiesProxy": "0x20202052617269626C6520526F79616c74696573",
+  "raribleTransferProxy": "0x72617269626c655472616e7366657250726f7879",
+  "openSeaTransferProxy": "0x6f70656e5365615472616e7366657250726f7879",
+  "cxipDomainName": "CXIP_DOMAIN_NAME",
+  "cxipNFTDomainName": "CXIP_NFT_DOMAIN_NAME",
+  "ipfsDomainName": "IPFS_DOMAIN_NAME",
+  "arweaveDomainName": "ARWEAVE_DOMAIN_NAME",
+  "identityProxyBytecode": "IDENTITY_PROXY_BYTECODE",
+  "erc721ProxyBytecode": "ERC721_PROXY_BYTECODE"
+}
