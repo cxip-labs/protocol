@@ -43,6 +43,21 @@ interface ICxipIdentity {
         CollectionData calldata collectionData
     ) external returns (address);
 
+    function createCustomERC721Collection(
+        bytes32 saltHash,
+        address collectionCreator,
+        Verification calldata verification,
+        CollectionData calldata collectionData,
+        bytes32 slot
+    ) external returns (address);
+
+    function createDanielERC721Collection(
+        bytes32 saltHash,
+        address collectionCreator,
+        Verification calldata verification,
+        CollectionData calldata collectionData
+    ) external returns (address);
+
     function init(address wallet, address secondaryWallet) external;
 
     function getAuthorizer(address wallet) external view returns (address);

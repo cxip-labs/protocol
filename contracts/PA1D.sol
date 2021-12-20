@@ -72,18 +72,18 @@ contract PA1D {
          * @dev Keep in mind that Rarible V1 makes a "owner" function call to the overlying smart contract.
          * @dev It is mandatory to have owner function call return this contract address, or the function will fail.
          */
-        (
-            bool setProviderSuccess, /*bytes memory setProviderResponse*/
-
-        ) = address(0x20202052617269626C6520526F79616c74696573).call(
-                /**
-                 * @dev We hardcode the bytes4 function hash to save on gas
-                 */
-                // abi.encodeWithSignature(
-                //     'setProviderByToken(address,address)',
-                abi.encodeWithSelector(bytes4(0xd836f013), address(this), address(this))
-            );
-        require(setProviderSuccess, "PA1D: failed setting Rarible");
+//         (
+//             bool setProviderSuccess, /*bytes memory setProviderResponse*/
+//
+//         ) = address(0x20202052617269626C6520526F79616c74696573).call(
+//                 /**
+//                  * @dev We hardcode the bytes4 function hash to save on gas
+//                  */
+//                 // abi.encodeWithSignature(
+//                 //     'setProviderByToken(address,address)',
+//                 abi.encodeWithSelector(bytes4(0xd836f013), address(this), address(this))
+//             );
+//         require(setProviderSuccess, "PA1D: failed setting Rarible");
     }
 
     /**

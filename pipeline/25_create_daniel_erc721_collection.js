@@ -49,7 +49,6 @@ async function main() {
     .getIdentity()
     .call(from)
     .catch(error);
-  console.log ('IDENTITY_CONTRACT', IDENTITY_CONTRACT);
 
   const identity = new web3.eth.Contract(IDENTITY_ABI, IDENTITY_CONTRACT, {
     gasLimit: '6721975',
@@ -58,7 +57,7 @@ async function main() {
 
   const result = await identity.methods
     // createCustomERC721Collection (bytes32 saltHash, address collectionCreator, Verification calldata verification, CollectionData calldata collectionData, bytes32 slot)
-    .createCustomERC721Collection(
+    .createDanielERC721Collection(
       salt,
       wallet,
       [
@@ -72,8 +71,8 @@ async function main() {
         '0x' + removeX(web3.utils.utf8ToHex('Safari-930-🏎️')).padStart(64, '0'),
         wallet,
         '0x' + (1000).toString(16).padStart(24, '0'),
-      ],
-      '0x34614b2160c4ad0a9004a062b1210e491f551c3b3eb86397949dc0279cf60c0d'
+      ]//,
+      //'0x34614b2160c4ad0a9004a062b1210e491f551c3b3eb86397949dc0279cf60c0d'
     )
     .send(from)
     .catch(error);
@@ -84,7 +83,7 @@ async function main() {
     fs.readFileSync('./build/contracts/DanielArshamErosions.json')
   ).abi;
   const ERC721_CONTRACT = await identity.methods
-    .getCollectionId(0)
+    .getCollectionById(0)
     .call(from)
     .catch(error);
 
