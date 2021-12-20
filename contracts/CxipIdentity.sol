@@ -280,6 +280,7 @@ contract CxipIdentity {
      * @param verification Signature created by the collectionCreator wallet to validate the integrity of the collection data.
      * @param collectionData The collection data struct, with all the default collection info.
      * @param slot Hash of proxy contract slot where the source is saved in registry.
+     * @param bytecode The bytecode used for deployment. Validated against slot code for abuse prevention.
      * @return address Returns the address of the newly created collection.
      */
     function createCustomERC721Collection(
@@ -287,7 +288,8 @@ contract CxipIdentity {
         address collectionCreator,
         Verification calldata verification,
         CollectionData calldata collectionData,
-        bytes32 slot
+        bytes32 slot,
+        bytes memory bytecode
     ) public returns (address) {
         if(collectionCreator != msg.sender) {
             require(
@@ -310,7 +312,6 @@ contract CxipIdentity {
             );
         }
         require(_isOwner(collectionCreator), "CXIP: creator not owner");
-        bytes memory bytecode = ICxipRegistry(0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD).getCustomSource(slot).code;
         address cxipAddress;
         assembly {
             cxipAddress := create2(
@@ -320,6 +321,10 @@ contract CxipIdentity {
                 saltHash
             )
         }
+        require(
+            keccak256(cxipAddress.code) == keccak256(ICxipRegistry(0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD).getCustomSource(slot).code),
+            "CXIP: byte code missmatch"
+        );
         ICxipERC721(cxipAddress).init(collectionCreator, collectionData);
         _addCollectionToEnumeration(cxipAddress, InterfaceType.ERC721);
         return(cxipAddress);

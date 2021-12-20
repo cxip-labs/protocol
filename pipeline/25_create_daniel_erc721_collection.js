@@ -37,6 +37,18 @@ const removeX = function (input) {
   }
 };
 
+
+const FACTORY_CONTRACT = JSON.parse(
+  fs.readFileSync('./build/contracts/DanielArshamErosionsProxy.json')
+);
+let bytecode = FACTORY_CONTRACT.bytecode.replace(
+  /deaddeaddeaddeaddeaddeaddeaddeaddeaddead/gi,
+  fs
+    .readFileSync('./data/' + NETWORK + '.registry.address', 'utf8')
+    .trim()
+    .substring(2)
+);
+
 async function main() {
   const salt =
     '0x0000000000000000000000000000000000000000000000000000000000000001';
@@ -56,8 +68,8 @@ async function main() {
   });
 
   const result = await identity.methods
-    // createCustomERC721Collection (bytes32 saltHash, address collectionCreator, Verification calldata verification, CollectionData calldata collectionData, bytes32 slot)
-    .createDanielERC721Collection(
+    // createCustomERC721Collection (bytes32 saltHash, address collectionCreator, Verification calldata verification, CollectionData calldata collectionData, bytes32 slot, bytes bytecode)
+    .createCustomERC721Collection(
       salt,
       wallet,
       [
@@ -71,8 +83,9 @@ async function main() {
         '0x' + removeX(web3.utils.utf8ToHex('Safari-930-🏎️')).padStart(64, '0'),
         wallet,
         '0x' + (1000).toString(16).padStart(24, '0'),
-      ]//,
-      //'0x34614b2160c4ad0a9004a062b1210e491f551c3b3eb86397949dc0279cf60c0d'
+      ],
+      '0x34614b2160c4ad0a9004a062b1210e491f551c3b3eb86397949dc0279cf60c0d',
+      '0x' + removeX(bytecode)
     )
     .send(from)
     .catch(error);
