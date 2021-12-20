@@ -49,7 +49,6 @@ pragma solidity 0.8.4;
 
 */
 
-import "./external/OpenSea.sol";
 import "./interface/ICxipERC721.sol";
 import "./interface/ICxipIdentity.sol";
 import "./interface/ICxipProvenance.sol";
@@ -668,11 +667,7 @@ contract DanielArshamErosions {
      */
     function isApprovedForAll(address wallet, address operator) public view returns (bool) {
         // pre-approved OpenSea and Rarible proxies removed, per Nifty Gateway's request
-        return (_operatorApprovals[wallet][operator]/* ||
-            // Rarible Transfer Proxy
-            0x72617269626C655472616E7366657250726F7879 == operator ||
-            // OpenSea Transfer Proxy
-            address(OpenSeaProxyRegistry(0x6f70656E5365615472616E7366657250726F7879).proxies(wallet)) == operator*/);
+        return _operatorApprovals[wallet][operator];
     }
 
     /**
