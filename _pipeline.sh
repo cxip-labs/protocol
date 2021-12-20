@@ -20,8 +20,13 @@ node pipeline/13_check_registry.js
 node pipeline/14_fund_wallet.js
 node pipeline/15_create_identity.js
 node pipeline/16_check_identity.js
-node pipeline/17_create_erc721_collection.js
-node pipeline/18_check_erc721_collection.js
+node pipeline/22_deploy_daniel.js
+node pipeline/23_deploy_daniel_proxy.js
+node pipeline/24_register_daniel.js
+node pipeline/13_check_registry.js
+node pipeline/25_create_daniel_erc721_collection.js
+# node pipeline/17_create_erc721_collection.js
+# node pipeline/18_check_erc721_collection.js
 # node pipeline/19_create_erc721_token.js
 # node pipeline/20_check_erc721_token.js
 # node pipeline/21_get_bytecodes.js

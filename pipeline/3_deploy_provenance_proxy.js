@@ -50,15 +50,15 @@ async function main() {
       process.exit();
     });
 
-  fs.writeFileSync(
-    './data/' + NETWORK + '.provenance.proxy.address',
-    result.events.Deployed.returnValues.addr
-  );
   if (result.status) {
     console.log('Transaction hash :', result.transactionHash);
     console.log(
       'Deployed Provenance Proxy Contract : ' +
-        result.events.Deployed.returnValues.addr
+        result.events.Deployed.returnValues.contractAddress
+    );
+    fs.writeFileSync(
+        './data/' + NETWORK + '.provenance.proxy.address',
+        result.events.Deployed.returnValues.contractAddress
     );
   } else {
     console.log('\n');

@@ -53,16 +53,16 @@ async function main() {
     .send(from)
     .catch(error);
 
-  fs.writeFileSync(
-    './data/' + NETWORK + '.royalties.proxy.address',
-    result.events.Deployed.returnValues.addr
-  );
   if (result.status) {
     console.log('Transaction hash :', result.transactionHash);
     console.log(
       'Deployed Royalties Proxy Contract : ' +
-        result.events.Deployed.returnValues.addr
+        result.events.Deployed.returnValues.contractAddress
     );
+  fs.writeFileSync(
+    './data/' + NETWORK + '.royalties.proxy.address',
+    result.events.Deployed.returnValues.contractAddress
+  );
   } else {
     console.log('\n');
     console.log(result);

@@ -50,16 +50,16 @@ async function main() {
       process.exit();
     });
 
-  fs.writeFileSync(
-    './data/' + NETWORK + '.asset.proxy.address',
-    result.events.Deployed.returnValues.addr
-  );
   if (result.status) {
     console.log('Transaction hash :', result.transactionHash);
     console.log(
-      'Deployed Asset Proxy Contract : ' +
-        result.events.Deployed.returnValues.addr
+        'Deployed Asset Proxy Contract : ' +
+        result.events.Deployed.returnValues.contractAddress
     );
+      fs.writeFileSync(
+        './data/' + NETWORK + '.asset.proxy.address',
+        result.events.Deployed.returnValues.contractAddress
+      );
   } else {
     console.log('\n');
     console.log(result);

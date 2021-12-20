@@ -3,14 +3,14 @@
 const fs = require('fs');
 const HDWalletProvider = require('truffle-hdwallet-provider');
 const Web3 = require('web3');
-const { NETWORK, GAS, PRIVATE_KEY } = require('../config/env');
+const { NETWORK, GAS, WALLET } = require('../config/env');
 
 const FACTORY_CONTRACT = JSON.parse(
   fs.readFileSync('./build/contracts/DanielArshamErosionsProxy.json')
 );
 
 const rpc = JSON.parse(fs.readFileSync('./rpc.json', 'utf8'));
-const provider = new HDWalletProvider(PRIVATE_KEY, rpc[NETWORK]);
+const provider = new HDWalletProvider(WALLET, rpc[NETWORK]);
 const web3 = new Web3(provider);
 
 //Contract object and account info

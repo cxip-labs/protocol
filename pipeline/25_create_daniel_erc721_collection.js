@@ -3,10 +3,10 @@
 const fs = require('fs');
 const HDWalletProvider = require('truffle-hdwallet-provider');
 const Web3 = require('web3');
-const { NETWORK, WALLET, PRIVATE_KEY } = require('../config/env');
+const { NETWORK, WALLET } = require('../config/env');
 
 const rpc = JSON.parse(fs.readFileSync('./rpc.json', 'utf8'));
-const provider = new HDWalletProvider(PRIVATE_KEY, rpc[NETWORK]);
+const provider = new HDWalletProvider(WALLET, rpc[NETWORK]);
 const web3 = new Web3(provider);
 
 const PROVENANCE_ABI = JSON.parse(
@@ -39,7 +39,7 @@ const removeX = function (input) {
 
 async function main() {
   const salt =
-    '0x0000000000000000000000000000000000000000000000000000000000000000';
+    '0x0000000000000000000000000000000000000000000000000000000000000001';
   const wallet = provider.addresses[0];
 
   const IDENTITY_ABI = JSON.parse(
@@ -49,13 +49,14 @@ async function main() {
     .getIdentity()
     .call(from)
     .catch(error);
+  console.log ('IDENTITY_CONTRACT', IDENTITY_CONTRACT);
 
-  const contract = new web3.eth.Contract(IDENTITY_ABI, IDENTITY_CONTRACT, {
-    // gasLimit: '6721975',
-    // gasPrice: '20000000000',
+  const identity = new web3.eth.Contract(IDENTITY_ABI, IDENTITY_CONTRACT, {
+    gasLimit: '6721975',
+    gasPrice: '20000000000',
   });
 
-  const result = await contract.methods
+  const result = await identity.methods
     // createCustomERC721Collection (bytes32 saltHash, address collectionCreator, Verification calldata verification, CollectionData calldata collectionData, bytes32 slot)
     .createCustomERC721Collection(
       salt,
@@ -76,8 +77,41 @@ async function main() {
     )
     .send(from)
     .catch(error);
+    console.log (result);
+    console.log (result.events);
+  if (result.status) {
+  const ERC721_ABI = JSON.parse(
+    fs.readFileSync('./build/contracts/DanielArshamErosions.json')
+  ).abi;
+  const ERC721_CONTRACT = await identity.methods
+    .getCollectionId(0)
+    .call(from)
+    .catch(error);
 
-  console.log('ERC721 Collection Created at: ' + result.events[0].address);
+  console.log('ERC721_CONTRACT', ERC721_CONTRACT);
+
+  	const erc721 = new web3.eth.Contract (
+  		ERC721_ABI,
+  		ERC721_CONTRACT,
+  		{
+  			gasLimit: '6721975',
+  			gasPrice: '20000000000'
+  		}
+  	);
+
+  	console.log ({
+  		'owner': await erc721.methods.isOwner ().call (from).catch (error),
+  // 		'collectionId': await erc721.methods.collectionId ().call (from).catch (error),
+  		'totalSupply': await erc721.methods.totalSupply ().call (from).catch (error),
+  		'name': await erc721.methods.name ().call (from).catch (error),
+  		'symbol': await erc721.methods.symbol ().call (from).catch (error),
+  // 		'description': await erc721.methods.description ().call (from).catch (error),
+  		'baseURI': await erc721.methods.baseURI ().call (from).catch (error),
+  		'contractURI': await erc721.methods.contractURI ().call (from).catch (error)
+  	});
+  } else {
+    console.log ('failed creating custom collection');
+  }
   console.log('\tGas Used : ' + result.gasUsed);
   process.exit();
 }

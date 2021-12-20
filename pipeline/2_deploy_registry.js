@@ -40,14 +40,14 @@ async function main() {
       process.exit();
     });
 
-  fs.writeFileSync(
-    './data/' + NETWORK + '.registry.address',
-    result.events.Deployed.returnValues.addr
-  );
   if (result.status) {
     console.log('Transaction hash :', result.transactionHash);
     console.log(
-      'Deployed Registry Contract : ' + result.events.Deployed.returnValues.addr
+      'Deployed Registry Contract : ' + result.events.Deployed.returnValues.contractAddress
+    );
+    fs.writeFileSync(
+      './data/' + NETWORK + '.registry.address',
+      result.events.Deployed.returnValues.contractAddress
     );
   } else {
     console.log('\n');

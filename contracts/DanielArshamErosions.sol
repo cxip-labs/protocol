@@ -398,17 +398,17 @@ contract DanielArshamErosions {
         _admin = msg.sender;
         _owner = address(this);
         _collectionData = collectionData;
-        (
-            bool royaltiesSuccess, /* bytes memory royaltiesResponse */
-        ) = getRegistry().getPA1D().delegatecall(
-                abi.encodeWithSelector(
-                    bytes4(0xea2299f8),
-                    uint256(0),
-                    payable(collectionData.royalties),
-                    uint256(collectionData.bps)
-                )
-            );
-        require(royaltiesSuccess, "CXIP: failed setting royalties");
+//         (
+//             bool royaltiesSuccess, /* bytes memory royaltiesResponse */
+//         ) = getRegistry().getPA1D().delegatecall(
+//                 abi.encodeWithSelector(
+//                     bytes4(0xea2299f8),
+//                     uint256(0),
+//                     payable(collectionData.royalties),
+//                     uint256(collectionData.bps)
+//                 )
+//             );
+//         require(royaltiesSuccess, "CXIP: failed setting royalties");
         _owner = newOwner;
     }
 
