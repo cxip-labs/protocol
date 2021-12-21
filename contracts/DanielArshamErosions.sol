@@ -438,14 +438,14 @@ contract DanielArshamErosions {
         address from,
         address to,
         uint256 tokenId,
-        bytes memory /*_data*/
+        bytes memory data
     ) public payable {
         require(_isApproved(msg.sender, tokenId), "CXIP: not approved sender");
         _transferFrom(from, to, tokenId);
         if (Address.isContract(to)) {
             require(
-                ICxipERC721(to).onERC721Received(address(this), from, tokenId, "") == 0x150b7a02,
-                "CXIP: safe transfer failed"
+                ICxipERC721(to).onERC721Received(address(this), from, tokenId, data) == 0x150b7a02,
+                "CXIP: onERC721Received fail"
             );
         }
     }
