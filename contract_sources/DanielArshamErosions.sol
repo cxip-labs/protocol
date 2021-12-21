@@ -373,21 +373,14 @@ contract DanielArshamErosions {
      * @param tokenId The token to burn.
      */
     function burn(uint256 tokenId) public {
-        if (_isApproved(msg.sender, tokenId)) {
-            address wallet = _tokenOwner[tokenId];
-            require(!Address.isZero(wallet));
-            _clearApproval(tokenId);
-            _tokenOwner[tokenId] = address(0);
-            emit Transfer(wallet, address(0), tokenId);
-            _removeTokenFromOwnerEnumeration(wallet, tokenId);
-            uint256 index = _allTokens.length;
-            index--;
-            if (index == 0) {
-                delete _allTokens;
-            } else {
-                delete _allTokens[index];
-            }
-        }
+        require(_isApproved(msg.sender, tokenId), "CXIP: not approved sender");
+        address wallet = _tokenOwner[tokenId];
+        require(!Address.isZero(wallet));
+        _clearApproval(tokenId);
+        _tokenOwner[tokenId] = address(0);
+        emit Transfer(wallet, address(0), tokenId);
+        _removeTokenFromOwnerEnumeration(wallet, tokenId);
+        _totalTokens--;
     }
 
     /**
@@ -499,7 +492,7 @@ contract DanielArshamErosions {
      * @param recipient Optional parameter, to send the token to a recipient right after minting.
      */
     function batchMint(address creatorWallet, uint256 startId, uint256 length, address recipient) public onlyOwner {
-        require((_allTokens.length + length) <= getTokenLimit(), "CXIP: over token limit");
+        require((_totalTokens + length) <= getTokenLimit(), "CXIP: over token limit");
         require(isIdentityWallet(creatorWallet), "CXIP: creator not in identity");
         bool hasRecipient = !Address.isZero(recipient);
         uint256 tokenId;
@@ -511,8 +504,7 @@ contract DanielArshamErosions {
                 emit Transfer(creatorWallet, recipient, tokenId);
                 _tokenOwner[tokenId] = recipient;
                 _addTokenToOwnerEnumeration(recipient, tokenId);
-                _allTokens.push(tokenId);
-
+                _totalTokens++;
             } else {
                 _mint(creatorWallet, tokenId);
             }
@@ -738,17 +730,6 @@ contract DanielArshamErosions {
     }
 
     /**
-     * @notice Get token by index instead of token id.
-     * @dev Helpful for token enumeration where token id info is not yet available.
-     * @param index Index of token in array.
-     * @return uint256 Returns the token id of token located at that index.
-     */
-    function tokenByIndex(uint256 index) public view returns (uint256) {
-        require(index < totalSupply());
-        return _allTokens[index];
-    }
-
-    /**
      * @notice Get token from wallet by index instead of token id.
      * @dev Helpful for wallet token enumeration where token id info is not yet available. Use in conjunction with balanceOf function.
      * @param wallet Specific address for which to get token for.
@@ -769,7 +750,7 @@ contract DanielArshamErosions {
      * @return uint256 Returns the total number of active (not burned) tokens.
      */
     function totalSupply() public view returns (uint256) {
-        return _allTokens.length;
+        return _totalTokens;
     }
 
     /**
@@ -865,7 +846,7 @@ contract DanielArshamErosions {
         _tokenOwner[tokenId] = to;
         emit Transfer(address(0), to, tokenId);
         _addTokenToOwnerEnumeration(to, tokenId);
-        _allTokens.push(tokenId);
+        _totalTokens++;
     }
 
     /**
