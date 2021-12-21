@@ -265,7 +265,8 @@ contract DanielArshamErosions {
      * @return bytes32 The hash.
      */
     function payloadHash(uint256 tokenId) external view returns (bytes32) {
-        return _tokenData[tokenId].payloadHash;
+        uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
+        return _tokenData[index].payloadHash;
     }
 
     /**
@@ -275,7 +276,8 @@ contract DanielArshamErosions {
      * @return Verification a struct containing v, r, s values of the signature.
      */
     function payloadSignature(uint256 tokenId) external view returns (Verification memory) {
-        return _tokenData[tokenId].payloadSignature;
+        uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
+        return _tokenData[index].payloadSignature;
     }
 
     /**
@@ -285,7 +287,8 @@ contract DanielArshamErosions {
      * @return address The creator.
      */
     function payloadSigner(uint256 tokenId) external view returns (address) {
-        return _tokenData[tokenId].creator;
+        uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
+        return _tokenData[index].creator;
     }
 
     /**
@@ -628,10 +631,6 @@ contract DanielArshamErosions {
      */
     function setStartTimestamp(uint256 _timestamp) public onlyOwner {
         RotatingToken.setStartTimestamp(_timestamp);
-    }
-
-    function blockTime()public view returns(uint256){
-    return block.timestamp;
     }
 
     /**

@@ -80,9 +80,8 @@ async function main() {
     // gasPrice: '20000000000',
   });
 
-    let blockTime = await contract.methods.blockTime().call(from).catch(error);
-    console.log (blockTime);
-    console.log ('setStartTimestamp', await contract.methods.setStartTimestamp (Math.round(Math.random() * blockTime)).send(from).catch(error));
+    // used to force cycle block.timestamp on ganache
+    await contract.methods.setStartTimestamp (Math.round(Math.random() * (Date.now () / 1000))).send(from).catch(error);
 
   console.log({
     tokenURI: await contract.methods.tokenURI(tokenId).call(from).catch(error),
@@ -106,8 +105,8 @@ async function main() {
       .catch(error),
     httpURI: await contract.methods.httpURI(tokenId).call(from).catch(error),
     ipfsURI: await contract.methods.ipfsURI(tokenId).call(from).catch(error),
-    arweaveURI: await contract.methods
-      .arweaveURI(tokenId)
+    tokenURI: await contract.methods
+      .tokenURI(tokenId)
       .call(from)
       .catch(error),
   });

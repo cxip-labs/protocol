@@ -91,7 +91,7 @@ library RotatingToken {
         if (rotationIndex > halfwayPoint) {
             rotationIndex = steps - rotationIndex;
         }
-//        rotationIndex = rotationIndex + (steps * (tokenId / tokenSeparator));
+       rotationIndex = rotationIndex + (steps * (tokenId / tokenSeparator));
     }
 
 }
