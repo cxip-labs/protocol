@@ -644,12 +644,12 @@ contract DanielArshamErosions {
      * @param steps Total number of steps for complete rotation. Reverse rotation including.
      * @param halfwayPoint Step at which to reverse the rotation backwards. Must be exactly in the middle.
      */
-    function setRotationConfig(uint256 interval, uint256 steps, uint256 halfwayPoint) public onlyOwner {
-        RotatingToken.setRotationConfig(interval, steps, halfwayPoint);
+    function setRotationConfig(uint256 index, uint256 interval, uint256 steps, uint256 halfwayPoint) public onlyOwner {
+        RotatingToken.setRotationConfig(index, interval, steps, halfwayPoint);
     }
 
-    function getRotationConfig() public view returns (uint256, uint256, uint256) {
-        return RotatingToken.getRotationConfig();
+    function getRotationConfig(uint256 index) public view returns (uint256, uint256, uint256) {
+        return RotatingToken.getRotationConfig(index);
     }
 
     /**
@@ -914,8 +914,8 @@ contract DanielArshamErosions {
         _allTokens[tokenIndex] = lastTokenId;
         _allTokensIndex[lastTokenId] = tokenIndex;
         delete _allTokensIndex[tokenId];
-        delete _allTokensIndex[tokenId];
-        delete _allTokens[lastTokenIndex];
+        _allTokens.pop();
+//         delete _allTokens[lastTokenIndex];
     }
 
     /**

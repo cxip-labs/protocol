@@ -65,6 +65,16 @@ library RotatingToken {
         steps = uint256(uint16(unpacked >> 16));
         halfwayPoint = uint256(uint16(unpacked));
     }
+    function getRotationConfig(uint256 index) internal view returns (uint256 interval, uint256 steps, uint256 halfwayPoint) {
+        uint48 unpacked;
+        bytes32 slot = bytes32(uint256(keccak256(abi.encodePacked("eip1967.CXIP.RotatingToken.rotationConfig.", index))) - 1);
+        assembly {
+            unpacked := sload(slot)
+        }
+        interval = uint256(uint16(unpacked >> 32));
+        steps = uint256(uint16(unpacked >> 16));
+        halfwayPoint = uint256(uint16(unpacked));
+    }
 
     /**
      * @dev Sets the configuration for rotation calculations to storage slot.
@@ -84,14 +94,22 @@ library RotatingToken {
             )
         }
     }
+    function setRotationConfig(uint256 index, uint256 interval, uint256 steps, uint256 halfwayPoint) internal {
+        bytes32 slot = bytes32(uint256(keccak256(abi.encodePacked("eip1967.CXIP.RotatingToken.rotationConfig.", index))) - 1);
+        uint256 packed = uint256(interval << 32 | steps << 16 | halfwayPoint);
+        assembly {
+            sstore(slot, packed)
+        }
+    }
 
     function calculateRotation(uint256 tokenId, uint256 tokenSeparator) internal view returns (uint256 rotationIndex) {
-        (uint256 interval, uint256 steps, uint256 halfwayPoint) = getRotationConfig();
+        uint256 configIndex = (tokenId / tokenSeparator);
+        (uint256 interval, uint256 steps, uint256 halfwayPoint) = getRotationConfig(configIndex);
         rotationIndex = ((block.timestamp - getStartTimestamp()) % (interval * steps)) / interval;
         if (rotationIndex > halfwayPoint) {
             rotationIndex = steps - rotationIndex;
         }
-       rotationIndex = rotationIndex + (steps * (tokenId / tokenSeparator));
+       rotationIndex = rotationIndex + (steps * configIndex);
     }
 
 }
