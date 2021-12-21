@@ -441,10 +441,13 @@ contract DanielArshamErosions {
         bytes memory /*_data*/
     ) public payable {
         require(_isApproved(msg.sender, tokenId), "CXIP: not approved sender");
-        if (Address.isContract(to)) {
-
-        }
         _transferFrom(from, to, tokenId);
+        if (Address.isContract(to)) {
+            require(
+                ICxipERC721(to).onERC721Received(address(this), from, tokenId, "") == 0x150b7a02,
+                "CXIP: safe transfer failed"
+            );
+        }
     }
 
     /**
