@@ -137,6 +137,11 @@ contract DanielArshamErosions {
     uint256 private _totalTokens;
 
     /**
+     * @dev Mapping from token id to position in the allTokens array.
+     */
+    mapping(uint256 => uint256) private _allTokensIndex;
+
+    /**
      * @notice Event emitted when an token is minted, transfered, or burned.
      * @dev If from is empty, it's a mint. If to is empty, it's a burn. Otherwise, it's a transfer.
      * @param from Address from where token is being transfered.
@@ -207,6 +212,7 @@ contract DanielArshamErosions {
      * @return string The URI.
      */
     function arweaveURI(uint256 tokenId) external view returns (string memory) {
+        require(_exists(tokenId), "CXIP: token does not exist");
         uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
         return string(abi.encodePacked("https://arweave.cxip.dev/", _tokenData[index].arweave, _tokenData[index].arweave2));
     }
@@ -226,6 +232,7 @@ contract DanielArshamErosions {
      * @return address Creator's address.
      */
     function creator(uint256 tokenId) external view returns (address) {
+        require(_exists(tokenId), "CXIP: token does not exist");
         uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
         return _tokenData[index].creator;
     }
@@ -236,6 +243,7 @@ contract DanielArshamErosions {
      * @return string The URI.
      */
     function httpURI(uint256 tokenId) external view returns (string memory) {
+        require(_exists(tokenId), "CXIP: token does not exist");
         return string(abi.encodePacked(baseURI(), "/", Strings.toHexString(tokenId)));
     }
 
@@ -245,6 +253,7 @@ contract DanielArshamErosions {
      * @return string The URI.
      */
     function ipfsURI(uint256 tokenId) external view returns (string memory) {
+        require(_exists(tokenId), "CXIP: token does not exist");
         uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
         return string(abi.encodePacked("https://ipfs.cxip.dev/", _tokenData[index].ipfs, _tokenData[index].ipfs2));
     }
@@ -265,6 +274,7 @@ contract DanielArshamErosions {
      * @return bytes32 The hash.
      */
     function payloadHash(uint256 tokenId) external view returns (bytes32) {
+        require(_exists(tokenId), "CXIP: token does not exist");
         uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
         return _tokenData[index].payloadHash;
     }
@@ -276,6 +286,7 @@ contract DanielArshamErosions {
      * @return Verification a struct containing v, r, s values of the signature.
      */
     function payloadSignature(uint256 tokenId) external view returns (Verification memory) {
+        require(_exists(tokenId), "CXIP: token does not exist");
         uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
         return _tokenData[index].payloadSignature;
     }
@@ -287,6 +298,7 @@ contract DanielArshamErosions {
      * @return address The creator.
      */
     function payloadSigner(uint256 tokenId) external view returns (address) {
+        require(_exists(tokenId), "CXIP: token does not exist");
         uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
         return _tokenData[index].creator;
     }
@@ -328,6 +340,7 @@ contract DanielArshamErosions {
      * @return string The URI.
      */
     function tokenURI(uint256 tokenId) external view returns (string memory) {
+        require(_exists(tokenId), "CXIP: token does not exist");
         uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
         return string(abi.encodePacked("https://arweave.cxip.dev/", _tokenData[index].arweave, _tokenData[index].arweave2));
     }
@@ -375,12 +388,10 @@ contract DanielArshamErosions {
     function burn(uint256 tokenId) public {
         require(_isApproved(msg.sender, tokenId), "CXIP: not approved sender");
         address wallet = _tokenOwner[tokenId];
-        require(!Address.isZero(wallet));
         _clearApproval(tokenId);
         _tokenOwner[tokenId] = address(0);
         emit Transfer(wallet, address(0), tokenId);
         _removeTokenFromOwnerEnumeration(wallet, tokenId);
-        _totalTokens--;
     }
 
     /**
@@ -430,6 +441,9 @@ contract DanielArshamErosions {
         bytes memory /*_data*/
     ) public payable {
         require(_isApproved(msg.sender, tokenId), "CXIP: not approved sender");
+        if (Address.isContract(to)) {
+
+        }
         _transferFrom(from, to, tokenId);
     }
 
@@ -487,7 +501,8 @@ contract DanielArshamErosions {
      * @param recipient Optional parameter, to send the token to a recipient right after minting.
      */
     function batchMint(address creatorWallet, uint256 startId, uint256 length, address recipient) public onlyOwner {
-        require((_totalTokens + length) <= getTokenLimit(), "CXIP: over token limit");
+        require(!getMintingClosed(), "CXIP: minting is now closed");
+        require(_allTokens.length <= getTokenLimit(), "CXIP: over token limit");
         require(isIdentityWallet(creatorWallet), "CXIP: creator not in identity");
         bool hasRecipient = !Address.isZero(recipient);
         uint256 tokenId;
@@ -499,16 +514,50 @@ contract DanielArshamErosions {
                 emit Transfer(creatorWallet, recipient, tokenId);
                 _tokenOwner[tokenId] = recipient;
                 _addTokenToOwnerEnumeration(recipient, tokenId);
-                _totalTokens++;
             } else {
                 _mint(creatorWallet, tokenId);
             }
         }
-        _currentTokenId += length;
+        if (_allTokens.length == getTokenLimit()) {
+            setMintingClosed();
+        }
     }
 
     function getStartTimestamp() public view returns (uint256) {
         return RotatingToken.getStartTimestamp();
+    }
+
+    /**
+     * @dev Gets the minting status from storage slot.
+     * @return mintingClosed Whether minting is open or closed permanently.
+     */
+    function getMintingClosed() public view returns (bool mintingClosed) {
+        // The slot hash has been precomputed for gas optimizaion
+        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.DanielArshamErosions.mintingClosed')) - 1);
+        uint256 data;
+        assembly {
+            data := sload(
+                /* slot */
+                0xab90edbe8f424080ec4ee1e9062e8b7540cbbfd5f4287285e52611030e58b8d4
+            )
+        }
+        mintingClosed = (data == 1);
+    }
+
+    /**
+     * @dev Sets the minting status to closed in storage slot.
+     */
+    function setMintingClosed() public onlyOwner {
+        // The slot hash has been precomputed for gas optimizaion
+        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.DanielArshamErosions.mintingClosed')) - 1);
+        uint256 data = 1;
+        assembly {
+            sstore(
+                /* slot */
+                0xab90edbe8f424080ec4ee1e9062e8b7540cbbfd5f4287285e52611030e58b8d4,
+                data
+            )
+        }
     }
 
     /**
@@ -725,6 +774,17 @@ contract DanielArshamErosions {
     }
 
     /**
+     * @notice Get token by index.
+     * @dev Used in conjunction with totalSupply function to iterate over all tokens in collection.
+     * @param index Index of token in array.
+     * @return uint256 Returns the token id of token located at that index.
+     */
+    function tokenByIndex(uint256 index) public view returns (uint256) {
+        require(index < totalSupply(), "CXIP: index out of bounds");
+        return _allTokens[index];
+    }
+
+    /**
      * @notice Get token from wallet by index instead of token id.
      * @dev Helpful for wallet token enumeration where token id info is not yet available. Use in conjunction with balanceOf function.
      * @param wallet Specific address for which to get token for.
@@ -745,7 +805,7 @@ contract DanielArshamErosions {
      * @return uint256 Returns the total number of active (not burned) tokens.
      */
     function totalSupply() public view returns (uint256) {
-        return _totalTokens;
+        return _allTokens.length;
     }
 
     /**
@@ -817,6 +877,8 @@ contract DanielArshamErosions {
         _ownedTokensIndex[tokenId] = _ownedTokensCount[to];
         _ownedTokensCount[to]++;
         _ownedTokens[to].push(tokenId);
+        _allTokensIndex[tokenId] = _allTokens.length;
+        _allTokens.push(tokenId);
     }
 
     /**
@@ -840,7 +902,17 @@ contract DanielArshamErosions {
         _tokenOwner[tokenId] = to;
         emit Transfer(address(0), to, tokenId);
         _addTokenToOwnerEnumeration(to, tokenId);
-        _totalTokens++;
+    }
+
+    function _removeTokenFromAllTokensEnumeration(uint256 tokenId) private {
+        uint256 lastTokenIndex = _allTokens.length - 1;
+        uint256 tokenIndex = _allTokensIndex[tokenId];
+        uint256 lastTokenId = _allTokens[lastTokenIndex];
+        _allTokens[tokenIndex] = lastTokenId;
+        _allTokensIndex[lastTokenId] = tokenIndex;
+        delete _allTokensIndex[tokenId];
+        delete _allTokensIndex[tokenId];
+        delete _allTokens[lastTokenIndex];
     }
 
     /**
@@ -852,6 +924,7 @@ contract DanielArshamErosions {
         address from,
         uint256 tokenId
     ) private {
+        _removeTokenFromAllTokensEnumeration(tokenId);
         _ownedTokensCount[from]--;
         uint256 lastTokenIndex = _ownedTokensCount[from];
         uint256 tokenIndex = _ownedTokensIndex[tokenId];
