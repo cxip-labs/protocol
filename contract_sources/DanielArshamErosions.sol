@@ -361,10 +361,10 @@ contract DanielArshamErosions {
      */
     function approve(address to, uint256 tokenId) public {
         address tokenOwner = _tokenOwner[tokenId];
-        if (to != tokenOwner && _isApproved(msg.sender, tokenId)) {
-            _tokenApprovals[tokenId] = to;
-            emit Approval(tokenOwner, to, tokenId);
-        }
+        require(to != tokenOwner, "CXIP: can't approve self");
+        require(_isApproved(msg.sender, tokenId), "CXIP: not approved sender");
+        _tokenApprovals[tokenId] = to;
+        emit Approval(tokenOwner, to, tokenId);
     }
 
     /**
@@ -429,9 +429,8 @@ contract DanielArshamErosions {
         uint256 tokenId,
         bytes memory /*_data*/
     ) public payable {
-        if (_isApproved(msg.sender, tokenId)) {
-            _transferFrom(from, to, tokenId);
-        }
+        require(_isApproved(msg.sender, tokenId), "CXIP: not approved sender");
+        _transferFrom(from, to, tokenId);
     }
 
     /**
@@ -441,12 +440,9 @@ contract DanielArshamErosions {
      * @param approved Turn on or off approval status.
      */
     function setApprovalForAll(address to, bool approved) public {
-        if (to != msg.sender) {
-            _operatorApprovals[msg.sender][to] = approved;
-            emit ApprovalForAll(msg.sender, to, approved);
-        } else {
-            assert(false);
-        }
+        require(to != msg.sender, "CXIP: can't approve self");
+        _operatorApprovals[msg.sender][to] = approved;
+        emit ApprovalForAll(msg.sender, to, approved);
     }
 
     /**
@@ -478,9 +474,8 @@ contract DanielArshamErosions {
         uint256 tokenId,
         bytes memory /*_data*/
     ) public payable {
-        if (_isApproved(msg.sender, tokenId)) {
-            _transferFrom(from, to, tokenId);
-        }
+        require(_isApproved(msg.sender, tokenId), "CXIP: not approved sender");
+        _transferFrom(from, to, tokenId);
     }
 
     /**
@@ -840,9 +835,8 @@ contract DanielArshamErosions {
      * @param tokenId The new token.
      */
     function _mint(address to, uint256 tokenId) private {
-        if (Address.isZero(to) || _exists(tokenId)) {
-            assert(false);
-        }
+        require(!Address.isZero(to), "CXIP: can't mint a burn");
+        require(!_exists(tokenId), "CXIP: token already exists");
         _tokenOwner[tokenId] = to;
         emit Transfer(address(0), to, tokenId);
         _addTokenToOwnerEnumeration(to, tokenId);
@@ -884,15 +878,13 @@ contract DanielArshamErosions {
         address to,
         uint256 tokenId
     ) private {
-        if (_tokenOwner[tokenId] == from && !Address.isZero(to)) {
-            _clearApproval(tokenId);
-            _tokenOwner[tokenId] = to;
-            emit Transfer(from, to, tokenId);
-            _removeTokenFromOwnerEnumeration(from, tokenId);
-            _addTokenToOwnerEnumeration(to, tokenId);
-        } else {
-            assert(false);
-        }
+        require(_tokenOwner[tokenId] == from, "CXIP: not from's token");
+        require(!Address.isZero(to), "CXIP: use burn instead");
+        _clearApproval(tokenId);
+        _tokenOwner[tokenId] = to;
+        emit Transfer(from, to, tokenId);
+        _removeTokenFromOwnerEnumeration(from, tokenId);
+        _addTokenToOwnerEnumeration(to, tokenId);
     }
 
     /**
