@@ -107,7 +107,7 @@ async function main() {
             '0x000000000000000000000000000' + i,
         ]).send(from).catch(error));
     }
-    console.log ('setRotationConfig', await contract.methods.setRotationConfig(30, 10, 5).send(from).catch(error));
+    console.log ('setRotationConfig', await contract.methods.setRotationConfig(0, 30, 10, 5).send(from).catch(error));
     console.log ('getRotationConfig', await contract.methods.getRotationConfig().call(from).catch(error));
     console.log ('batchMint', await contract.methods.batchMint(wallet, 1, 3, '0x0000000000000000000000000000000000000000').send(from).catch(error));
 
