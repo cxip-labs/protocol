@@ -233,6 +233,94 @@
     {
         "inputs": [
             {
+                "internalType": "bytes32",
+                "name": "saltHash",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "address",
+                "name": "collectionCreator",
+                "type": "address"
+            },
+            {
+                "components": [
+                    {
+                        "internalType": "bytes32",
+                        "name": "r",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "s",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "uint8",
+                        "name": "v",
+                        "type": "uint8"
+                    }
+                ],
+                "internalType": "struct Verification",
+                "name": "verification",
+                "type": "tuple"
+            },
+            {
+                "components": [
+                    {
+                        "internalType": "bytes32",
+                        "name": "name",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "name2",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "symbol",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "royalties",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint96",
+                        "name": "bps",
+                        "type": "uint96"
+                    }
+                ],
+                "internalType": "struct CollectionData",
+                "name": "collectionData",
+                "type": "tuple"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "slot",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "bytes",
+                "name": "bytecode",
+                "type": "bytes"
+            }
+        ],
+        "name": "createCustomERC721Collection",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "address",
                 "name": "wallet",
                 "type": "address"

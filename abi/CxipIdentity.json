@@ -332,6 +332,11 @@
                 "internalType": "bytes32",
                 "name": "slot",
                 "type": "bytes32"
+            },
+            {
+                "internalType": "bytes",
+                "name": "bytecode",
+                "type": "bytes"
             }
         ],
         "name": "createCustomERC721Collection",

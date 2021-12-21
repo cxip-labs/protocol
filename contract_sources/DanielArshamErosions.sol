@@ -206,8 +206,8 @@ contract DanielArshamErosions {
      * @dev Concatenates 2 sections of the arweave URI.
      * @return string The URI.
      */
-    function arweaveURI(uint256/* tokenId*/) external view returns (string memory) {
-        uint256 index = RotatingToken.calculateRotation();
+    function arweaveURI(uint256 tokenId) external view returns (string memory) {
+        uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
         return string(abi.encodePacked("ARWEAVE_DOMAIN_NAME", _tokenData[index].arweave, _tokenData[index].arweave2));
     }
 
@@ -225,8 +225,8 @@ contract DanielArshamErosions {
      * @dev If the token Id doesn't exist it will return zero address.
      * @return address Creator's address.
      */
-    function creator(uint256/* tokenId*/) external view returns (address) {
-        uint256 index = RotatingToken.calculateRotation();
+    function creator(uint256 tokenId) external view returns (address) {
+        uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
         return _tokenData[index].creator;
     }
 
@@ -244,8 +244,8 @@ contract DanielArshamErosions {
      * @dev Concatenates to the IPFS domain.
      * @return string The URI.
      */
-    function ipfsURI(uint256/* tokenId*/) external view returns (string memory) {
-        uint256 index = RotatingToken.calculateRotation();
+    function ipfsURI(uint256 tokenId) external view returns (string memory) {
+        uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
         return string(abi.encodePacked("IPFS_DOMAIN_NAME", _tokenData[index].ipfs, _tokenData[index].ipfs2));
     }
 
@@ -324,8 +324,8 @@ contract DanielArshamErosions {
      * @dev Defaults the the Arweave URI
      * @return string The URI.
      */
-    function tokenURI(uint256/* tokenId*/) external view returns (string memory) {
-        uint256 index = RotatingToken.calculateRotation();
+    function tokenURI(uint256 tokenId) external view returns (string memory) {
+        uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
         return string(abi.encodePacked("ARWEAVE_DOMAIN_NAME", _tokenData[index].arweave, _tokenData[index].arweave2));
     }
 
@@ -396,19 +396,11 @@ contract DanielArshamErosions {
     function init(address newOwner, CollectionData calldata collectionData) public {
         require(Address.isZero(_admin), "CXIP: already initialized");
         _admin = msg.sender;
+        // temporary set to self, to pass rarible royalties logic trap
         _owner = address(this);
         _collectionData = collectionData;
-//         (
-//             bool royaltiesSuccess, /* bytes memory royaltiesResponse */
-//         ) = getRegistry().getPA1D().delegatecall(
-//                 abi.encodeWithSelector(
-//                     bytes4(0xea2299f8),
-//                     uint256(0),
-//                     payable(collectionData.royalties),
-//                     uint256(collectionData.bps)
-//                 )
-//             );
-//         require(royaltiesSuccess, "CXIP: failed setting royalties");
+        IPA1D(address(this)).init (0, payable(collectionData.royalties), collectionData.bps);
+        // set to actual owner
         _owner = newOwner;
     }
 
@@ -504,17 +496,14 @@ contract DanielArshamErosions {
      * @param recipient Optional parameter, to send the token to a recipient right after minting.
      */
     function batchMint(address creatorWallet, uint256 startId, uint256 length, address recipient) public onlyOwner {
-        require((startId - _currentTokenId) == 1, "CXIP: broken tokenId sequence");
-        require((startId + length) <= getTokenLimit(), "CXIP: over token limit");
+        require((_allTokens.length + length) <= getTokenLimit(), "CXIP: over token limit");
         require(isIdentityWallet(creatorWallet), "CXIP: creator not in identity");
         bool hasRecipient = !Address.isZero(recipient);
         uint256 tokenId;
         for (uint256 i = 0; i < length; i++) {
             tokenId = (startId + i);
             if (hasRecipient) {
-                if (_exists(tokenId)) {
-                    assert(false);
-                }
+                require(!_exists(tokenId), "CXIP: token already exists");
                 emit Transfer(address(0), creatorWallet, tokenId);
                 emit Transfer(creatorWallet, recipient, tokenId);
                 _tokenOwner[tokenId] = recipient;
@@ -528,11 +517,15 @@ contract DanielArshamErosions {
         _currentTokenId += length;
     }
 
+    function getStartTimestamp() public view returns (uint256) {
+        return RotatingToken.getStartTimestamp();
+    }
+
     /**
      * @dev Gets the token limit from storage slot.
      * @return tokenLimit Maximum number of tokens that can be minted.
      */
-    function getTokenLimit() private view returns (uint256 tokenLimit) {
+    function getTokenLimit() public view returns (uint256 tokenLimit) {
         // The slot hash has been precomputed for gas optimizaion
         // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.DanielArshamErosions.tokenLimit')) - 1);
         assembly {
@@ -561,6 +554,38 @@ contract DanielArshamErosions {
     }
 
     /**
+     * @dev Gets the token separator from storage slot.
+     * @return tokenSeparator The number of tokens before separation.
+     */
+    function getTokenSeparator() public view returns (uint256 tokenSeparator) {
+        // The slot hash has been precomputed for gas optimizaion
+        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.DanielArshamErosions.tokenSeparator')) - 1);
+        assembly {
+            tokenSeparator := sload(
+                /* slot */
+                0x988145eec05de02f4c5d4ecd419a9617237db574d35b27207657cbd8c5b1f045
+            )
+        }
+    }
+
+    /**
+     * @dev Sets the token separator to storage slot.
+     * @param tokenSeparator The number of tokens before separation.
+     */
+    function setTokenSeparator(uint256 tokenSeparator) public onlyOwner {
+        require(getTokenSeparator() == 0, "CXIP: separator already set");
+        // The slot hash has been precomputed for gas optimizaion
+        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.DanielArshamErosions.tokenSeparator')) - 1);
+        assembly {
+            sstore(
+                /* slot */
+                0x988145eec05de02f4c5d4ecd419a9617237db574d35b27207657cbd8c5b1f045,
+                tokenSeparator
+            )
+        }
+    }
+
+    /**
      * @notice Set an NFT state.
      * @dev Time-based states will be retrieved by index.
      * @param id The index of time slot to set for.
@@ -581,6 +606,10 @@ contract DanielArshamErosions {
         RotatingToken.setRotationConfig(interval, steps, halfwayPoint);
     }
 
+    function getRotationConfig() public view returns (uint256, uint256, uint256) {
+        return RotatingToken.getRotationConfig();
+    }
+
     /**
      * @notice Sets a name for the collection.
      * @dev The name is split in two for gas optimization.
@@ -599,6 +628,10 @@ contract DanielArshamErosions {
      */
     function setStartTimestamp(uint256 _timestamp) public onlyOwner {
         RotatingToken.setStartTimestamp(_timestamp);
+    }
+
+    function blockTime()public view returns(uint256){
+    return block.timestamp;
     }
 
     /**

@@ -365,18 +365,7 @@ contract CxipERC721 {
         // temporary set to self, to pass rarible royalties logic trap
         _owner = address(this);
         _collectionData = collectionData;
-//         (
-//             bool royaltiesSuccess, /* bytes memory royaltiesResponse */
-//         ) = getRegistry().getPA1D().delegatecall(
-//                 // bytes4(keccak256("init(uint256,address,uint256)")) == 0xea2299f8
-//                 abi.encodeWithSelector(
-//                     bytes4(0xea2299f8),
-//                     uint256(0),
-//                     payable(collectionData.royalties),
-//                     uint256(collectionData.bps)
-//                 )
-//             );
-//         require(royaltiesSuccess, "CXIP: failed setting royalties");
+        IPA1D(address(this)).init (0, payable(collectionData.royalties), collectionData.bps);
         // set to actual owner
         _owner = newOwner;
     }

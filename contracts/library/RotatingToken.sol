@@ -85,12 +85,13 @@ library RotatingToken {
         }
     }
 
-    function calculateRotation() internal view returns (uint256 rotationIndex) {
+    function calculateRotation(uint256 tokenId, uint256 tokenSeparator) internal view returns (uint256 rotationIndex) {
         (uint256 interval, uint256 steps, uint256 halfwayPoint) = getRotationConfig();
         rotationIndex = ((block.timestamp - getStartTimestamp()) % (interval * steps)) / interval;
         if (rotationIndex > halfwayPoint) {
             rotationIndex = steps - rotationIndex;
         }
+//        rotationIndex = rotationIndex + (steps * (tokenId / tokenSeparator));
     }
 
 }

@@ -331,57 +331,6 @@ contract CxipIdentity {
     }
 
     /**
-     * @notice Create a Daniel Arsham ERC721 collection.
-     * @dev Creates and associates the custom ERC721 collection with the identity.
-     * @param saltHash A salt used for deploying a collection to a specific address.
-     * @param collectionCreator Specific wallet, associated with the identity, that will be marked as the creator of this collection.
-     * @param verification Signature created by the collectionCreator wallet to validate the integrity of the collection data.
-     * @param collectionData The collection data struct, with all the default collection info.
-     * @return address Returns the address of the newly created collection.
-     */
-    function createDanielERC721Collection(
-        bytes32 saltHash,
-        address collectionCreator,
-        Verification calldata verification,
-        CollectionData calldata collectionData
-    ) public returns (address) {
-        if(collectionCreator != msg.sender) {
-            require(
-                Signature.Valid(
-                    collectionCreator,
-                    verification.r,
-                    verification.s,
-                    verification.v,
-                    abi.encodePacked(
-                        address(this),
-                        collectionCreator,
-                        collectionData.name,
-                        collectionData.name2,
-                        collectionData.symbol,
-                        collectionData.royalties,
-                        collectionData.bps
-                    )
-                ),
-                "CXIP: invalid signature"
-            );
-        }
-        require(_isOwner(collectionCreator), "CXIP: creator not owner");
-        bytes memory bytecode = hex"608060405234801561001057600080fd5b50610129806100206000396000f3fe608060408190527fb305cff90000000000000000000000000000000000000000000000000000000090527f748042799f1a8ea5aa2ae183edddb216f96c3c6ada37066aa2ce51a56438ede7608452600073deaddeaddeaddeaddeaddeaddeaddeaddeaddead63b305cff960a460206040518083038186803b15801561008357600080fd5b505afa158015610097573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906100bb91906100e1565b90503660008037600080366000845af43d6000803e8080156100dc573d6000f35b3d6000fd5b6000602082840312156100f2578081fd5b815173ffffffffffffffffffffffffffffffffffffffff81168114610115578182fd5b939250505056fea164736f6c6343000804000a";
-        address cxipAddress;
-        assembly {
-            cxipAddress := create2(
-                0,
-                add(bytecode, 0x20),
-                mload(bytecode),
-                saltHash
-            )
-        }
-        ICxipERC721(cxipAddress).init(collectionCreator, collectionData);
-        _addCollectionToEnumeration(cxipAddress, InterfaceType.ERC721);
-        return(cxipAddress);
-    }
-
-    /**
      * @notice Initialise the identity. This function works only once.
      * @dev It is important to run this inside the same function as the create2 for this contract.
      * @param wallet The address of the wallet to add to new identity.

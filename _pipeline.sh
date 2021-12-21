@@ -25,6 +25,8 @@ node pipeline/23_deploy_daniel_proxy.js
 node pipeline/24_register_daniel.js
 node pipeline/13_check_registry.js
 node pipeline/25_create_daniel_erc721_collection.js
+node pipeline/26_mint_daniel_erc721_collection.js
+node pipeline/27_check_daniel_token.js
 # node pipeline/17_create_erc721_collection.js
 # node pipeline/18_check_erc721_collection.js
 # node pipeline/19_create_erc721_token.js

@@ -8,6 +8,5 @@
   "ipfsDomainName": "IPFS_DOMAIN_NAME",
   "arweaveDomainName": "ARWEAVE_DOMAIN_NAME",
   "identityProxyBytecode": "IDENTITY_PROXY_BYTECODE",
-  "erc721ProxyBytecode": "ERC721_PROXY_BYTECODE",
-  "danielArsham721ProxyBytecode": "DANIEL_PROXY_BYTECODE"
+  "erc721ProxyBytecode": "ERC721_PROXY_BYTECODE"
 }

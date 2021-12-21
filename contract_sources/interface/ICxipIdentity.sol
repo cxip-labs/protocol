@@ -48,14 +48,8 @@ interface ICxipIdentity {
         address collectionCreator,
         Verification calldata verification,
         CollectionData calldata collectionData,
-        bytes32 slot
-    ) external returns (address);
-
-    function createDanielERC721Collection(
-        bytes32 saltHash,
-        address collectionCreator,
-        Verification calldata verification,
-        CollectionData calldata collectionData
+        bytes32 slot,
+        bytes memory bytecode
     ) external returns (address);
 
     function init(address wallet, address secondaryWallet) external;
