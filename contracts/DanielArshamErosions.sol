@@ -687,9 +687,8 @@ contract DanielArshamErosions {
      * @param newOwner Address of new owner.
      */
     function transferOwnership(address newOwner) public onlyOwner {
-        if (!Address.isZero(newOwner)) {
-            _owner = newOwner;
-        }
+        require(!Address.isZero(newOwner), "CXIP: zero address");
+        _owner = newOwner;
     }
 
     /**
@@ -699,6 +698,7 @@ contract DanielArshamErosions {
      * @return uint256 Returns an integer, representing total amount of tokens held by address.
      */
     function balanceOf(address wallet) public view returns (uint256) {
+        require(!Address.isZero(wallet), "CXIP: zero address");
         return _ownedTokensCount[wallet];
     }
 
@@ -914,8 +914,8 @@ contract DanielArshamErosions {
         _allTokens[tokenIndex] = lastTokenId;
         _allTokensIndex[lastTokenId] = tokenIndex;
         delete _allTokensIndex[tokenId];
+        delete _allTokens[lastTokenIndex];
         _allTokens.pop();
-//         delete _allTokens[lastTokenIndex];
     }
 
     /**
@@ -940,6 +940,7 @@ contract DanielArshamErosions {
             delete _ownedTokens[from];
         } else {
             delete _ownedTokens[from][lastTokenIndex];
+            _ownedTokens[from].pop();
         }
     }
 
