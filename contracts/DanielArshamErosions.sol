@@ -505,7 +505,7 @@ contract DanielArshamErosions {
      */
     function batchMint(address creatorWallet, uint256 startId, uint256 length, address recipient) public onlyOwner {
         require(!getMintingClosed(), "CXIP: minting is now closed");
-        require(_allTokens.length <= getTokenLimit(), "CXIP: over token limit");
+        require(_allTokens.length + length <= getTokenLimit(), "CXIP: over token limit");
         require(isIdentityWallet(creatorWallet), "CXIP: creator not in identity");
         bool hasRecipient = !Address.isZero(recipient);
         uint256 tokenId;
