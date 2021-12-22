@@ -60,10 +60,17 @@ contract CxipIdentity {
     mapping(address => InterfaceType) private _additionalInfo;
 
     /**
-     * @notice Constructor is empty and not utilised.
+     * @dev Reentrancy implementation from OpenZepellin. State 1 == NOT_ENDERED, State 2 == ENTERED
+     */
+    uint256 private _reentrancyState;
+
+    /**
+     * @notice Constructor is empty and only reentrancy guard is implemented.
      * @dev To make exact CREATE2 deployment possible, constructor is left empty. We utilize the "init" function instead.
      */
-    constructor() {}
+    constructor() {
+        _reentrancyState = 1;
+    }
 
     /**
      * @notice Enables royaltiy functionality at the ERC721 level when ether is sent with no calldata.
@@ -81,6 +88,15 @@ contract CxipIdentity {
         _royaltiesFallback();
     }
 
+    /**
+     * @dev Implementation from OpenZeppelin (https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/security/ReentrancyGuard.sol)
+     */
+    modifier nonReentrant() {
+        require(_reentrancyState != 2, "ReentrancyGuard: reentrant call");
+        _reentrancyState = 2;
+        _;
+        _reentrancyState = 1;
+    }
 
     /**
      * @notice Check if an identity collection is open to external minting.
@@ -108,7 +124,7 @@ contract CxipIdentity {
         uint8 v,
         bytes32 r,
         bytes32 s
-    ) public {
+    ) public nonReentrant {
         require(_isOwner(msg.sender), "CXIP: you are not an the owner");
         require(!Address.isContract(newWallet), "CXIP: contract not allowed");
         require(
@@ -155,7 +171,7 @@ contract CxipIdentity {
      * @notice Connects a pre-authorised wallet.
      * @dev Make this call with a new wallet after an addWallet function is called by an existing wallet.
      */
-    function connectWallet() public {
+    function connectWallet() public nonReentrant {
         address newWallet = msg.sender;
         address authorizer = _preAuthWallets[newWallet];
         require(!Address.isZero(authorizer), "CXIP: not authorized by owner");
@@ -172,7 +188,7 @@ contract CxipIdentity {
         ICxipProvenance(getRegistry().getProvenance()).informAboutNewWallet(
             newWallet
         );
-        delete(_preAuthWallets[newWallet]);
+        delete _preAuthWallets[newWallet];
     }
 
     /**
@@ -190,7 +206,7 @@ contract CxipIdentity {
         uint256 id,
         TokenData calldata tokenData,
         Verification calldata verification
-    ) public returns (uint256) {
+    ) public nonReentrant returns (uint256) {
         require(_isOwner(msg.sender), "CXIP: you are not an the owner");
         require(_isOwner(tokenData.creator), "CXIP: creator not owner");
         require(
@@ -235,7 +251,7 @@ contract CxipIdentity {
         address collectionCreator,
         Verification calldata verification,
         CollectionData calldata collectionData
-    ) public returns (address) {
+    ) public nonReentrant returns (address) {
         if(collectionCreator != msg.sender) {
             require(
                 Signature.Valid(
@@ -290,7 +306,7 @@ contract CxipIdentity {
         CollectionData calldata collectionData,
         bytes32 slot,
         bytes memory bytecode
-    ) public returns (address) {
+    ) public nonReentrant returns (address) {
         if(collectionCreator != msg.sender) {
             require(
                 Signature.Valid(
@@ -336,7 +352,7 @@ contract CxipIdentity {
      * @param wallet The address of the wallet to add to new identity.
      * @param secondaryWallet Optional second wallet to add to new identity.
      */
-    function init(address wallet, address secondaryWallet) public {
+    function init(address wallet, address secondaryWallet) public nonReentrant {
         require(_walletArray.length == 0, "CXIP: already initialized");
         _addWalletToEnumeration(wallet);
         if(!Address.isZero(secondaryWallet)) {

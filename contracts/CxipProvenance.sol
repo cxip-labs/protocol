@@ -39,6 +39,11 @@ contract CxipProvenance {
     mapping(address => bool) private _blacklistMap;
 
     /**
+     * @dev Reentrancy implementation from OpenZepellin. State 1 == NOT_ENDERED, State 2 == ENTERED
+     */
+    uint256 private _reentrancyState;
+
+    /**
      * @notice Event emitted when an identity gets blacklisted.
      * @dev This is reserved for later use, in cases where an identity needs to be publicly blacklisted.
      * @param identityAddress Address of the identity being blacklisted.
@@ -65,10 +70,22 @@ contract CxipProvenance {
     );
 
     /**
-     * @notice Constructor is empty and not utilised.
+     * @notice Constructor is empty and only reentrancy guard is implemented.
      * @dev There is no data that needs to be set on first time deployment.
      */
-    constructor() {}
+    constructor() {
+        _reentrancyState = 1;
+    }
+
+    /**
+     * @dev Implementation from OpenZeppelin (https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/security/ReentrancyGuard.sol)
+     */
+    modifier nonReentrant() {
+        require(_reentrancyState != 2, "ReentrancyGuard: reentrant call");
+        _reentrancyState = 2;
+        _;
+        _reentrancyState = 1;
+    }
 
     /**
      * @notice Create a new identity smart contract.
@@ -81,7 +98,7 @@ contract CxipProvenance {
         bytes32 saltHash,
         address secondaryWallet,
         Verification calldata verification
-    ) public {
+    ) public nonReentrant {
         bool usingSecondaryWallet = !Address.isZero(secondaryWallet);
         address wallet = msg.sender;
         require(
@@ -153,7 +170,7 @@ contract CxipProvenance {
      * @dev Can only be called by a valid identity associated wallet.
      * @param newWallet Address of wallet to emit event for.
      */
-    function informAboutNewWallet(address newWallet) public {
+    function informAboutNewWallet(address newWallet) public nonReentrant {
         address identityAddress = msg.sender;
         require(
             _identityMap[identityAddress],
