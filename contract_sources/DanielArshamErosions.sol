@@ -708,7 +708,7 @@ contract DanielArshamErosions {
      * @return string the token URI.
      */
     function baseURI() public view returns (string memory) {
-        return string(abi.encodePacked("CXIP_DOMAIN_NAMEnft/", Strings.toHexString(address(this))));
+        return string(abi.encodePacked("CXIP_NFT_DOMAIN_NAME", Strings.toHexString(address(this))));
     }
 
     /**

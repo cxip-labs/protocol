@@ -86,30 +86,38 @@ async function main() {
   		}
   	);
 
-   console.log ('setStartTimestamp', await contract.methods.setStartTimestamp (Math.round (Date.now () / 1000)).send(from).catch(error));
+   console.log ('setStartTimestamp', await contract.methods.setStartTimestamp (1640146736).send(from).catch(error));
     console.log ('getStartTimestamp', await contract.methods.getStartTimestamp().call(from).catch(error));
    console.log ('setTokenSeparator', await contract.methods.setTokenSeparator (10000).send(from).catch(error));
     console.log ('getTokenSeparator', await contract.methods.getTokenSeparator().call(from).catch(error));
    console.log ('setTokenLimit', await contract.methods.setTokenLimit (200 + 150 + 99).send(from).catch(error));
+    let ipfsUrls = [
+        'QmUmtiRzgxBiUrzBhuTwHLWkmdo4NrFFdDsjeBCdy4agvR',
+        'QmPx3BXWGZNPUXnHeXUA2Z6jPm5j7SWx738rw9sLARSGw7',
+        'QmVXvqZCPZEtURDkHUxAAr45XickyfoiqoPDvR2nfGwbK1',
+        'QmXTqw3ufQxQNuHKz4SvWEn3Cfhcp5sBqwRcarPK5qsZiP',
+        'QmTxgtchZiPTqW1Q267KfdWh32yZEcroQwRBtxjWmbQEcJ',
+        'QmRQSbQDRpecTSY7m2BG3bzhHzH76EDGmGDW9Vm5xCqooA'
+    ];
     console.log ('getTokenLimit', await contract.methods.getTokenLimit().call(from).catch(error));
     for (let i = 0, l = 6; i < l; i++) {
         console.log ('prepareMintData', i, await contract.methods.prepareMintData(i, [
-            '0x000000000000000000000000000000000000000000000000000000000000000' + i,
+            '0x787878787878787878787878787878787878787878787878787878787878780' + i,
             [
-                '0x000000000000000000000000000000000000000000000000000000000000000' + i,
-                '0x000000000000000000000000000000000000000000000000000000000000000' + i,
+                '0x787878787878787878787878787878787878787878787878787878787878780' + i,
+                '0x787878787878787878787878787878787878787878787878787878787878780' + i,
                 '0x0' + i,
             ],
             wallet,
-            '0x000000000000000000000000000000000000000000000000000000000000000' + i,
-            '0x000000000000000000000' + i,
-            '0x000000000000000000000000000000000000000000000000000000000000000' + i,
-            '0x000000000000000000000000000' + i,
+            '0x787878787878787878787878787878787878787878787878787878787878780' + i,
+            '0x787878787878787878780' + i,
+            '0x787878787878787878787878787878787878787878787878787878787878780' + i,
+            '0x787878787878787878787878780' + i,
         ]).send(from).catch(error));
     }
     console.log ('setRotationConfig', await contract.methods.setRotationConfig(0, 30, 10, 5).send(from).catch(error));
     console.log ('getRotationConfig', await contract.methods.getRotationConfig(0).call(from).catch(error));
-    console.log ('batchMint', await contract.methods.batchMint(wallet, 1, 3, '0x0000000000000000000000000000000000000000').send(from).catch(error));
+    console.log ('batchMint', await contract.methods.batchMint(wallet, 1, 20, '0x0000000000000000000000000000000000000000').send(from).catch(error));
 
   	console.log ({
   		'owner': await contract.methods.isOwner ().call (from).catch (error),

@@ -81,7 +81,7 @@ async function main() {
   });
 
     // used to force cycle block.timestamp on ganache
-    await contract.methods.setStartTimestamp (Math.round(Math.random() * (Date.now () / 1000))).send(from).catch(error);
+    await contract.methods.setStartTimestamp (1640146736).send(from).catch(error);
 
   console.log({
     tokenURI: await contract.methods.tokenURI(tokenId).call(from).catch(error),

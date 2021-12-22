@@ -708,7 +708,7 @@ contract DanielArshamErosions {
      * @return string the token URI.
      */
     function baseURI() public view returns (string memory) {
-        return string(abi.encodePacked("https://cxip.dev/nft/", Strings.toHexString(address(this))));
+        return string(abi.encodePacked("https://nft.cxip.dev/", Strings.toHexString(address(this))));
     }
 
     /**

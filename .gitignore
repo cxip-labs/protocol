@@ -33,3 +33,5 @@ coverage.json
 
 .idea
 .DS_Store
+
+deployment_assets
