@@ -9,11 +9,8 @@
     "build": "node scripts/build.js",
     "cleanup": "rm mnemonic; rm priv_key; rm -fr contracts/*; rm -fr build; rm -fr data/*",
     "compile": "truffle compile --all",
-    "ganache": "rm -fr ./db; mkdir db; rm ./keys.json; ganache-cli --accounts=10 --defaultBalanceEther=100 --deterministic --mnemonic=\"$(cat ./mnemonic)\" --port=8545 --hostname=0.0.0.0 --gasPrice=0 --gasLimit=10000000 --networkId=5777 --db=./db --acctKeys=./keys.json",
+    "ganache": "rm -fr ./db; mkdir db; rm ./keys.json; ganache-cli --accounts=10 --defaultBalanceEther=100 --deterministic --mnemonic=\"$(cat ./.mnemonic)\" --port=8545 --hostname=0.0.0.0 --gasPrice=0 --gasLimit=10000000 --networkId=5777 --db=./db --acctKeys=./keys.json",
     "pipeline": "npm run-script ganache & sh _pipeline.sh",
-    "switch-cxip": "npm run-script cleanup; echo 'cxip' > network; cp cxip_mnemonic mnemonic; cp cxip_priv_key priv_key; npm run-script build",
-    "switch-live": "npm run-script cleanup; echo 'live' > network; cp live_mnemonic mnemonic; cp live_priv_key priv_key; npm run-script build",
-    "switch-local": "npm run-script cleanup; echo 'local' > network; cp local_mnemonic mnemonic; cp local_priv_key priv_key; npm run-script build",
     "build-compile": "rm -fr contracts/* ; rm -fr build/* ; npm run-script build ; npm run-script compile",
     "abi": "rm -fr abi/* ; node scripts/abi.js"
   },

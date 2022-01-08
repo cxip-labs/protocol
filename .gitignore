@@ -15,6 +15,7 @@ live_priv_key
 local_mnemonic
 local_priv_key
 mnemonic
+.mnemonic
 network
 priv_key
 
