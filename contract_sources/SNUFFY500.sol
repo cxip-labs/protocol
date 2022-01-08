@@ -632,6 +632,25 @@ contract SNUFFY500 {
         SnuffyToken.setTokenData(tokenId, 0, block.timestamp, tokenId);
     }
 
+    function evolve(uint256 tokenId, uint256[] calldata tokenIds) public {
+        uint256 state = SnuffyToken.getTokenState(tokenId);
+        (/*uint256 max*/, uint256 limit,/* uint256 future0*/,/* uint256 future1*/,/* uint256 future2*/,/* uint256 future3*/) = SnuffyToken.getStatesConfig();
+        require(state < (limit - 1), "CXIP: token evolved to max");
+        uint256[16] memory _limits = SnuffyToken.getMutationRequirements();
+        require(tokenIds.length == _limits[state], "CXIP: incorrect tokens amount");
+        bool included;
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            require(ownerOf(tokenIds[i]) == msg.sender, "CXIP: not owner of token");
+            if (!included && tokenId == tokenIds[i]) {
+                SnuffyToken.setTokenData(tokenId, state + 1, block.timestamp, tokenId);
+                included = true;
+            } else {
+                _transferFrom(msg.sender, SnuffyToken.getBroker(), tokenIds[i]);
+            }
+        }
+        require(included, "CXIP: missing evolving token");
+    }
+
     /**
      * @dev Gets the minting status from storage slot.
      * @return mintingClosed Whether minting is open or closed permanently.
