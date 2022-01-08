@@ -158,18 +158,80 @@ contract SNUFFY500 {
     constructor() {}
 
 
+    /**
+     * @notice Gets the configs for each state.
+     * @dev Currently only max and limit are being utilised. Four more future values are reserved for later use.
+     * @return max maximum number of token states ever possible.
+     * @return limit currently imposed hardcap/limit of token states.
+     * @return future0 reserved for a future value.
+     * @return future1 reserved for a future value.
+     * @return future2 reserved for a future value.
+     * @return future3 reserved for a future value.
+     */
+    function getStatesConfig() public view returns (uint256 max, uint256 limit, uint256 future0, uint256 future1, uint256 future2, uint256 future3) {
+        return SnuffyToken.getStatesConfig();
+    }
+
+    /**
+     * @notice Sets the configs for each state.
+     * @dev Currently only max and limit are being utilised. Four more future values are reserved for later use.
+     * @param max maximum number of token states ever possible.
+     * @param limit currently imposed hardcap/limit of token states.
+     * @param future0 reserved for a future value.
+     * @param future1 reserved for a future value.
+     * @param future2 reserved for a future value.
+     * @param future3 reserved for a future value.
+     */
+    function setStatesConfig(uint256 max, uint256 limit, uint256 future0, uint256 future1, uint256 future2, uint256 future3) public onlyOwner {
+        SnuffyToken.setStatesConfig(max, limit, future0, future1, future2, future3);
+    }
+
+    /**
+     * @notice Gets the times that each state is valid for.
+     * @dev All state times are stacked to identify the current state based on last timestamp.
+     * @return UNIX timestamps in seconds for each state's time.
+     */
     function getStateTimestamps() public view returns (uint256[16] memory) {
         return SnuffyToken.getStateTimestamps();
     }
 
     /**
-     * @notice Sets the start timestamp for token rotations.
-     * @dev All rotation calculations will use this timestamp as the origin point from which to calculate.
-     * @param _timestamps UNIX timestamp in seconds.
+     * @notice Sets the times that each state is valid for.
+     * @dev All state times are stacked to identify the current state based on last timestamp.
+     * @param _timestamps UNIX timestamps in seconds for each state's time.
      */
     function setStateTimestamps(uint256[16] memory _timestamps) public onlyOwner {
         SnuffyToken.setStateTimestamps(_timestamps);
     }
+
+    /**
+     * @notice Gets the mutation requirements for each state.
+     * @dev Each state has it's own required amount of tokens to stack before a mutation can be forced.
+     * @return An array with numbers of tokens to stack for each state's mutation.
+     */
+    function getMutationRequirements() public view returns (uint256[16] memory) {
+        return SnuffyToken.getMutationRequirements();
+    }
+
+    /**
+     * @notice Sets the mutation requirements for each state.
+     * @dev Each state has it's own required amount of tokens to stack before a mutation can be forced.
+     * @param _limits An array with numbers of tokens to stack for each state's mutation.
+     */
+    function setMutationRequirements(uint256[16] memory _limits) public onlyOwner {
+        SnuffyToken.setMutationRequirements(_limits);
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * @dev Throws if called by any account other than the owner.
@@ -202,7 +264,7 @@ contract SNUFFY500 {
      */
     function arweaveURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
-        uint256 index = SnuffyToken.calculateRotation(tokenId, getTokenSeparator());
+        uint256 index = SnuffyToken.calculateState(tokenId);
         return string(abi.encodePacked("https://arweave.cxip.dev/", _tokenData[index].arweave, _tokenData[index].arweave2));
     }
 
@@ -222,7 +284,7 @@ contract SNUFFY500 {
      */
     function creator(uint256 tokenId) external view returns (address) {
         require(_exists(tokenId), "CXIP: token does not exist");
-        uint256 index = SnuffyToken.calculateRotation(tokenId, getTokenSeparator());
+        uint256 index = SnuffyToken.calculateState(tokenId);
         return _tokenData[index].creator;
     }
 
@@ -243,7 +305,7 @@ contract SNUFFY500 {
      */
     function ipfsURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
-        uint256 index = SnuffyToken.calculateRotation(tokenId, getTokenSeparator());
+        uint256 index = SnuffyToken.calculateState(tokenId);
         return string(abi.encodePacked("https://ipfs.cxip.dev/", _tokenData[index].ipfs, _tokenData[index].ipfs2));
     }
 
@@ -264,7 +326,7 @@ contract SNUFFY500 {
      */
     function payloadHash(uint256 tokenId) external view returns (bytes32) {
         require(_exists(tokenId), "CXIP: token does not exist");
-        uint256 index = SnuffyToken.calculateRotation(tokenId, getTokenSeparator());
+        uint256 index = SnuffyToken.calculateState(tokenId);
         return _tokenData[index].payloadHash;
     }
 
@@ -276,7 +338,7 @@ contract SNUFFY500 {
      */
     function payloadSignature(uint256 tokenId) external view returns (Verification memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
-        uint256 index = SnuffyToken.calculateRotation(tokenId, getTokenSeparator());
+        uint256 index = SnuffyToken.calculateState(tokenId);
         return _tokenData[index].payloadSignature;
     }
 
@@ -288,7 +350,7 @@ contract SNUFFY500 {
      */
     function payloadSigner(uint256 tokenId) external view returns (address) {
         require(_exists(tokenId), "CXIP: token does not exist");
-        uint256 index = SnuffyToken.calculateRotation(tokenId, getTokenSeparator());
+        uint256 index = SnuffyToken.calculateState(tokenId);
         return _tokenData[index].creator;
     }
 
@@ -330,7 +392,7 @@ contract SNUFFY500 {
      */
     function tokenURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
-        uint256 index = SnuffyToken.calculateRotation(tokenId, getTokenSeparator());
+        uint256 index = SnuffyToken.calculateState(tokenId);
         return string(abi.encodePacked("https://arweave.cxip.dev/", _tokenData[index].arweave, _tokenData[index].arweave2));
     }
 
@@ -515,10 +577,6 @@ contract SNUFFY500 {
         }
     }
 
-    function getStartTimestamp() public view returns (uint256) {
-        return SnuffyToken.getStartTimestamp();
-    }
-
     /**
      * @dev Gets the minting status from storage slot.
      * @return mintingClosed Whether minting is open or closed permanently.
@@ -564,6 +622,9 @@ contract SNUFFY500 {
                 /* slot */
                 0xd7cccb4858870420bddc578f86437fd66f8949091f61f21bd40e4390dc953953
             )
+        }
+        if (tokenLimit == 0) {
+            tokenLimit = type(uint256).max;
         }
     }
 
@@ -636,20 +697,6 @@ contract SNUFFY500 {
     }
 
     /**
-     * @dev Sets the configuration for rotation calculations.
-     * @param interval The number of seconds each rotation is shown for.
-     * @param steps Total number of steps for complete rotation. Reverse rotation including.
-     * @param halfwayPoint Step at which to reverse the rotation backwards. Must be exactly in the middle.
-     */
-    function setRotationConfig(uint256 index, uint256 interval, uint256 steps, uint256 halfwayPoint) public onlyOwner {
-        SnuffyToken.setRotationConfig(index, interval, steps, halfwayPoint);
-    }
-
-    function getRotationConfig(uint256 index) public view returns (uint256, uint256, uint256) {
-        return SnuffyToken.getRotationConfig(index);
-    }
-
-    /**
      * @notice Sets a name for the collection.
      * @dev The name is split in two for gas optimization.
      * @param newName First part of name.
@@ -658,15 +705,6 @@ contract SNUFFY500 {
     function setName(bytes32 newName, bytes32 newName2) public onlyOwner {
         _collectionData.name = newName;
         _collectionData.name2 = newName2;
-    }
-
-    /**
-     * @notice Sets the start timestamp for token rotations.
-     * @dev All rotation calculations will use this timestamp as the origin point from which to calculate.
-     * @param _timestamp UNIX timestamp in seconds.
-     */
-    function setStartTimestamp(uint256 _timestamp) public onlyOwner {
-        SnuffyToken.setStartTimestamp(_timestamp);
     }
 
     /**

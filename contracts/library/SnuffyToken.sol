@@ -14,9 +14,71 @@ pragma solidity 0.8.4;
 
 library SnuffyToken {
 
+
+/*
+
+    // current hard cap for the states and amount of mutations possible
+        uint256 statesLimit = 6;
+
+    // hardware limit of maximum number of mutations possible
+        uint256 maxStates = 16;
+
+*/
+
     /**
-     * @dev Gets the timestamp for rotation calculations from storage slot.
-     * @return _timestamps UNIX timestamp from which to calculate rotations.
+     * @notice Gets the configs for each state.
+     * @dev Currently only max and limit are being utilised. Four more future values are reserved for later use.
+     * @return max maximum number of token states ever possible.
+     * @return limit currently imposed hardcap/limit of token states.
+     * @return future0 reserved for a future value.
+     * @return future1 reserved for a future value.
+     * @return future2 reserved for a future value.
+     * @return future3 reserved for a future value.
+     */
+    function getStatesConfig() internal view returns (uint256 max, uint256 limit, uint256 future0, uint256 future1, uint256 future2, uint256 future3) {
+        uint48 unpacked;
+        // The slot hash has been precomputed for gas optimizaion
+        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SnuffyToken.statesConfig')) - 1);
+        assembly {
+            unpacked := sload(
+                /* slot */
+                0x320f7df63ad3c1fb03163fc8f47010f96d0a4b028d5ed2c9bdbc6b577caddacf
+            )
+        }
+        max = uint256(uint16(unpacked >> 80));
+        limit = uint256(uint16(unpacked >> 64));
+        future0 = uint256(uint16(unpacked >> 48));
+        future1 = uint256(uint16(unpacked >> 32));
+        future2 = uint256(uint16(unpacked >> 16));
+        future3 = uint256(uint16(unpacked));
+    }
+
+    /**
+     * @notice Sets the configs for each state.
+     * @dev Currently only max and limit are being utilised. Four more future values are reserved for later use.
+     * @param max maximum number of token states ever possible.
+     * @param limit currently imposed hardcap/limit of token states.
+     * @param future0 reserved for a future value.
+     * @param future1 reserved for a future value.
+     * @param future2 reserved for a future value.
+     * @param future3 reserved for a future value.
+     */
+    function setStatesConfig(uint256 max, uint256 limit, uint256 future0, uint256 future1, uint256 future2, uint256 future3) internal {
+        // The slot hash has been precomputed for gas optimizaion
+        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SnuffyToken.statesConfig')) - 1);
+        uint256 packed = uint256(max << 80 | limit << 64 | future0 << 48 | future1 << 32 | future2 << 16 | future3);
+        assembly {
+            sstore(
+                /* slot */
+                0x320f7df63ad3c1fb03163fc8f47010f96d0a4b028d5ed2c9bdbc6b577caddacf,
+                packed
+            )
+        }
+    }
+
+    /**
+     * @dev Gets the timestamps for duration of each state from storage slot.
+     * @return _timestamps UNIX timestamps for controlling each state's maximum duration.
      */
     function getStateTimestamps() internal view returns (uint256[16] memory _timestamps) {
         uint256 data;
@@ -34,8 +96,8 @@ library SnuffyToken {
     }
 
     /**
-     * @dev Sets the timestamp for rotation calculations to storage slot.
-     * @param _timestamps UNIX timestamp from which to calculate rotations.
+     * @dev Sets the timestamps for duration of each state to storage slot.
+     * @param _timestamps timestamps for controlling each state's maximum duration.
      */
     function setStateTimestamps(uint256[16] memory _timestamps) internal {
         uint256 packed;
@@ -54,101 +116,99 @@ library SnuffyToken {
     }
 
     /**
-     * @dev Gets the timestamp for rotation calculations from storage slot.
-     * @return _timestamp UNIX timestamp from which to calculate rotations.
+     * @dev Gets the number of tokens needed for a forced mutation from storage slot.
+     * @return _limits An array of number of tokens required for a forced mutation.
      */
-    function getStartTimestamp() internal view returns (uint256 _timestamp) {
+    function getMutationRequirements() internal view returns (uint256[16] memory _limits) {
+        uint256 data;
         // The slot hash has been precomputed for gas optimizaion
-        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SnuffyToken.startTimestamp')) - 1);
+        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SnuffyToken.mutationRequirements')) - 1);
         assembly {
-            _timestamp := sload(
+            data := sload(
                 /* slot */
-                0x38fa0648fc40600e921e87d7da5d00ef6f0ef7324da1460be4f71ea9c20281e8
+                0x6ab8a5e4f8314f5c905e9eb234db45800102f76ee29724ea1039076fe1c57441
             )
+        }
+        for (uint256 i = 0; i < 16; i++) {
+            _limits[i] = uint256(uint16(data >> (16 * i)));
         }
     }
 
     /**
-     * @dev Sets the timestamp for rotation calculations to storage slot.
-     * @param _timestamp UNIX timestamp from which to calculate rotations.
+     * @dev Sets the number of tokens needed for a forced mutation to storage slot.
+     * @param _limits An array of number of tokens required for a forced mutation.
      */
-    function setStartTimestamp(uint256 _timestamp) internal {
+    function setMutationRequirements(uint256[16] memory _limits) internal {
+        uint256 packed;
+        for (uint256 i = 0; i < 16; i++) {
+            packed = packed | _limits[i] << (16 * i);
+        }
         // The slot hash has been precomputed for gas optimizaion
-        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SnuffyToken.startTimestamp')) - 1);
+        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SnuffyToken.mutationRequirements')) - 1);
         assembly {
             sstore(
                 /* slot */
-                0x38fa0648fc40600e921e87d7da5d00ef6f0ef7324da1460be4f71ea9c20281e8,
-                _timestamp
-            )
-        }
-    }
-
-    /**
-     * @dev Gets the configuration for rotation calculations from storage slot.
-     * @return interval The number of seconds each rotation is shown for.
-     * @return steps Total number of steps for complete rotation. Reverse rotation including.
-     * @return halfwayPoint Step at which to reverse the rotation backwards. Must be exactly in the middle.
-     */
-    function getRotationConfig() internal view returns (uint256 interval, uint256 steps, uint256 halfwayPoint) {
-        uint48 unpacked;
-        // The slot hash has been precomputed for gas optimizaion
-        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SnuffyToken.rotationConfig')) - 1);
-        assembly {
-            unpacked := sload(
-                /* slot */
-                0x160a343c5d37c6f7a98898ab4dfa8a16ea4ae7d0f75bda8697a9bedd96b49786
-            )
-        }
-        interval = uint256(uint16(unpacked >> 32));
-        steps = uint256(uint16(unpacked >> 16));
-        halfwayPoint = uint256(uint16(unpacked));
-    }
-    function getRotationConfig(uint256 index) internal view returns (uint256 interval, uint256 steps, uint256 halfwayPoint) {
-        uint48 unpacked;
-        bytes32 slot = bytes32(uint256(keccak256(abi.encodePacked("eip1967.CXIP.SnuffyToken.rotationConfig.", index))) - 1);
-        assembly {
-            unpacked := sload(slot)
-        }
-        interval = uint256(uint16(unpacked >> 32));
-        steps = uint256(uint16(unpacked >> 16));
-        halfwayPoint = uint256(uint16(unpacked));
-    }
-
-    /**
-     * @dev Sets the configuration for rotation calculations to storage slot.
-     * @param interval The number of seconds each rotation is shown for.
-     * @param steps Total number of steps for complete rotation. Reverse rotation including.
-     * @param halfwayPoint Step at which to reverse the rotation backwards. Must be exactly in the middle.
-     */
-    function setRotationConfig(uint256 interval, uint256 steps, uint256 halfwayPoint) internal {
-        // The slot hash has been precomputed for gas optimizaion
-        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SnuffyToken.rotationConfig')) - 1);
-        uint256 packed = uint256(interval << 32 | steps << 16 | halfwayPoint);
-        assembly {
-            sstore(
-                /* slot */
-                0x160a343c5d37c6f7a98898ab4dfa8a16ea4ae7d0f75bda8697a9bedd96b49786,
+                0x6ab8a5e4f8314f5c905e9eb234db45800102f76ee29724ea1039076fe1c57441,
                 packed
             )
         }
     }
-    function setRotationConfig(uint256 index, uint256 interval, uint256 steps, uint256 halfwayPoint) internal {
-        bytes32 slot = bytes32(uint256(keccak256(abi.encodePacked("eip1967.CXIP.SnuffyToken.rotationConfig.", index))) - 1);
-        uint256 packed = uint256(interval << 32 | steps << 16 | halfwayPoint);
+
+    /**
+     * @dev Gets the configuration/mapping for tokenId to stencilId from storage slot.
+     * @return state The latest permanent state that the token was transferred with.
+     * @return timestamp The UNIX timestamp of when last transfer occurred.
+     * @return stencilId Mapping for which stencil the token id was assigned.
+     */
+    function getTokenData(uint256 tokenId) internal view returns (uint256 state, uint256 timestamp, uint256 stencilId) {
+        uint48 unpacked;
+        bytes32 slot = bytes32(uint256(keccak256(abi.encodePacked("eip1967.CXIP.SnuffyToken.tokenData.", tokenId))) - 1);
+        assembly {
+            unpacked := sload(slot)
+        }
+        state = uint256(uint16(unpacked >> 32));
+        timestamp = uint256(uint16(unpacked >> 16));
+        stencilId = uint256(uint16(unpacked));
+    }
+
+    /**
+     * @dev Sets the configuration/mapping for tokenId to stencilId to storage slot.
+     * @param state The latest permanent state that the token was transferred with.
+     * @param timestamp The UNIX timestamp of when last transfer occurred.
+     * @param stencilId Mapping for which stencil the token id was assigned.
+     */
+    function setTokenData(uint256 tokenId, uint256 state, uint256 timestamp, uint256 stencilId) internal {
+        bytes32 slot = bytes32(uint256(keccak256(abi.encodePacked("eip1967.CXIP.SnuffyToken.tokenData.", tokenId))) - 1);
+        uint256 packed = uint256(state << 32 | timestamp << 16 | stencilId);
         assembly {
             sstore(slot, packed)
         }
     }
 
-    function calculateRotation(uint256 tokenId, uint256 tokenSeparator) internal view returns (uint256 rotationIndex) {
-        uint256 configIndex = (tokenId / tokenSeparator);
-        (uint256 interval, uint256 steps, uint256 halfwayPoint) = getRotationConfig(configIndex);
-        rotationIndex = ((block.timestamp - getStartTimestamp()) % (interval * steps)) / interval;
-        if (rotationIndex > halfwayPoint) {
-            rotationIndex = steps - rotationIndex;
+    function calculateState(uint256 tokenId) internal view returns (uint256 dataIndex) {
+        (uint256 max, uint256 limit, uint256 future0, uint256 future1, uint256 future2, uint256 future3) = getStatesConfig();
+        (uint256[16] memory _timestamps) = getStateTimestamps();
+        (uint256 state, uint256 timestamp, uint256 stencilId) = getTokenData(tokenId);
+        dataIndex = max * stencilId;
+        uint256 duration = block.timestamp - timestamp;
+        for (uint256 i = state ;i < limit; i++) {
+            if (duration < _timestamps[i]) {
+                return dataIndex;
+            }
+            duration -= _timestamps[i];
+            dataIndex++;
         }
-       rotationIndex = rotationIndex + ((halfwayPoint + 1) * configIndex);
+        return dataIndex - 1;
     }
+//
+//     function calculateRotation(uint256 tokenId, uint256 tokenSeparator) internal view returns (uint256 rotationIndex) {
+//         uint256 configIndex = (tokenId / tokenSeparator);
+//         (uint256 interval, uint256 steps, uint256 halfwayPoint) = getRotationConfig(configIndex);
+//         rotationIndex = ((block.timestamp - getStartTimestamp()) % (interval * steps)) / interval;
+//         if (rotationIndex > halfwayPoint) {
+//             rotationIndex = steps - rotationIndex;
+//         }
+//        rotationIndex = rotationIndex + ((halfwayPoint + 1) * configIndex);
+//     }
 
 }
