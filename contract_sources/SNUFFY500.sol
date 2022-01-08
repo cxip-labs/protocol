@@ -27,6 +27,7 @@ import "./interface/ICxipRegistry.sol";
 import "./interface/IPA1D.sol";
 import "./library/Address.sol";
 import "./library/Bytes.sol";
+import "./library/Signature.sol";
 import "./library/SnuffyToken.sol";
 import "./library/Strings.sol";
 import "./struct/CollectionData.sol";
@@ -532,6 +533,20 @@ contract SNUFFY500 {
     }
 
     /**
+     * @notice Transfers `tokenId` token from `msg.sender` to `to`.
+     * @dev WARNING: Usage of this method is discouraged, use {safeTransferFrom} whenever possible.
+     * @param to cannot be the zero address.
+     * @param tokenId token must be owned by `from`.
+     */
+    function transfer(
+        address to,
+        uint256 tokenId
+    ) public payable {
+        transferFrom(msg.sender, to, tokenId, "");
+    }
+
+
+    /**
      * @notice Transfers `tokenId` token from `from` to `to`.
      * @dev WARNING: Usage of this method is discouraged, use {safeTransferFrom} whenever possible.
      * @param from  cannot be the zero address.
@@ -569,14 +584,31 @@ contract SNUFFY500 {
      * @dev Function can be called by the owner or by an authorised broker.
      * @dev If a token limit is set, then it is enforced, and minting is closed on last mint.
      * @param creatorWallet The wallet address of the NFT creator.
-     * @param recipient Optional parameter, to send the token to a recipient right after minting.
      * @param tokenId The specific token id to use. Mandatory.
      * @param tokenData Array of details for each state of the token being minted.
+     * @param signer the address of the wallet that signed this.
+     * @param verification Broker has to include a signature made by any of the identity's wallets.
+     * @param recipient Optional parameter, to send the token to a recipient right after minting.
      */
-    function mint(address creatorWallet, address recipient, uint256 tokenId, TokenData[] calldata tokenData) public {
+    function mint(address creatorWallet, uint256 tokenId, TokenData[] calldata tokenData, address signer, Verification calldata verification, address recipient) public {
         require(isOwner() || msg.sender == getBroker(), "CXIP: only owner/broker can mint");
         require(_allTokens.length < getTokenLimit(), "CXIP: over token limit");
         require(isIdentityWallet(creatorWallet), "CXIP: creator not in identity");
+        if (msg.sender == getBroker()) {
+            require(isIdentityWallet(signer), "CXIP: invalid signer");
+            bytes memory encoded = abi.encode(
+                creatorWallet,
+                tokenId,
+                tokenData
+            );
+            require(Signature.Valid(
+                signer,
+                verification.r,
+                verification.s,
+                verification.v,
+                encoded
+            ), "CXIP: invalid signature");
+        }
         bool hasRecipient = !Address.isZero(recipient);
         if (hasRecipient) {
             require(!_exists(tokenId), "CXIP: token already exists");
@@ -590,6 +622,14 @@ contract SNUFFY500 {
         if (_allTokens.length == getTokenLimit()) {
             setMintingClosed();
         }
+        (uint256 max,/* uint256 limit*/,/* uint256 future0*/,/* uint256 future1*/,/* uint256 future2*/,/* uint256 future3*/) = SnuffyToken.getStatesConfig();
+        require(tokenData.length <= max, "CXIP: token data states too long");
+        uint256 index = max * tokenId;
+        for (uint256 i = 0; i < tokenData.length; i++) {
+            _tokenData[index] = tokenData[i];
+            index++;
+        }
+        SnuffyToken.setTokenData(tokenId, 0, block.timestamp, tokenId);
     }
 
     /**
@@ -980,6 +1020,7 @@ contract SNUFFY500 {
         emit Transfer(from, to, tokenId);
         _removeTokenFromOwnerEnumeration(from, tokenId);
         _addTokenToOwnerEnumeration(to, tokenId);
+        SnuffyToken.setTokenData(tokenId, SnuffyToken.getTokenState(tokenId), block.timestamp, tokenId);
     }
 
     /**

@@ -217,19 +217,24 @@ library SnuffyToken {
     }
 
     function calculateState(uint256 tokenId) internal view returns (uint256 dataIndex) {
-        (uint256 max, uint256 limit,/* uint256 future0*/,/* uint256 future1*/,/* uint256 future2*/,/* uint256 future3*/) = getStatesConfig();
-        (uint256[16] memory _timestamps) = getStateTimestamps();
-        (uint256 state, uint256 timestamp, uint256 stencilId) = getTokenData(tokenId);
+        (uint256 max,/* uint256 limit*/,/* uint256 future0*/,/* uint256 future1*/,/* uint256 future2*/,/* uint256 future3*/) = getStatesConfig();
+        (/*uint256 state*/,/* uint256 timestamp*/, uint256 stencilId) = getTokenData(tokenId);
         dataIndex = max * stencilId;
+        return dataIndex + getTokenState(tokenId);
+    }
+
+    function getTokenState(uint256 tokenId) internal view returns (uint256 dataIndex) {
+        (/*uint256 max*/, uint256 limit,/* uint256 future0*/,/* uint256 future1*/,/* uint256 future2*/,/* uint256 future3*/) = getStatesConfig();
+        (uint256[16] memory _timestamps) = getStateTimestamps();
+        (uint256 state, uint256 timestamp,/* uint256 stencilId*/) = getTokenData(tokenId);
         uint256 duration = block.timestamp - timestamp;
-        for (uint256 i = state ;i < limit; i++) {
+        for (uint256 i = state; i < limit; i++) {
             if (duration < _timestamps[i]) {
-                return dataIndex;
+                return i;
             }
             duration -= _timestamps[i];
-            dataIndex++;
         }
-        return dataIndex - 1;
+        return limit - 1;
     }
 //
 //     function calculateRotation(uint256 tokenId, uint256 tokenSeparator) internal view returns (uint256 rotationIndex) {
