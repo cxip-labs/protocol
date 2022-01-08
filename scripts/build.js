@@ -4,7 +4,7 @@ const fs = require('fs');
 const buildDir = './contract_sources';
 const deployDir = './contracts';
 
-const NETWORK = process.env.NETWORK || 'local';
+const { NETWORK } = require('../config/env');
 const buildConfig = JSON.parse(
     fs.readFileSync('./config/build.config.json', 'utf8')
 );

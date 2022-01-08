@@ -70,6 +70,15 @@ async function main() {
     .call(from)
     .catch(error);
 
+  const snuffy = await contract.methods
+    .getCustomSource('0x760d8fd549489d03ac3713df7691c6343992aa824c4e75d3d990e8a5f46d8619')
+    .call(from)
+    .catch(error);
+  const snuffyProxy = await contract.methods
+    .getCustomSource('0x173e062e35414a9e4a78473136b46649bf11b541b977af37c24fdf9b93fd2b26')
+    .call(from)
+    .catch(error);
+
   console.log({
     asset,
     assetProxy,
@@ -86,7 +95,9 @@ async function main() {
     royalties,
     royaltiesProxy,
     daniel,
-    danielProxy
+    danielProxy,
+    snuffy,
+    snuffyProxy
   });
   process.exit();
 }

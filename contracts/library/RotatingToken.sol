@@ -109,7 +109,7 @@ library RotatingToken {
         if (rotationIndex > halfwayPoint) {
             rotationIndex = steps - rotationIndex;
         }
-       rotationIndex = rotationIndex + (steps * configIndex);
+       rotationIndex = rotationIndex + ((halfwayPoint + 1) * configIndex);
     }
 
 }

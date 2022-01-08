@@ -31,7 +31,8 @@ const from = {
 
 async function main() {
   const tokenId =
-    '0x0000000000000000000000000000000000000000000000000000000000000002';
+    10001;
+    //'0x0000000000000000000000000000000000000000000000000000000000000007';
 
   const IDENTITY_ABI = JSON.parse(
     fs.readFileSync('./build/contracts/CxipIdentity.json')
@@ -81,7 +82,7 @@ async function main() {
   });
 
     // used to force cycle block.timestamp on ganache
-    await contract.methods.setStartTimestamp (1640146736).send(from).catch(error);
+//     await contract.methods.setStartTimestamp (1640146736).send(from).catch(error);
 
   console.log({
     tokenURI: await contract.methods.tokenURI(tokenId).call(from).catch(error),

@@ -6,7 +6,7 @@ const Web3 = require('web3');
 const { NETWORK, GAS, WALLET } = require('../config/env');
 
 const FACTORY_CONTRACT = JSON.parse(
-  fs.readFileSync('./build/contracts/DanielArshamErosions.json')
+  fs.readFileSync('./build/contracts/SNUFFY500.json')
 );
 
 const rpc = JSON.parse(fs.readFileSync('./rpc.json', 'utf8'));
@@ -42,11 +42,11 @@ FACTORY.deploy(payload)
   })
   .then(function (newContractInstance) {
     fs.writeFileSync(
-      './data/' + NETWORK + '.daniel.address',
+      './data/' + NETWORK + '.snuffy.address',
       newContractInstance.options.address
     );
     console.log(
-      'Deployed Daniel Arsham Contract : ' + newContractInstance.options.address
+      'Deployed SNUFFY500 Contract : ' + newContractInstance.options.address
     );
     process.exit();
   });

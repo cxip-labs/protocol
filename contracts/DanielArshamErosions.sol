@@ -638,6 +638,14 @@ contract DanielArshamErosions {
         _tokenData[id] = tokenData;
     }
 
+    function prepareMintDataBatch(uint256[] calldata ids, TokenData[] calldata tokenData) public onlyOwner {
+        require(ids.length == tokenData.length, "CXIP: array lengths missmatch");
+        for (uint256 i = 0; i < ids.length; i++) {
+            require(Address.isZero(_tokenData[ids[i]].creator), "CXIP: token data already set");
+            _tokenData[ids[i]] = tokenData[i];
+        }
+    }
+
     /**
      * @dev Sets the configuration for rotation calculations.
      * @param interval The number of seconds each rotation is shown for.

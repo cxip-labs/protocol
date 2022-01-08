@@ -39,7 +39,7 @@ const removeX = function (input) {
 
 
 const FACTORY_CONTRACT = JSON.parse(
-  fs.readFileSync('./build/contracts/DanielArshamErosionsProxy.json')
+  fs.readFileSync('./build/contracts/SNUFFY500Proxy.json')
 );
 let bytecode = FACTORY_CONTRACT.bytecode.replace(
   /deaddeaddeaddeaddeaddeaddeaddeaddeaddead/gi,
@@ -78,13 +78,13 @@ async function main() {
         '0x0',
       ],
       [
-        '0x' + removeX(web3.utils.utf8ToHex('Eroding and Reforming Digital Sc')).padStart(64, '0'),
-        '0x' + removeX(web3.utils.utf8ToHex('ulptures: Cars')).padStart(64, '0'),
-        '0x' + removeX(web3.utils.utf8ToHex('ERODING&REFORMINGDIGITAL')).padStart(64, '0'),
+        '0x' + removeX(web3.utils.utf8ToHex('The SNUFFY 500')).padStart(64, '0'),
+        '0x' + removeX(web3.utils.utf8ToHex('')).padStart(64, '0'),
+        '0x' + removeX(web3.utils.utf8ToHex('SNUFFY500')).padStart(64, '0'),
         IDENTITY_CONTRACT,
         '0x' + (1000).toString(16).padStart(24, '0'),
       ],
-      '0x34614b2160c4ad0a9004a062b1210e491f551c3b3eb86397949dc0279cf60c0d',
+      '0x173e062e35414a9e4a78473136b46649bf11b541b977af37c24fdf9b93fd2b26',
       '0x' + removeX(bytecode)
     )
     .send(from)
@@ -93,7 +93,7 @@ async function main() {
     console.log (result.events);
   if (result.status) {
   const ERC721_ABI = JSON.parse(
-    fs.readFileSync('./build/contracts/DanielArshamErosions.json')
+    fs.readFileSync('./build/contracts/SNUFFY500.json')
   ).abi;
   const ERC721_CONTRACT = await identity.methods
     .getCollectionById(0)

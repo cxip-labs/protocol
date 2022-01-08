@@ -3,49 +3,16 @@
 pragma solidity 0.8.4;
 
 /*
-
-    ██████╗  █████╗ ███╗   ██╗██╗███████╗██╗
-    ██╔══██╗██╔══██╗████╗  ██║██║██╔════╝██║
-    ██║  ██║███████║██╔██╗ ██║██║█████╗  ██║
-    ██║  ██║██╔══██║██║╚██╗██║██║██╔══╝  ██║
-    ██████╔╝██║  ██║██║ ╚████║██║███████╗███████╗
-    ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚══════╝╚══════╝
-
-  █████╗ ██████╗ ███████╗██╗  ██╗ █████╗ ███╗   ███╗
- ██╔══██╗██╔══██╗██╔════╝██║  ██║██╔══██╗████╗ ████║
- ███████║██████╔╝███████╗███████║███████║██╔████╔██║
- ██╔══██║██╔══██╗╚════██║██╔══██║██╔══██║██║╚██╔╝██║
- ██║  ██║██║  ██║███████║██║  ██║██║  ██║██║ ╚═╝ ██║
- ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝
-
-                       ______
-                      /     /\
-                     /     /##\
-                    /     /####\
-                   /     /######\
-                  /     /########\
-                 /     /##########\
-                /     /#####/\#####\
-               /     /#####/++\#####\
-              /     /#####/++++\#####\
-             /     /#####/\+++++\#####\
-            /     /#####/  \+++++\#####\
-           /     /#####/    \+++++\#####\
-          /     /#####/      \+++++\#####\
-         /     /#####/        \+++++\#####\
-        /     /#####/__________\+++++\#####\
-       /                        \+++++\#####\
-      /__________________________\+++++\####/
-      \+++++++++++++++++++++++++++++++++\##/
-       \+++++++++++++++++++++++++++++++++\/
-        ``````````````````````````````````
-
-              ██████╗██╗  ██╗██╗██████╗
-             ██╔════╝╚██╗██╔╝██║██╔══██╗
-             ██║      ╚███╔╝ ██║██████╔╝
-             ██║      ██╔██╗ ██║██╔═══╝
-             ╚██████╗██╔╝ ██╗██║██║
-              ╚═════╝╚═╝  ╚═╝╚═╝╚═╝
+ __________________________________
+|                                  |
+| $ + $ + $ + $ + $ + $ + $ + $ + $|
+|+ $ + $ + $ + $ + $ + $ + $ + $ + |
+| + $ + $ + $ + $ + $ + $ + $ + $ +|
+|$ + $ + $ + $ + $ + $ + $ + $ + $ |
+| $ + $ + $ + $ + $ + $ + $ + $ + $|
+|+ $ + $ + $ + $ + $ + $ + $ + $ + |
+| + $ + $ + $ + $ + $ + $ + $ + $ +|
+|__________________________________|
 
 */
 
@@ -64,12 +31,13 @@ import "./struct/TokenData.sol";
 import "./struct/Verification.sol";
 
 /**
- * @title CXIP ERC721
+ * @title NFT Broker
  * @author CXIP-Labs
- * @notice A smart contract for minting and managing ERC721 NFTs.
+ * @notice A simple smart contract for selling NFTs from a private storefront.
  * @dev The entire logic and functionality of the smart contract is self-contained.
+ * @dev Deploy, configure, transfer in NFTs, and sell!
  */
-contract DanielArshamErosions {
+contract NFTBroker {
     /**
      * @dev Stores default collection data: name, symbol, and royalties.
      */
@@ -214,16 +182,16 @@ contract DanielArshamErosions {
     function arweaveURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
         uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
-        return string(abi.encodePacked("ARWEAVE_DOMAIN_NAME", _tokenData[index].arweave, _tokenData[index].arweave2));
+        return string(abi.encodePacked("https://arweave.cxip.dev/", _tokenData[index].arweave, _tokenData[index].arweave2));
     }
 
     /**
      * @notice Gets the URI of the NFT backup from CXIP.
-     * @dev Concatenates to CXIP_NFT_DOMAIN_NAME.
+     * @dev Concatenates to https://nft.cxip.dev/.
      * @return string The URI.
      */
     function contractURI() external view returns (string memory) {
-        return string(abi.encodePacked("CXIP_NFT_DOMAIN_NAME", Strings.toHexString(address(this)), "/"));
+        return string(abi.encodePacked("https://nft.cxip.dev/", Strings.toHexString(address(this)), "/"));
     }
 
     /**
@@ -255,7 +223,7 @@ contract DanielArshamErosions {
     function ipfsURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
         uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
-        return string(abi.encodePacked("IPFS_DOMAIN_NAME", _tokenData[index].ipfs, _tokenData[index].ipfs2));
+        return string(abi.encodePacked("https://ipfs.cxip.dev/", _tokenData[index].ipfs, _tokenData[index].ipfs2));
     }
 
     /**
@@ -342,7 +310,7 @@ contract DanielArshamErosions {
     function tokenURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
         uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
-        return string(abi.encodePacked("ARWEAVE_DOMAIN_NAME", _tokenData[index].arweave, _tokenData[index].arweave2));
+        return string(abi.encodePacked("https://arweave.cxip.dev/", _tokenData[index].arweave, _tokenData[index].arweave2));
     }
 
     /**
@@ -716,7 +684,7 @@ contract DanielArshamErosions {
      * @return string the token URI.
      */
     function baseURI() public view returns (string memory) {
-        return string(abi.encodePacked("CXIP_NFT_DOMAIN_NAME", Strings.toHexString(address(this))));
+        return string(abi.encodePacked("https://nft.cxip.dev/", Strings.toHexString(address(this))));
     }
 
     /**

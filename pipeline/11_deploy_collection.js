@@ -39,8 +39,8 @@ let payload = {
 
 let parameter = {
   from: provider.addresses[0],
-  gas: web3.utils.toHex(2900000),
-  gasPrice: web3.utils.toHex(web3.utils.toWei('70', 'gwei')),
+  gas: web3.utils.toHex(3000000),
+  gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei')),
 };
 
 // Function Call

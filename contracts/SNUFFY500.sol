@@ -4,48 +4,18 @@ pragma solidity 0.8.4;
 
 /*
 
-    ██████╗  █████╗ ███╗   ██╗██╗███████╗██╗
-    ██╔══██╗██╔══██╗████╗  ██║██║██╔════╝██║
-    ██║  ██║███████║██╔██╗ ██║██║█████╗  ██║
-    ██║  ██║██╔══██║██║╚██╗██║██║██╔══╝  ██║
-    ██████╔╝██║  ██║██║ ╚████║██║███████╗███████╗
-    ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚══════╝╚══════╝
+            O
+            _
+     ---\ _|.|_ /---
+      ---|  |  |---
+         |_/ \_|
+          |   |
+          |   |
+          |___|
+           | |
+           / \
 
-  █████╗ ██████╗ ███████╗██╗  ██╗ █████╗ ███╗   ███╗
- ██╔══██╗██╔══██╗██╔════╝██║  ██║██╔══██╗████╗ ████║
- ███████║██████╔╝███████╗███████║███████║██╔████╔██║
- ██╔══██║██╔══██╗╚════██║██╔══██║██╔══██║██║╚██╔╝██║
- ██║  ██║██║  ██║███████║██║  ██║██║  ██║██║ ╚═╝ ██║
- ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝
-
-                       ______
-                      /     /\
-                     /     /##\
-                    /     /####\
-                   /     /######\
-                  /     /########\
-                 /     /##########\
-                /     /#####/\#####\
-               /     /#####/++\#####\
-              /     /#####/++++\#####\
-             /     /#####/\+++++\#####\
-            /     /#####/  \+++++\#####\
-           /     /#####/    \+++++\#####\
-          /     /#####/      \+++++\#####\
-         /     /#####/        \+++++\#####\
-        /     /#####/__________\+++++\#####\
-       /                        \+++++\#####\
-      /__________________________\+++++\####/
-      \+++++++++++++++++++++++++++++++++\##/
-       \+++++++++++++++++++++++++++++++++\/
-        ``````````````````````````````````
-
-              ██████╗██╗  ██╗██╗██████╗
-             ██╔════╝╚██╗██╔╝██║██╔══██╗
-             ██║      ╚███╔╝ ██║██████╔╝
-             ██║      ██╔██╗ ██║██╔═══╝
-             ╚██████╗██╔╝ ██╗██║██║
-              ╚═════╝╚═╝  ╚═╝╚═╝╚═╝
+       SNUFFY 500
 
 */
 
@@ -57,7 +27,7 @@ import "./interface/ICxipRegistry.sol";
 import "./interface/IPA1D.sol";
 import "./library/Address.sol";
 import "./library/Bytes.sol";
-import "./library/RotatingToken.sol";
+import "./library/SnuffyToken.sol";
 import "./library/Strings.sol";
 import "./struct/CollectionData.sol";
 import "./struct/TokenData.sol";
@@ -69,7 +39,7 @@ import "./struct/Verification.sol";
  * @notice A smart contract for minting and managing ERC721 NFTs.
  * @dev The entire logic and functionality of the smart contract is self-contained.
  */
-contract DanielArshamErosions {
+contract SNUFFY500 {
     /**
      * @dev Stores default collection data: name, symbol, and royalties.
      */
@@ -142,6 +112,11 @@ contract DanielArshamErosions {
     mapping(uint256 => uint256) private _allTokensIndex;
 
     /**
+     * @dev Mapping from token id to token data type.
+     */
+    mapping(uint256 => uint256) private _tokenDataType;
+
+    /**
      * @notice Event emitted when an token is minted, transfered, or burned.
      * @dev If from is empty, it's a mint. If to is empty, it's a burn. Otherwise, it's a transfer.
      * @param from Address from where token is being transfered.
@@ -182,6 +157,20 @@ contract DanielArshamErosions {
      */
     constructor() {}
 
+
+    function getStateTimestamps() public view returns (uint256[16] memory) {
+        return SnuffyToken.getStateTimestamps();
+    }
+
+    /**
+     * @notice Sets the start timestamp for token rotations.
+     * @dev All rotation calculations will use this timestamp as the origin point from which to calculate.
+     * @param _timestamps UNIX timestamp in seconds.
+     */
+    function setStateTimestamps(uint256[16] memory _timestamps) public onlyOwner {
+        SnuffyToken.setStateTimestamps(_timestamps);
+    }
+
     /**
      * @dev Throws if called by any account other than the owner.
      */
@@ -213,17 +202,17 @@ contract DanielArshamErosions {
      */
     function arweaveURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
-        uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
-        return string(abi.encodePacked("ARWEAVE_DOMAIN_NAME", _tokenData[index].arweave, _tokenData[index].arweave2));
+        uint256 index = SnuffyToken.calculateRotation(tokenId, getTokenSeparator());
+        return string(abi.encodePacked("https://arweave.cxip.dev/", _tokenData[index].arweave, _tokenData[index].arweave2));
     }
 
     /**
      * @notice Gets the URI of the NFT backup from CXIP.
-     * @dev Concatenates to CXIP_NFT_DOMAIN_NAME.
+     * @dev Concatenates to https://nft.cxip.dev/.
      * @return string The URI.
      */
     function contractURI() external view returns (string memory) {
-        return string(abi.encodePacked("CXIP_NFT_DOMAIN_NAME", Strings.toHexString(address(this)), "/"));
+        return string(abi.encodePacked("https://nft.cxip.dev/", Strings.toHexString(address(this)), "/"));
     }
 
     /**
@@ -233,7 +222,7 @@ contract DanielArshamErosions {
      */
     function creator(uint256 tokenId) external view returns (address) {
         require(_exists(tokenId), "CXIP: token does not exist");
-        uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
+        uint256 index = SnuffyToken.calculateRotation(tokenId, getTokenSeparator());
         return _tokenData[index].creator;
     }
 
@@ -254,8 +243,8 @@ contract DanielArshamErosions {
      */
     function ipfsURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
-        uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
-        return string(abi.encodePacked("IPFS_DOMAIN_NAME", _tokenData[index].ipfs, _tokenData[index].ipfs2));
+        uint256 index = SnuffyToken.calculateRotation(tokenId, getTokenSeparator());
+        return string(abi.encodePacked("https://ipfs.cxip.dev/", _tokenData[index].ipfs, _tokenData[index].ipfs2));
     }
 
     /**
@@ -275,7 +264,7 @@ contract DanielArshamErosions {
      */
     function payloadHash(uint256 tokenId) external view returns (bytes32) {
         require(_exists(tokenId), "CXIP: token does not exist");
-        uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
+        uint256 index = SnuffyToken.calculateRotation(tokenId, getTokenSeparator());
         return _tokenData[index].payloadHash;
     }
 
@@ -287,7 +276,7 @@ contract DanielArshamErosions {
      */
     function payloadSignature(uint256 tokenId) external view returns (Verification memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
-        uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
+        uint256 index = SnuffyToken.calculateRotation(tokenId, getTokenSeparator());
         return _tokenData[index].payloadSignature;
     }
 
@@ -299,7 +288,7 @@ contract DanielArshamErosions {
      */
     function payloadSigner(uint256 tokenId) external view returns (address) {
         require(_exists(tokenId), "CXIP: token does not exist");
-        uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
+        uint256 index = SnuffyToken.calculateRotation(tokenId, getTokenSeparator());
         return _tokenData[index].creator;
     }
 
@@ -341,8 +330,8 @@ contract DanielArshamErosions {
      */
     function tokenURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
-        uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
-        return string(abi.encodePacked("ARWEAVE_DOMAIN_NAME", _tokenData[index].arweave, _tokenData[index].arweave2));
+        uint256 index = SnuffyToken.calculateRotation(tokenId, getTokenSeparator());
+        return string(abi.encodePacked("https://arweave.cxip.dev/", _tokenData[index].arweave, _tokenData[index].arweave2));
     }
 
     /**
@@ -527,7 +516,7 @@ contract DanielArshamErosions {
     }
 
     function getStartTimestamp() public view returns (uint256) {
-        return RotatingToken.getStartTimestamp();
+        return SnuffyToken.getStartTimestamp();
     }
 
     /**
@@ -536,12 +525,12 @@ contract DanielArshamErosions {
      */
     function getMintingClosed() public view returns (bool mintingClosed) {
         // The slot hash has been precomputed for gas optimizaion
-        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.DanielArshamErosions.mintingClosed')) - 1);
+        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SNUFFY500.mintingClosed')) - 1);
         uint256 data;
         assembly {
             data := sload(
                 /* slot */
-                0xab90edbe8f424080ec4ee1e9062e8b7540cbbfd5f4287285e52611030e58b8d4
+                0x82d37688748a8833e0d222efdc792424f8a1acdd6c8351cb26b314a4ceee6a84
             )
         }
         mintingClosed = (data == 1);
@@ -552,12 +541,12 @@ contract DanielArshamErosions {
      */
     function setMintingClosed() public onlyOwner {
         // The slot hash has been precomputed for gas optimizaion
-        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.DanielArshamErosions.mintingClosed')) - 1);
+        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SNUFFY500.mintingClosed')) - 1);
         uint256 data = 1;
         assembly {
             sstore(
                 /* slot */
-                0xab90edbe8f424080ec4ee1e9062e8b7540cbbfd5f4287285e52611030e58b8d4,
+                0x82d37688748a8833e0d222efdc792424f8a1acdd6c8351cb26b314a4ceee6a84,
                 data
             )
         }
@@ -569,11 +558,11 @@ contract DanielArshamErosions {
      */
     function getTokenLimit() public view returns (uint256 tokenLimit) {
         // The slot hash has been precomputed for gas optimizaion
-        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.DanielArshamErosions.tokenLimit')) - 1);
+        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SNUFFY500.tokenLimit')) - 1);
         assembly {
             tokenLimit := sload(
                 /* slot */
-                0xb63653e470fa8e7fcc528e0068173a1969fdee5ae0ee29dd58e7b6111b829c56
+                0xd7cccb4858870420bddc578f86437fd66f8949091f61f21bd40e4390dc953953
             )
         }
     }
@@ -585,11 +574,11 @@ contract DanielArshamErosions {
     function setTokenLimit(uint256 tokenLimit) public onlyOwner {
         require(getTokenLimit() == 0, "CXIP: token limit already set");
         // The slot hash has been precomputed for gas optimizaion
-        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.DanielArshamErosions.tokenLimit')) - 1);
+        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SNUFFY500.tokenLimit')) - 1);
         assembly {
             sstore(
                 /* slot */
-                0xb63653e470fa8e7fcc528e0068173a1969fdee5ae0ee29dd58e7b6111b829c56,
+                0xd7cccb4858870420bddc578f86437fd66f8949091f61f21bd40e4390dc953953,
                 tokenLimit
             )
         }
@@ -601,11 +590,11 @@ contract DanielArshamErosions {
      */
     function getTokenSeparator() public view returns (uint256 tokenSeparator) {
         // The slot hash has been precomputed for gas optimizaion
-        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.DanielArshamErosions.tokenSeparator')) - 1);
+        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SNUFFY500.tokenSeparator')) - 1);
         assembly {
             tokenSeparator := sload(
                 /* slot */
-                0x988145eec05de02f4c5d4ecd419a9617237db574d35b27207657cbd8c5b1f045
+                0x5fbebac9543f395bcde5bb6f76074bffa54ddbcd8f036f33923ed255ddc116f3
             )
         }
     }
@@ -617,11 +606,11 @@ contract DanielArshamErosions {
     function setTokenSeparator(uint256 tokenSeparator) public onlyOwner {
         require(getTokenSeparator() == 0, "CXIP: separator already set");
         // The slot hash has been precomputed for gas optimizaion
-        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.DanielArshamErosions.tokenSeparator')) - 1);
+        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SNUFFY500.tokenSeparator')) - 1);
         assembly {
             sstore(
                 /* slot */
-                0x988145eec05de02f4c5d4ecd419a9617237db574d35b27207657cbd8c5b1f045,
+                0x5fbebac9543f395bcde5bb6f76074bffa54ddbcd8f036f33923ed255ddc116f3,
                 tokenSeparator
             )
         }
@@ -653,11 +642,11 @@ contract DanielArshamErosions {
      * @param halfwayPoint Step at which to reverse the rotation backwards. Must be exactly in the middle.
      */
     function setRotationConfig(uint256 index, uint256 interval, uint256 steps, uint256 halfwayPoint) public onlyOwner {
-        RotatingToken.setRotationConfig(index, interval, steps, halfwayPoint);
+        SnuffyToken.setRotationConfig(index, interval, steps, halfwayPoint);
     }
 
     function getRotationConfig(uint256 index) public view returns (uint256, uint256, uint256) {
-        return RotatingToken.getRotationConfig(index);
+        return SnuffyToken.getRotationConfig(index);
     }
 
     /**
@@ -677,7 +666,7 @@ contract DanielArshamErosions {
      * @param _timestamp UNIX timestamp in seconds.
      */
     function setStartTimestamp(uint256 _timestamp) public onlyOwner {
-        RotatingToken.setStartTimestamp(_timestamp);
+        SnuffyToken.setStartTimestamp(_timestamp);
     }
 
     /**
@@ -716,7 +705,7 @@ contract DanielArshamErosions {
      * @return string the token URI.
      */
     function baseURI() public view returns (string memory) {
-        return string(abi.encodePacked("CXIP_NFT_DOMAIN_NAME", Strings.toHexString(address(this))));
+        return string(abi.encodePacked("https://nft.cxip.dev/", Strings.toHexString(address(this))));
     }
 
     /**

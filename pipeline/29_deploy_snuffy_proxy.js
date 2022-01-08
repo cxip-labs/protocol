@@ -6,7 +6,7 @@ const Web3 = require('web3');
 const { NETWORK, GAS, WALLET } = require('../config/env');
 
 const FACTORY_CONTRACT = JSON.parse(
-  fs.readFileSync('./build/contracts/DanielArshamErosions.json')
+  fs.readFileSync('./build/contracts/SNUFFY500Proxy.json')
 );
 
 const rpc = JSON.parse(fs.readFileSync('./rpc.json', 'utf8'));
@@ -31,7 +31,7 @@ let payload = {
 
 let parameter = {
   from: provider.addresses[0],
-  gas: web3.utils.toHex(5000000),
+  gas: web3.utils.toHex(1500000),
   gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei')),
 };
 
@@ -42,11 +42,11 @@ FACTORY.deploy(payload)
   })
   .then(function (newContractInstance) {
     fs.writeFileSync(
-      './data/' + NETWORK + '.daniel.address',
+      './data/' + NETWORK + '.snuffy.proxy.address',
       newContractInstance.options.address
     );
     console.log(
-      'Deployed Daniel Arsham Contract : ' + newContractInstance.options.address
+      'Deployed SNUFFY500 Proxy Contract : ' + newContractInstance.options.address
     );
     process.exit();
   });

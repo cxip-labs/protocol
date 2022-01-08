@@ -46,7 +46,7 @@ const hexify = function (input) {
 };
 
 const FACTORY_CONTRACT = JSON.parse(
-  fs.readFileSync('./build/contracts/DanielArshamErosionsProxy.json')
+  fs.readFileSync('./build/contracts/SNUFFY500Proxy.json')
 );
 let bytecode = FACTORY_CONTRACT.bytecode.replace(
   /deaddeaddeaddeaddeaddeaddeaddeaddeaddead/gi,
@@ -73,7 +73,7 @@ async function main() {
   });
 
   const ERC721_ABI = JSON.parse(
-    fs.readFileSync('./build/contracts/DanielArshamErosions.json')
+    fs.readFileSync('./build/contracts/SNUFFY500.json')
   ).abi;
   const ERC721_CONTRACT = await identity.methods
     .getCollectionById(0)
@@ -91,8 +91,28 @@ async function main() {
   		}
   	);
 
-//    console.log ('setStartTimestamp', await contract.methods.setStartTimestamp (1640304000).send(from).catch(error));
-//     console.log ('getStartTimestamp', await contract.methods.getStartTimestamp().call(from).catch(error));
+    console.log ('setStateTimestamps', await contract.methods.setStateTimestamps ([
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+    ]).send(from).catch(error));
+        console.log ('getStateTimestamps', await contract.methods.getStateTimestamps().call(from).catch(error));
+
+    console.log ('setStartTimestamp', await contract.methods.setStartTimestamp (1234567890).send(from).catch(error));
+        console.log ('getStartTimestamp', await contract.methods.getStartTimestamp().call(from).catch(error));
 //    console.log ('setTokenSeparator', await contract.methods.setTokenSeparator (10000).send(from).catch(error));
 //     console.log ('getTokenSeparator', await contract.methods.getTokenSeparator().call(from).catch(error));
 //    console.log ('setTokenLimit', await contract.methods.setTokenLimit (200 + 150 + 99).send(from).catch(error));

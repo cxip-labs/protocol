@@ -3,7 +3,7 @@
 const fs = require('fs');
 const HDWalletProvider = require('truffle-hdwallet-provider');
 const Web3 = require('web3');
-const { NETWORK, WALLET } = require('../config/env');
+const { NETWORK, GAS, WALLET } = require('../config/env');
 
 const rpc = JSON.parse(fs.readFileSync('./rpc.json', 'utf8'));
 const provider = new HDWalletProvider(WALLET, rpc[NETWORK]);
@@ -17,8 +17,8 @@ const PROVENANCE_ADDRESS = fs
   .trim();
 
 const contract = new web3.eth.Contract(PROVENANCE_ABI, PROVENANCE_ADDRESS, {
-  gasLimit: web3.utils.toHex(2000000),
-  gasPrice: web3.utils.toHex(web3.utils.toWei('20', 'gwei')),
+  gasLimit: web3.utils.toHex(2500000),
+  gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei')),
 });
 
 const error = function (err) {
@@ -31,7 +31,7 @@ const from = {
 
 async function main() {
   const salt =
-    provider.addresses[0] + '0x000000000000000000000000'.substring(2);
+    provider.addresses[0] + '0x44616e69656c41727368616d'.substring(2);
   const secondaryWallet = '0x0000000000000000000000000000000000000000';
 
   const result = await contract.methods

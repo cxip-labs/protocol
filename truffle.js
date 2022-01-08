@@ -81,9 +81,6 @@ module.exports = {
 					enabled: true,
 					runs: 20000
 				},
-				metadata: {
-					bytecodeHash: 'none'
-				},
 				outputSelection: {
 					'*': {
 						'*': [
