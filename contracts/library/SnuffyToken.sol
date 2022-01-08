@@ -155,6 +155,37 @@ library SnuffyToken {
     }
 
     /**
+     * @dev Gets the authorised broker from storage slot.
+     * @return broker Address of authorised broker.
+     */
+    function getBroker() internal view returns (address broker) {
+        // The slot hash has been precomputed for gas optimizaion
+        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SnuffyToken.broker')) - 1);
+        assembly {
+            broker := sload(
+                /* slot */
+                0x71ad4b54125645bc093479b790dba1d002be6ff1fc59f46b726e598257e1e3c1
+            )
+        }
+    }
+
+    /**
+     * @dev Sets authorised broker to storage slot.
+     * @param broker Address of authorised broker.
+     */
+    function setBroker(address broker) internal {
+        // The slot hash has been precomputed for gas optimizaion
+        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SnuffyToken.broker')) - 1);
+        assembly {
+            sstore(
+                /* slot */
+                0x71ad4b54125645bc093479b790dba1d002be6ff1fc59f46b726e598257e1e3c1,
+                broker
+            )
+        }
+    }
+
+    /**
      * @dev Gets the configuration/mapping for tokenId to stencilId from storage slot.
      * @return state The latest permanent state that the token was transferred with.
      * @return timestamp The UNIX timestamp of when last transfer occurred.
@@ -186,7 +217,7 @@ library SnuffyToken {
     }
 
     function calculateState(uint256 tokenId) internal view returns (uint256 dataIndex) {
-        (uint256 max, uint256 limit, uint256 future0, uint256 future1, uint256 future2, uint256 future3) = getStatesConfig();
+        (uint256 max, uint256 limit,/* uint256 future0*/,/* uint256 future1*/,/* uint256 future2*/,/* uint256 future3*/) = getStatesConfig();
         (uint256[16] memory _timestamps) = getStateTimestamps();
         (uint256 state, uint256 timestamp, uint256 stencilId) = getTokenData(tokenId);
         dataIndex = max * stencilId;

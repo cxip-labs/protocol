@@ -112,11 +112,6 @@ contract SNUFFY500 {
     mapping(uint256 => uint256) private _allTokensIndex;
 
     /**
-     * @dev Mapping from token id to token data type.
-     */
-    mapping(uint256 => uint256) private _tokenDataType;
-
-    /**
      * @notice Event emitted when an token is minted, transfered, or burned.
      * @dev If from is empty, it's a mint. If to is empty, it's a burn. Otherwise, it's a transfer.
      * @param from Address from where token is being transfered.
@@ -156,6 +151,13 @@ contract SNUFFY500 {
      * @dev To make exact CREATE2 deployment possible, constructor is left empty. We utilize the "init" function instead.
      */
     constructor() {}
+
+
+
+
+
+
+
 
 
     /**
@@ -222,7 +224,23 @@ contract SNUFFY500 {
         SnuffyToken.setMutationRequirements(_limits);
     }
 
+    /**
+     * @notice Gets the authorised broker for minting.
+     * @dev In order to allow for custom airdrop type minting/claims, an external broker smart contract is used.
+     * @return Address of wallet or smart contract that can mint tokens.
+     */
+    function getBroker() public view returns (address) {
+        return SnuffyToken.getBroker();
+    }
 
+    /**
+     * @notice Sets the authorised broker for minting.
+     * @dev In order to allow for custom airdrop type minting/claims, an external broker smart contract is used.
+     * @param broker Address of wallet or smart contract that can mint tokens.
+     */
+    function setBroker(address broker) public onlyOwner {
+        SnuffyToken.setBroker(broker);
+    }
 
 
 
@@ -547,30 +565,27 @@ contract SNUFFY500 {
     }
 
     /**
-     * @notice Mints batches of NFTs.
-     * @dev Limited to maximum number of NFTs that can be minted for this drop. Needs to be called in tokenId sequence.
+     * @notice Mints a token directly to creator wallet, or to a recipient.
+     * @dev Function can be called by the owner or by an authorised broker.
+     * @dev If a token limit is set, then it is enforced, and minting is closed on last mint.
      * @param creatorWallet The wallet address of the NFT creator.
-     * @param startId The tokenId from which to start batch mint.
-     * @param length The total number of NFTs to mint starting from the startId.
      * @param recipient Optional parameter, to send the token to a recipient right after minting.
+     * @param tokenId The specific token id to use. Mandatory.
+     * @param tokenData Array of details for each state of the token being minted.
      */
-    function batchMint(address creatorWallet, uint256 startId, uint256 length, address recipient) public onlyOwner {
-        require(!getMintingClosed(), "CXIP: minting is now closed");
-        require(_allTokens.length + length <= getTokenLimit(), "CXIP: over token limit");
+    function mint(address creatorWallet, address recipient, uint256 tokenId, TokenData[] calldata tokenData) public {
+        require(isOwner() || msg.sender == getBroker(), "CXIP: only owner/broker can mint");
+        require(_allTokens.length < getTokenLimit(), "CXIP: over token limit");
         require(isIdentityWallet(creatorWallet), "CXIP: creator not in identity");
         bool hasRecipient = !Address.isZero(recipient);
-        uint256 tokenId;
-        for (uint256 i = 0; i < length; i++) {
-            tokenId = (startId + i);
-            if (hasRecipient) {
-                require(!_exists(tokenId), "CXIP: token already exists");
-                emit Transfer(address(0), creatorWallet, tokenId);
-                emit Transfer(creatorWallet, recipient, tokenId);
-                _tokenOwner[tokenId] = recipient;
-                _addTokenToOwnerEnumeration(recipient, tokenId);
-            } else {
-                _mint(creatorWallet, tokenId);
-            }
+        if (hasRecipient) {
+            require(!_exists(tokenId), "CXIP: token already exists");
+            emit Transfer(address(0), creatorWallet, tokenId);
+            emit Transfer(creatorWallet, recipient, tokenId);
+            _tokenOwner[tokenId] = recipient;
+            _addTokenToOwnerEnumeration(recipient, tokenId);
+        } else {
+            _mint(creatorWallet, tokenId);
         }
         if (_allTokens.length == getTokenLimit()) {
             setMintingClosed();
@@ -641,38 +656,6 @@ contract SNUFFY500 {
                 /* slot */
                 0xd7cccb4858870420bddc578f86437fd66f8949091f61f21bd40e4390dc953953,
                 tokenLimit
-            )
-        }
-    }
-
-    /**
-     * @dev Gets the token separator from storage slot.
-     * @return tokenSeparator The number of tokens before separation.
-     */
-    function getTokenSeparator() public view returns (uint256 tokenSeparator) {
-        // The slot hash has been precomputed for gas optimizaion
-        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SNUFFY500.tokenSeparator')) - 1);
-        assembly {
-            tokenSeparator := sload(
-                /* slot */
-                0x5fbebac9543f395bcde5bb6f76074bffa54ddbcd8f036f33923ed255ddc116f3
-            )
-        }
-    }
-
-    /**
-     * @dev Sets the token separator to storage slot.
-     * @param tokenSeparator The number of tokens before separation.
-     */
-    function setTokenSeparator(uint256 tokenSeparator) public onlyOwner {
-        require(getTokenSeparator() == 0, "CXIP: separator already set");
-        // The slot hash has been precomputed for gas optimizaion
-        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SNUFFY500.tokenSeparator')) - 1);
-        assembly {
-            sstore(
-                /* slot */
-                0x5fbebac9543f395bcde5bb6f76074bffa54ddbcd8f036f33923ed255ddc116f3,
-                tokenSeparator
             )
         }
     }

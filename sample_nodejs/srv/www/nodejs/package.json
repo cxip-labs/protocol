@@ -1,0 +1,20 @@
+{
+  "name": "cxip-sample",
+  "version": "1.0.0",
+  "description": "",
+  "main": "public.js",
+  "scripts": {
+    "start": "node public.js",
+    "test": ""
+  },
+  "author": "vitto.io",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "busboy": "^0.3.1",
+    "dotenv": "^10.0.0",
+    "ipfs-unixfs-importer": "^9.0.5",
+    "notp": "^2.0.3",
+    "umbrella": "file:custom_modules/umbrella",
+    "web3": "^1.5.2"
+  }
+}
