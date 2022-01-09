@@ -142,7 +142,7 @@ contract NFTBroker {
         _tier3 = tier3;
     }
 
-    function getTierTimes () public returns (uint256 tier1, uint256 tier2, uint256 tier3) {
+    function getTierTimes () public view returns (uint256 tier1, uint256 tier2, uint256 tier3) {
         tier1 = _tier1;
         tier2 = _tier2;
         tier3 = _tier3;
@@ -160,7 +160,7 @@ contract NFTBroker {
         }
     }
 
-    function getPrice (uint256/* tokenId*/) public returns (uint256) {
+    function getPrice (uint256/* tokenId*/) public view returns (uint256) {
         return _tokenBasePrice;
     }
 
@@ -169,6 +169,7 @@ contract NFTBroker {
      */
     function claimAndMint (uint256 tokenId, TokenData[] calldata tokenData, Verification calldata verification) public payable {
         require(block.timestamp >= _tier1, "CXIP: too early to claim");
+        require(block.timestamp < _tier2, "CXIP: too late to claim");
         require(msg.value >= _tokenBasePrice, "CXIP: payment amount is too low");
         require(!SNUFFY500(_tokenContract).exists(tokenId), "CXIP: token snatched");
         // need to write a code that will do something here with the funds
@@ -178,7 +179,7 @@ contract NFTBroker {
         uint256 index;
         uint256 lastIndex = length - 1;
         if (length == 1) {
-            index = 0;
+            index = lastIndex;
             require(claimable[index] == tokenId, "CXIP: not your token");
         } else {
             bool found;
@@ -204,27 +205,22 @@ contract NFTBroker {
      */
     function proofOfStakeAndMint (Verification calldata proof, uint256 tokens, uint256 tokenId, TokenData[] calldata tokenData, Verification calldata verification) public payable {
         require(block.timestamp >= _tier2, "CXIP: too early to stake");
+        require(block.timestamp < _tier3, "CXIP: too late to stake");
         require(msg.value >= _tokenBasePrice, "CXIP: payment amount is too low");
         require(!SNUFFY500(_tokenContract).exists(tokenId), "CXIP: token snatched");
         // need to write a code that will do something here with the funds
-        uint256[] storage claimable = _reservedTokens[msg.sender];
-        require(claimable.length > 0, "CXIP: no tokens to claim");
-        uint256 index;
-        bool found;
-        for (uint256 i = 0; i < claimable.length; i++) {
-            if (!found && claimable[i] == tokenId) {
-                found = true;
-                index = i;
-            }
-        }
-        require(found, "CXIP: token id not in list");
+        bytes memory encoded = abi.encodePacked(msg.sender, tokens);
+        require(Signature.Valid(
+            _notary,
+            proof.r,
+            proof.s,
+            proof.v,
+            encoded
+        ), "CXIP: invalid signature");
+        require(_purchasedTokens[msg.sender] < tokens, "CXIP: max allowance reached");
         SNUFFY500(_tokenContract).mint(_owner, tokenId, tokenData, _owner, verification, msg.sender);
-        uint256 lastIndex = claimable.length - 1;
-        if (index != lastIndex) {
-            claimable[index] = claimable[lastIndex];
-        }
-        delete claimable[lastIndex];
-        claimable.pop();
+        _purchasedTokens[msg.sender] = _purchasedTokens[msg.sender] + 1;
+        _removeTokenFromAllTokensEnumeration(tokenId);
     }
 
     /**
@@ -235,24 +231,8 @@ contract NFTBroker {
         require(msg.value >= _tokenBasePrice, "CXIP: payment amount is too low");
         require(!SNUFFY500(_tokenContract).exists(tokenId), "CXIP: token snatched");
         // need to write a code that will do something here with the funds
-        uint256[] storage claimable = _reservedTokens[msg.sender];
-        require(claimable.length > 0, "CXIP: no tokens to claim");
-        uint256 index;
-        bool found;
-        for (uint256 i = 0; i < claimable.length; i++) {
-            if (!found && claimable[i] == tokenId) {
-                found = true;
-                index = i;
-            }
-        }
-        require(found, "CXIP: token id not in list");
         SNUFFY500(_tokenContract).mint(_owner, tokenId, tokenData, _owner, verification, msg.sender);
-        uint256 lastIndex = claimable.length - 1;
-        if (index != lastIndex) {
-            claimable[index] = claimable[lastIndex];
-        }
-        delete claimable[lastIndex];
-        claimable.pop();
+        _removeTokenFromAllTokensEnumeration(tokenId);
     }
 
     /**
@@ -260,7 +240,6 @@ contract NFTBroker {
      * @dev Useful for fixing critical bugs, recovering lost tokens, and reversing accidental payments to contract.
      */
     function delegate (address target, bytes calldata payload) public onlyOwner {
-        target.delegatecall(payload);
         (bool success, bytes memory data) = target.delegatecall(payload);
         require(success, string(data));
     }

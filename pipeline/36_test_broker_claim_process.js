@@ -133,7 +133,7 @@ async function main() {
         );
     }
     console.log (states);
-    let tokenId = 1;
+    let tokenId = 2;
     let forSigning = web3.utils.keccak256 (EncodeForSignature (wallet, tokenId, states));
     console.log (forSigning);
     let sig = await web3.eth.personal.sign (forSigning, wallet);
