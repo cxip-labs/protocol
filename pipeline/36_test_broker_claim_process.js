@@ -18,7 +18,7 @@ const BROKER_ADDRESS = fs
   .readFileSync('./data/' + NETWORK + '.snuffy.broker.address', 'utf8')
   .trim();
 
-const contract = new web32.eth.Contract(BROKER_ABI, BROKER_ADDRESS, {
+const contract = new web3.eth.Contract(BROKER_ABI, BROKER_ADDRESS, {
   // gasLimit: '1721975',
   // gasPrice: '70000000000',
 });
@@ -156,9 +156,9 @@ async function main() {
             signature.v
         ]
     ).send ({
-        from: provider2.addresses[0],
+        from: provider.addresses[0],
         value: web3.utils.toHex(web3.utils.toWei('0.2', 'ether')),
-        gas: web3.utils.toHex(2000000),
+        gas: web3.utils.toHex(4000000),
         gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei'))
     }).catch (error));
 
