@@ -81,19 +81,32 @@ contract NFTBroker {
     mapping(address => uint256[]) private _reservedTokens;
 
     /**
-     * @dev A mapp keeping tally of total numer of tokens purchased by a wallet. Used on drop to enforce tier purchase amount limits.
+     * @dev A map keeping tally of total numer of tokens purchased by a wallet. Used on drop to enforce tier purchase limits.
      */
     mapping(address => uint256) private _purchasedTokens;
-
-    /**
-     * @dev Array of all tokenIds available for minting/purchasing.
-     */
-    uint256[] private _availableTokens;
 
     /**
      * @dev Base purchase price of token in wei.
      */
     uint256 private _tokenBasePrice;
+
+    /**
+     * @dev Array of all tokenIds available for minting/purchasing.
+     */
+    uint256[] private _allTokens;
+
+    /**
+     * @dev Mapping from token id to position in the allTokens array.
+     */
+    mapping(uint256 => uint256) private _allTokensIndex;
+
+    /**
+     * @dev Throws if called by any account other than the owner.
+     */
+    modifier onlyOwner() {
+        require(isOwner(), "CXIP: caller not an owner");
+        _;
+    }
 
 /*
 
@@ -108,21 +121,19 @@ contract NFTBroker {
 
     When Tier 1 closes, we need to have a function that can transfer the remaining NFTs back into the list of all available NFT.
 
-
-
 */
 
     constructor (uint256 tokenPrice, uint256[] memory openTokens, address tokenContract, address notary) {
         _admin = tx.origin;
         _owner = tx.origin;
         _tokenBasePrice = tokenPrice;
-        _availableTokens = openTokens;
+        _allTokens = openTokens;
         _tokenContract = payable(tokenContract);
         _notary = notary;
     }
 
     /**
-     * @dev This would get called for special reserved tokens. Message sender must be the approve wallet.
+     * @dev This would get called for special reserved tokens. Message sender must be the approved wallet.
      */
     function claimAndMint (uint256 tokenId, TokenData[] calldata tokenData, Verification calldata verification) public payable {
         require(block.timestamp >= _tier1, "CXIP: too early to claim");
@@ -130,23 +141,29 @@ contract NFTBroker {
         require(!SNUFFY500(_tokenContract).exists(tokenId), "CXIP: token snatched");
         // need to write a code that will do something here with the funds
         uint256[] storage claimable = _reservedTokens[msg.sender];
-        require(claimable.length > 0, "CXIP: no tokens to claim");
+        uint256 length = claimable.length;
+        require(length > 0, "CXIP: no tokens to claim");
         uint256 index;
-        bool found;
-        for (uint256 i = 0; i < claimable.length; i++) {
-            if (!found && claimable[i] == tokenId) {
-                found = true;
-                index = i;
+        uint256 lastIndex = length - 1;
+        if (length == 1) {
+            index = 0;
+        } else {
+            bool found;
+            for (uint256 i = 0; i < claimable.length; i++) {
+                if (!found && claimable[i] == tokenId) {
+                    found = true;
+                    index = i;
+                    break;
+                }
             }
-        }
-        require(found, "CXIP: token id not in list");
-        SNUFFY500(_tokenContract).mint(_owner, tokenId, tokenData, _owner, verification, msg.sender);
-        uint256 lastIndex = claimable.length - 1;
-        if (index != lastIndex) {
-            claimable[index] = claimable[lastIndex];
+            require(found, "CXIP: token id not in list");
+            if (index != lastIndex) {
+                claimable[index] = claimable[lastIndex];
+            }
         }
         delete claimable[lastIndex];
         claimable.pop();
+        SNUFFY500(_tokenContract).mint(_owner, tokenId, tokenData, _owner, verification, msg.sender);
     }
 
     /**
@@ -205,64 +222,37 @@ contract NFTBroker {
         claimable.pop();
     }
 
+    /**
+     * @notice Can be used to bring logic from other smart contracts in (temporarily).
+     * @dev Useful for fixing critical bugs, recovering lost tokens, and reversing accidental payments to contract.
+     */
+    function delegate (address target, bytes calldata payload) public onlyOwner {
+        target.delegatecall(payload);
+        (bool success, bytes memory data) = target.delegatecall(payload);
+        require(success, string(data));
+    }
 
     /**
-     * @dev Array of all token ids in collection.
+     * @notice Simple function to accept safe transfers.
+     * @dev Token transfers that are related to the _tokenContract are automatically added to _allTokens.
+     * @param _operator The address of the smart contract that operates the token.
+     * @dev Since it's not being used, the _from variable is commented out to avoid compiler warnings.
+     * @dev _tokenId Id of the token being transferred in.
+     * @dev Since it's not being used, the _data variable is commented out to avoid compiler warnings.
+     * @return bytes4 Returns the interfaceId of onERC721Received.
      */
-    uint256[] private _allTokens;
-
-    /**
-     * @dev Map of token id to array index of _ownedTokens.
-     */
-    mapping(uint256 => uint256) private _ownedTokensIndex;
-
-    /**
-     * @dev Token id to wallet (owner) address map.
-     */
-    mapping(uint256 => address) private _tokenOwner;
-
-    /**
-     * @dev 1-to-1 map of token id that was assigned an approved operator address.
-     */
-    mapping(uint256 => address) private _tokenApprovals;
-
-    /**
-     * @dev Map of total tokens owner by a specific address.
-     */
-    mapping(address => uint256) private _ownedTokensCount;
-
-    /**
-     * @dev Map of array of token ids owned by a specific address.
-     */
-    mapping(address => uint256[]) private _ownedTokens;
-
-    /**
-     * @notice Map of full operator approval for a particular address.
-     * @dev Usually utilised for supporting marketplace proxy wallets.
-     */
-    mapping(address => mapping(address => bool)) private _operatorApprovals;
-
-    /**
-     * @dev Token data mapped by token id.
-     */
-    mapping(uint256 => TokenData) private _tokenData;
-
-    /**
-     * @dev Simple tracker of all minted (not-burned) tokens.
-     */
-    uint256 private _totalTokens;
-
-    /**
-     * @dev Mapping from token id to position in the allTokens array.
-     */
-    mapping(uint256 => uint256) private _allTokensIndex;
-
-    /**
-     * @dev Throws if called by any account other than the owner.
-     */
-    modifier onlyOwner() {
-        require(isOwner(), "CXIP: caller not an owner");
-        _;
+    function onERC721Received(
+        address payable _operator,
+        address/* _from*/,
+        uint256 _tokenId,
+        bytes calldata /*_data*/
+    ) public returns (bytes4) {
+        if (_operator == _tokenContract) {
+            if (SNUFFY500(_operator).ownerOf(_tokenId) == address(this)) {
+                _addTokenToEnumeration (_tokenId);
+            }
+        }
+        return 0x150b7a02;
     }
 
     /**
@@ -283,15 +273,6 @@ contract NFTBroker {
     }
 
     /**
-     * @notice Get list of tokens owned by wallet.
-     * @param wallet The wallet address to get tokens for.
-     * @return uint256[] Returns an array of token ids owned by wallet.
-     */
-    function tokensOfOwner(address wallet) external view returns (uint256[] memory) {
-        return _ownedTokens[wallet];
-    }
-
-    /**
      * @notice Transfers ownership of the collection.
      * @dev Can't be the zero address.
      * @param newOwner Address of new owner.
@@ -299,17 +280,6 @@ contract NFTBroker {
     function transferOwnership(address newOwner) public onlyOwner {
         require(!Address.isZero(newOwner), "CXIP: zero address");
         _owner = newOwner;
-    }
-
-    /**
-     * @notice Get total number of tokens owned by wallet.
-     * @dev Used to see total amount of tokens owned by a specific wallet.
-     * @param wallet Address for which to get token balance.
-     * @return uint256 Returns an integer, representing total amount of tokens held by address.
-     */
-    function balanceOf(address wallet) public view returns (uint256) {
-        require(!Address.isZero(wallet), "CXIP: zero address");
-        return _ownedTokensCount[wallet];
     }
 
     /**
@@ -331,18 +301,6 @@ contract NFTBroker {
     }
 
     /**
-     * @notice Checks who the owner of a token is.
-     * @dev The token must exist.
-     * @param tokenId The token to look up.
-     * @return address Owner of the token.
-     */
-    function ownerOf(uint256 tokenId) public view returns (address) {
-        address tokenOwner = _tokenOwner[tokenId];
-        require(!Address.isZero(tokenOwner), "ERC721: token does not exist");
-        return tokenOwner;
-    }
-
-    /**
      * @notice Get token by index.
      * @dev Used in conjunction with totalSupply function to iterate over all tokens in collection.
      * @param index Index of token in array.
@@ -354,23 +312,8 @@ contract NFTBroker {
     }
 
     /**
-     * @notice Get token from wallet by index instead of token id.
-     * @dev Helpful for wallet token enumeration where token id info is not yet available. Use in conjunction with balanceOf function.
-     * @param wallet Specific address for which to get token for.
-     * @param index Index of token in array.
-     * @return uint256 Returns the token id of token located at that index in specified wallet.
-     */
-    function tokenOfOwnerByIndex(
-        address wallet,
-        uint256 index
-    ) public view returns (uint256) {
-        require(index < balanceOf(wallet));
-        return _ownedTokens[wallet][index];
-    }
-
-    /**
-     * @notice Total amount of tokens in the collection.
-     * @dev Ignores burned tokens.
+     * @notice Total amount of tokens available for sale.
+     * @dev Does not specifically reserved tokens.
      * @return uint256 Returns the total number of active (not burned) tokens.
      */
     function totalSupply() public view returns (uint256) {
@@ -378,36 +321,28 @@ contract NFTBroker {
     }
 
     /**
-     * @notice Empty function that is triggered by external contract on NFT transfer.
-     * @dev We have this blank function in place to make sure that external contract sending in NFTs don't error out.
-     * @dev Since it's not being used, the _operator variable is commented out to avoid compiler warnings.
-     * @dev Since it's not being used, the _from variable is commented out to avoid compiler warnings.
-     * @dev Since it's not being used, the _tokenId variable is commented out to avoid compiler warnings.
-     * @dev Since it's not being used, the _data variable is commented out to avoid compiler warnings.
-     * @return bytes4 Returns the interfaceId of onERC721Received.
-     */
-    function onERC721Received(
-        address, /*_operator*/
-        address, /*_from*/
-        uint256, /*_tokenId*/
-        bytes calldata /*_data*/
-    ) public pure returns (bytes4) {
-        return 0x150b7a02;
-    }
-
-    /**
-     * @dev Add a newly minted token into managed list of tokens.
-     * @param to Address of token owner for which to add the token.
+     * @dev Add a newly added token into managed list of tokens.
      * @param tokenId Id of token to add.
      */
-    function _addTokenToOwnerEnumeration(address to, uint256 tokenId) private {
-        _ownedTokensIndex[tokenId] = _ownedTokensCount[to];
-        _ownedTokensCount[to]++;
-        _ownedTokens[to].push(tokenId);
+    function _addTokenToEnumeration(uint256 tokenId) private {
         _allTokensIndex[tokenId] = _allTokens.length;
         _allTokens.push(tokenId);
     }
 
+    /**
+     * @notice Checks if the token is in our possession.
+     * @dev To avoid the possible as unset value issue, we check that returned value actually matches the tokenId.
+     * @param tokenId The affected token.
+     * @return bool True if it exists.
+     */
+    function _exists(uint256 tokenId) private view returns (bool) {
+        return _allTokens[_allTokensIndex[tokenId]] == tokenId;
+    }
+
+    /**
+     * @dev Remove a token from managed list of tokens.
+     * @param tokenId Id of token to remove.
+     */
     function _removeTokenFromAllTokensEnumeration(uint256 tokenId) private {
         uint256 lastTokenIndex = _allTokens.length - 1;
         uint256 tokenIndex = _allTokensIndex[tokenId];
@@ -417,32 +352,6 @@ contract NFTBroker {
         delete _allTokensIndex[tokenId];
         delete _allTokens[lastTokenIndex];
         _allTokens.pop();
-    }
-
-    /**
-     * @dev Remove a token from managed list of tokens.
-     * @param from Address of token owner for which to remove the token.
-     * @param tokenId Id of token to remove.
-     */
-    function _removeTokenFromOwnerEnumeration(
-        address from,
-        uint256 tokenId
-    ) private {
-        _removeTokenFromAllTokensEnumeration(tokenId);
-        _ownedTokensCount[from]--;
-        uint256 lastTokenIndex = _ownedTokensCount[from];
-        uint256 tokenIndex = _ownedTokensIndex[tokenId];
-        if(tokenIndex != lastTokenIndex) {
-            uint256 lastTokenId = _ownedTokens[from][lastTokenIndex];
-            _ownedTokens[from][tokenIndex] = lastTokenId;
-            _ownedTokensIndex[lastTokenId] = tokenIndex;
-        }
-        if(lastTokenIndex == 0) {
-            delete _ownedTokens[from];
-        } else {
-            delete _ownedTokens[from][lastTokenIndex];
-            _ownedTokens[from].pop();
-        }
     }
 
 }

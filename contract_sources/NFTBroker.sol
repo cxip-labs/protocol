@@ -133,24 +133,7 @@ contract NFTBroker {
     }
 
     /**
-     * @notice Shows the interfaces the contracts support
-     * @dev Must add new 4 byte interface Ids here to acknowledge support
-     * @param interfaceId ERC165 style 4 byte interfaceId.
-     * @return bool True if supported.
-     */
-    function supportsInterface(bytes4 interfaceId) external pure returns (bool) {
-        if (
-            interfaceId == 0x01ffc9a7 || // ERC165
-            interfaceId == 0x150b7a02    // ERC721TokenReceiver
-        ) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * @dev This would get called for special reserved tokens. Message sender must be the approve wallet.
+     * @dev This would get called for special reserved tokens. Message sender must be the approved wallet.
      */
     function claimAndMint (uint256 tokenId, TokenData[] calldata tokenData, Verification calldata verification) public payable {
         require(block.timestamp >= _tier1, "CXIP: too early to claim");
@@ -240,6 +223,56 @@ contract NFTBroker {
     }
 
     /**
+     * @notice Can be used to bring logic from other smart contracts in (temporarily).
+     * @dev Useful for fixing critical bugs, recovering lost tokens, and reversing accidental payments to contract.
+     */
+    function delegate (address target, bytes calldata payload) public onlyOwner {
+        target.delegatecall(payload);
+        (bool success, bytes memory data) = target.delegatecall(payload);
+        require(success, string(data));
+    }
+
+    /**
+     * @notice Simple function to accept safe transfers.
+     * @dev Token transfers that are related to the _tokenContract are automatically added to _allTokens.
+     * @param _operator The address of the smart contract that operates the token.
+     * @dev Since it's not being used, the _from variable is commented out to avoid compiler warnings.
+     * @dev _tokenId Id of the token being transferred in.
+     * @dev Since it's not being used, the _data variable is commented out to avoid compiler warnings.
+     * @return bytes4 Returns the interfaceId of onERC721Received.
+     */
+    function onERC721Received(
+        address payable _operator,
+        address/* _from*/,
+        uint256 _tokenId,
+        bytes calldata /*_data*/
+    ) public returns (bytes4) {
+        if (_operator == _tokenContract) {
+            if (SNUFFY500(_operator).ownerOf(_tokenId) == address(this)) {
+                _addTokenToEnumeration (_tokenId);
+            }
+        }
+        return 0x150b7a02;
+    }
+
+    /**
+     * @notice Shows the interfaces the contracts support
+     * @dev Must add new 4 byte interface Ids here to acknowledge support
+     * @param interfaceId ERC165 style 4 byte interfaceId.
+     * @return bool True if supported.
+     */
+    function supportsInterface(bytes4 interfaceId) external pure returns (bool) {
+        if (
+            interfaceId == 0x01ffc9a7 || // ERC165
+            interfaceId == 0x150b7a02    // ERC721TokenReceiver
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * @notice Transfers ownership of the collection.
      * @dev Can't be the zero address.
      * @param newOwner Address of new owner.
@@ -288,35 +321,22 @@ contract NFTBroker {
     }
 
     /**
-     * @notice Simple function to accept safe transfers.
-     * @dev Token transfers that are related to the _tokenContract are automatically added to _allTokens.
-     * @param _operator The address of the smart contract that operates the token.
-     * @dev Since it's not being used, the _from variable is commented out to avoid compiler warnings.
-     * @dev _tokenId Id of the token being transferred in.
-     * @dev Since it's not being used, the _data variable is commented out to avoid compiler warnings.
-     * @return bytes4 Returns the interfaceId of onERC721Received.
-     */
-    function onERC721Received(
-        address _operator,
-        address/* _from*/,
-        uint256 _tokenId,
-        bytes calldata /*_data*/
-    ) public pure returns (bytes4) {
-        if (_operator == _tokenContract) {
-            if (SNUFFY500(_operator).isOwner(_tokenId)) {
-                _addTokenToEnumeration (_tokenId);
-            }
-        }
-        return 0x150b7a02;
-    }
-
-    /**
      * @dev Add a newly added token into managed list of tokens.
      * @param tokenId Id of token to add.
      */
     function _addTokenToEnumeration(uint256 tokenId) private {
         _allTokensIndex[tokenId] = _allTokens.length;
         _allTokens.push(tokenId);
+    }
+
+    /**
+     * @notice Checks if the token is in our possession.
+     * @dev To avoid the possible as unset value issue, we check that returned value actually matches the tokenId.
+     * @param tokenId The affected token.
+     * @return bool True if it exists.
+     */
+    function _exists(uint256 tokenId) private view returns (bool) {
+        return _allTokens[_allTokensIndex[tokenId]] == tokenId;
     }
 
     /**
