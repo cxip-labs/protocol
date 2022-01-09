@@ -21,7 +21,7 @@ library SnuffyToken {
         uint256 statesLimit = 6;
 
     // hardware limit of maximum number of mutations possible
-        uint256 maxStates = 16;
+        uint256 maxStates = 8;
 
 */
 
@@ -45,12 +45,12 @@ library SnuffyToken {
                 0x320f7df63ad3c1fb03163fc8f47010f96d0a4b028d5ed2c9bdbc6b577caddacf
             )
         }
-        max = uint256(uint16(unpacked >> 80));
-        limit = uint256(uint16(unpacked >> 64));
-        future0 = uint256(uint16(unpacked >> 48));
-        future1 = uint256(uint16(unpacked >> 32));
-        future2 = uint256(uint16(unpacked >> 16));
-        future3 = uint256(uint16(unpacked));
+        max = uint256(uint32(unpacked >> 0));
+        limit = uint256(uint32(unpacked >> 32));
+        future0 = uint256(uint32(unpacked >> 64));
+        future1 = uint256(uint32(unpacked >> 96));
+        future2 = uint256(uint32(unpacked >> 128));
+        future3 = uint256(uint32(unpacked >> 160));
     }
 
     /**
@@ -66,7 +66,13 @@ library SnuffyToken {
     function setStatesConfig(uint256 max, uint256 limit, uint256 future0, uint256 future1, uint256 future2, uint256 future3) internal {
         // The slot hash has been precomputed for gas optimizaion
         // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SnuffyToken.statesConfig')) - 1);
-        uint256 packed = uint256(max << 80 | limit << 64 | future0 << 48 | future1 << 32 | future2 << 16 | future3);
+        uint256 packed;
+        packed = packed | max << 0;
+        packed = packed | limit << 32;
+        packed = packed | future0 << 64;
+        packed = packed | future1 << 96;
+        packed = packed | future2 << 128;
+        packed = packed | future3 << 160;
         assembly {
             sstore(
                 /* slot */
@@ -80,7 +86,7 @@ library SnuffyToken {
      * @dev Gets the timestamps for duration of each state from storage slot.
      * @return _timestamps UNIX timestamps for controlling each state's maximum duration.
      */
-    function getStateTimestamps() internal view returns (uint256[16] memory _timestamps) {
+    function getStateTimestamps() internal view returns (uint256[8] memory _timestamps) {
         uint256 data;
         // The slot hash has been precomputed for gas optimizaion
         // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SnuffyToken.stateTimestamps')) - 1);
@@ -90,8 +96,8 @@ library SnuffyToken {
                 0xb3272806717bb124fff9d338a5d6ec1182c08fc56784769d91b37c01055db8e2
             )
         }
-        for (uint256 i = 0; i < 16; i++) {
-            _timestamps[i] = uint256(uint16(data >> (16 * i)));
+        for (uint256 i = 0; i < 8; i++) {
+            _timestamps[i] = uint256(uint32(data >> (32 * i)));
         }
     }
 
@@ -99,10 +105,10 @@ library SnuffyToken {
      * @dev Sets the timestamps for duration of each state to storage slot.
      * @param _timestamps timestamps for controlling each state's maximum duration.
      */
-    function setStateTimestamps(uint256[16] memory _timestamps) internal {
+    function setStateTimestamps(uint256[8] memory _timestamps) internal {
         uint256 packed;
-        for (uint256 i = 0; i < 16; i++) {
-            packed = packed | _timestamps[i] << (16 * i);
+        for (uint256 i = 0; i < 8; i++) {
+            packed = packed | _timestamps[i] << (32 * i);
         }
         // The slot hash has been precomputed for gas optimizaion
         // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SnuffyToken.stateTimestamps')) - 1);
@@ -119,7 +125,7 @@ library SnuffyToken {
      * @dev Gets the number of tokens needed for a forced mutation from storage slot.
      * @return _limits An array of number of tokens required for a forced mutation.
      */
-    function getMutationRequirements() internal view returns (uint256[16] memory _limits) {
+    function getMutationRequirements() internal view returns (uint256[8] memory _limits) {
         uint256 data;
         // The slot hash has been precomputed for gas optimizaion
         // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SnuffyToken.mutationRequirements')) - 1);
@@ -129,8 +135,8 @@ library SnuffyToken {
                 0x6ab8a5e4f8314f5c905e9eb234db45800102f76ee29724ea1039076fe1c57441
             )
         }
-        for (uint256 i = 0; i < 16; i++) {
-            _limits[i] = uint256(uint16(data >> (16 * i)));
+        for (uint256 i = 0; i < 8; i++) {
+            _limits[i] = uint256(uint32(data >> (32 * i)));
         }
     }
 
@@ -138,10 +144,10 @@ library SnuffyToken {
      * @dev Sets the number of tokens needed for a forced mutation to storage slot.
      * @param _limits An array of number of tokens required for a forced mutation.
      */
-    function setMutationRequirements(uint256[16] memory _limits) internal {
+    function setMutationRequirements(uint256[8] memory _limits) internal {
         uint256 packed;
-        for (uint256 i = 0; i < 16; i++) {
-            packed = packed | _limits[i] << (16 * i);
+        for (uint256 i = 0; i < 8; i++) {
+            packed = packed | _limits[i] << (32 * i);
         }
         // The slot hash has been precomputed for gas optimizaion
         // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SnuffyToken.mutationRequirements')) - 1);
@@ -197,9 +203,9 @@ library SnuffyToken {
         assembly {
             unpacked := sload(slot)
         }
-        state = uint256(uint16(unpacked >> 32));
-        timestamp = uint256(uint16(unpacked >> 16));
-        stencilId = uint256(uint16(unpacked));
+        state = uint256(uint32(unpacked >> 64));
+        timestamp = uint256(uint32(unpacked >> 32));
+        stencilId = uint256(uint32(unpacked));
     }
 
     /**
@@ -210,7 +216,7 @@ library SnuffyToken {
      */
     function setTokenData(uint256 tokenId, uint256 state, uint256 timestamp, uint256 stencilId) internal {
         bytes32 slot = bytes32(uint256(keccak256(abi.encodePacked("eip1967.CXIP.SnuffyToken.tokenData.", tokenId))) - 1);
-        uint256 packed = uint256(state << 32 | timestamp << 16 | stencilId);
+        uint256 packed = uint256(state << 64 | timestamp << 32 | stencilId);
         assembly {
             sstore(slot, packed)
         }
@@ -225,7 +231,7 @@ library SnuffyToken {
 
     function getTokenState(uint256 tokenId) internal view returns (uint256 dataIndex) {
         (/*uint256 max*/, uint256 limit,/* uint256 future0*/,/* uint256 future1*/,/* uint256 future2*/,/* uint256 future3*/) = getStatesConfig();
-        (uint256[16] memory _timestamps) = getStateTimestamps();
+        (uint256[8] memory _timestamps) = getStateTimestamps();
         (uint256 state, uint256 timestamp,/* uint256 stencilId*/) = getTokenData(tokenId);
         uint256 duration = block.timestamp - timestamp;
         for (uint256 i = state; i < limit; i++) {

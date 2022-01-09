@@ -39,7 +39,8 @@ node pipeline/29_deploy_snuffy_proxy.js
 node pipeline/30_register_snuffy.js
 node pipeline/13_check_registry.js
 node pipeline/31_create_snuffy_erc721_collection.js
-node pipeline/32_mint_snuffy_erc721_collection.js
-# node pipeline/33_check_snuffy_token.js
+node pipeline/32_configure_snuffy_erc721_collection.js
+node pipeline/33_snuffy_test_mint.js
+# node pipeline/34_check_snuffy_token.js
 
 exit

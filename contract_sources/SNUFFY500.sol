@@ -35,9 +35,9 @@ import "./struct/TokenData.sol";
 import "./struct/Verification.sol";
 
 /**
- * @title CXIP ERC721
+ * @title SNUFFY 500
  * @author CXIP-Labs
- * @notice A smart contract for minting and managing ERC721 NFTs.
+ * @notice A smart contract for minting and managing SNUFFY 500 ERC721 NFTs.
  * @dev The entire logic and functionality of the smart contract is self-contained.
  */
 contract SNUFFY500 {
@@ -194,7 +194,7 @@ contract SNUFFY500 {
      * @dev All state times are stacked to identify the current state based on last timestamp.
      * @return UNIX timestamps in seconds for each state's time.
      */
-    function getStateTimestamps() public view returns (uint256[16] memory) {
+    function getStateTimestamps() public view returns (uint256[8] memory) {
         return SnuffyToken.getStateTimestamps();
     }
 
@@ -203,7 +203,7 @@ contract SNUFFY500 {
      * @dev All state times are stacked to identify the current state based on last timestamp.
      * @param _timestamps UNIX timestamps in seconds for each state's time.
      */
-    function setStateTimestamps(uint256[16] memory _timestamps) public onlyOwner {
+    function setStateTimestamps(uint256[8] memory _timestamps) public onlyOwner {
         SnuffyToken.setStateTimestamps(_timestamps);
     }
 
@@ -212,7 +212,7 @@ contract SNUFFY500 {
      * @dev Each state has it's own required amount of tokens to stack before a mutation can be forced.
      * @return An array with numbers of tokens to stack for each state's mutation.
      */
-    function getMutationRequirements() public view returns (uint256[16] memory) {
+    function getMutationRequirements() public view returns (uint256[8] memory) {
         return SnuffyToken.getMutationRequirements();
     }
 
@@ -221,7 +221,7 @@ contract SNUFFY500 {
      * @dev Each state has it's own required amount of tokens to stack before a mutation can be forced.
      * @param _limits An array with numbers of tokens to stack for each state's mutation.
      */
-    function setMutationRequirements(uint256[16] memory _limits) public onlyOwner {
+    function setMutationRequirements(uint256[8] memory _limits) public onlyOwner {
         SnuffyToken.setMutationRequirements(_limits);
     }
 
@@ -243,14 +243,18 @@ contract SNUFFY500 {
         SnuffyToken.setBroker(broker);
     }
 
+    /**
+     * @notice Gets the authorised broker for minting.
+     * @dev In order to allow for custom airdrop type minting/claims, an external broker smart contract is used.
+     * @return Address of wallet or smart contract that can mint tokens.
+     */
+    function getTokenState(uint256 tokenId) public view returns (uint256) {
+        return SnuffyToken.getTokenState(tokenId);
+    }
 
-
-
-
-
-
-
-
+    function getTokenDataIndex(uint256 tokenId) public view returns (uint256) {
+        return SnuffyToken.calculateState(tokenId);
+    }
 
     /**
      * @dev Throws if called by any account other than the owner.
@@ -590,11 +594,11 @@ contract SNUFFY500 {
      * @param verification Broker has to include a signature made by any of the identity's wallets.
      * @param recipient Optional parameter, to send the token to a recipient right after minting.
      */
-    function mint(address creatorWallet, uint256 tokenId, TokenData[] calldata tokenData, address signer, Verification calldata verification, address recipient) public {
+    function mint(address creatorWallet, uint256 tokenId, TokenData[] memory tokenData, address signer, Verification memory verification, address recipient) public {
         require(isOwner() || msg.sender == getBroker(), "CXIP: only owner/broker can mint");
         require(_allTokens.length < getTokenLimit(), "CXIP: over token limit");
         require(isIdentityWallet(creatorWallet), "CXIP: creator not in identity");
-        if (msg.sender == getBroker()) {
+        if (!isOwner()) {
             require(isIdentityWallet(signer), "CXIP: invalid signer");
             bytes memory encoded = abi.encode(
                 creatorWallet,
@@ -609,8 +613,7 @@ contract SNUFFY500 {
                 encoded
             ), "CXIP: invalid signature");
         }
-        bool hasRecipient = !Address.isZero(recipient);
-        if (hasRecipient) {
+        if (!Address.isZero(recipient)) {
             require(!_exists(tokenId), "CXIP: token already exists");
             emit Transfer(address(0), creatorWallet, tokenId);
             emit Transfer(creatorWallet, recipient, tokenId);
@@ -636,7 +639,7 @@ contract SNUFFY500 {
         uint256 state = SnuffyToken.getTokenState(tokenId);
         (/*uint256 max*/, uint256 limit,/* uint256 future0*/,/* uint256 future1*/,/* uint256 future2*/,/* uint256 future3*/) = SnuffyToken.getStatesConfig();
         require(state < (limit - 1), "CXIP: token evolved to max");
-        uint256[16] memory _limits = SnuffyToken.getMutationRequirements();
+        uint256[8] memory _limits = SnuffyToken.getMutationRequirements();
         require(tokenIds.length == _limits[state], "CXIP: incorrect tokens amount");
         bool included;
         for (uint256 i = 0; i < tokenIds.length; i++) {
@@ -786,6 +789,10 @@ contract SNUFFY500 {
      */
     function baseURI() public view returns (string memory) {
         return string(abi.encodePacked("CXIP_NFT_DOMAIN_NAME", Strings.toHexString(address(this))));
+    }
+
+    function exists(uint256 tokenId) public view returns (bool) {
+        return !Address.isZero(_tokenOwner[tokenId]);
     }
 
     /**
