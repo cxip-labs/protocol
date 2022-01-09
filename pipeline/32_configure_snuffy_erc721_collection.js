@@ -126,8 +126,8 @@ async function main() {
     ]).send(from).catch(error));
         console.log ('getMutationRequirements', await contract.methods.getMutationRequirements().call(from).catch(error));
 
-    console.log ('setBroker', await contract.methods.setBroker (provider2.addresses[0]).send(from).catch(error));
-        console.log ('getBroker', await contract.methods.getBroker().call(from).catch(error));
+//     console.log ('setBroker', await contract.methods.setBroker (provider2.addresses[0]).send(from).catch(error));
+//         console.log ('getBroker', await contract.methods.getBroker().call(from).catch(error));
 
   process.exit();
 }

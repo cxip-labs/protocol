@@ -123,13 +123,45 @@ contract NFTBroker {
 
 */
 
-    constructor (uint256 tokenPrice, uint256[] memory openTokens, address tokenContract, address notary) {
+    // we have to set separately for gas efficiency
+    // uint256[] memory openTokens
+    // _allTokens = openTokens;
+
+    constructor (uint256 tokenPrice, address tokenContract, address notary) {
         _admin = tx.origin;
         _owner = tx.origin;
         _tokenBasePrice = tokenPrice;
-        _allTokens = openTokens;
         _tokenContract = payable(tokenContract);
         _notary = notary;
+    }
+
+    function setTierTimes (uint256 tier1, uint256 tier2, uint256 tier3) public onlyOwner {
+        require (_tier1 == 0, "CXIP: tier times already set");
+        _tier1 = tier1;
+        _tier2 = tier2;
+        _tier3 = tier3;
+    }
+
+    function getTierTimes () public returns (uint256 tier1, uint256 tier2, uint256 tier3) {
+        tier1 = _tier1;
+        tier2 = _tier2;
+        tier3 = _tier3;
+    }
+
+    function setReservedTokens (address[] calldata wallets, uint256[][] calldata tokens) public onlyOwner {
+        for (uint256 i = 0; i < wallets.length; i++) {
+            _reservedTokens[wallets[i]] = tokens[i];
+        }
+    }
+
+    function setOpenTokens (uint256[] calldata tokens) public onlyOwner {
+        for (uint256 i = 0; i < tokens.length; i++) {
+            _addTokenToEnumeration(tokens[i]);
+        }
+    }
+
+    function getPrice (uint256/* tokenId*/) public returns (uint256) {
+        return _tokenBasePrice;
     }
 
     /**
@@ -147,6 +179,7 @@ contract NFTBroker {
         uint256 lastIndex = length - 1;
         if (length == 1) {
             index = 0;
+            require(claimable[index] == tokenId, "CXIP: not your token");
         } else {
             bool found;
             for (uint256 i = 0; i < claimable.length; i++) {

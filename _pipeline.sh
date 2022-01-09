@@ -41,6 +41,9 @@ node pipeline/13_check_registry.js
 node pipeline/31_create_snuffy_erc721_collection.js
 node pipeline/32_configure_snuffy_erc721_collection.js
 node pipeline/33_snuffy_test_mint.js
+node pipeline/34_deploy_snuffy_broker.js
+node pipeline/35_configure_snuffy_broker.js
+node pipeline/36_test_broker_claim_process.js
 # node pipeline/34_check_snuffy_token.js
 
 exit

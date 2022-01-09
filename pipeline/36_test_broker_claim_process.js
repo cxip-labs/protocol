@@ -11,14 +11,14 @@ const provider2 = new HDWalletProvider(PRIVATE_KEY, rpc[NETWORK]);
 const web3 = new Web3(provider);
 const web32 = new Web3(provider2);
 
-const PROVENANCE_ABI = JSON.parse(
-  fs.readFileSync('./build/contracts/CxipProvenance.json')
+const BROKER_ABI = JSON.parse(
+  fs.readFileSync('./build/contracts/NFTBroker.json')
 ).abi;
-const PROVENANCE_ADDRESS = fs
-  .readFileSync('./data/' + NETWORK + '.provenance.proxy.address', 'utf8')
+const BROKER_ADDRESS = fs
+  .readFileSync('./data/' + NETWORK + '.snuffy.broker.address', 'utf8')
   .trim();
 
-const provenance = new web3.eth.Contract(PROVENANCE_ABI, PROVENANCE_ADDRESS, {
+const contract = new web32.eth.Contract(BROKER_ABI, BROKER_ADDRESS, {
   // gasLimit: '1721975',
   // gasPrice: '70000000000',
 });
@@ -117,51 +117,8 @@ const EncodeForSignature = function (creatorWallet, tokenId, states) {
     );
 };
 
-const FACTORY_CONTRACT = JSON.parse(
-  fs.readFileSync('./build/contracts/SNUFFY500Proxy.json')
-);
-let bytecode = FACTORY_CONTRACT.bytecode.replace(
-  /deaddeaddeaddeaddeaddeaddeaddeaddeaddead/gi,
-  fs
-    .readFileSync('./data/' + NETWORK + '.registry.address', 'utf8')
-    .trim()
-    .substring(2)
-);
-
 async function main() {
   const wallet = provider.addresses[0];
-
-  const IDENTITY_ABI = JSON.parse(
-    fs.readFileSync('./build/contracts/CxipIdentity.json')
-  ).abi;
-  const IDENTITY_CONTRACT = await provenance.methods
-    .getIdentity()
-    .call(from)
-    .catch(error);
-
-  const identity = new web3.eth.Contract(IDENTITY_ABI, IDENTITY_CONTRACT, {
-    gas: web3.utils.toHex(300000),
-    gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei')),
-  });
-
-  const ERC721_ABI = JSON.parse(
-    fs.readFileSync('./build/contracts/SNUFFY500.json')
-  ).abi;
-  const ERC721_CONTRACT = await identity.methods
-    .getCollectionById(0)
-    .call(from)
-    .catch(error);
-
-  console.log('ERC721_CONTRACT', ERC721_CONTRACT);
-
-  	const contract = new web32.eth.Contract (
-  		ERC721_ABI,
-  		ERC721_CONTRACT,
-  		{
-            gas: web3.utils.toHex(5000000),
-            gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei')),
-  		}
-  	);
 
     let states = [];
     for (let i = 0, l = 6; i < l; i++) {
@@ -176,7 +133,7 @@ async function main() {
         );
     }
     console.log (states);
-    let tokenId = 16;
+    let tokenId = 1;
     let forSigning = web3.utils.keccak256 (EncodeForSignature (wallet, tokenId, states));
     console.log (forSigning);
     let sig = await web3.eth.personal.sign (forSigning, wallet);
@@ -187,38 +144,23 @@ async function main() {
         v: '0x' + (parseInt ('0x' + sig.substring (130, 132)) + 27).toString (16)
     };
     console.log (signature);
-    // mint address creatorWallet, uint256 tokenId, TokenData[] calldata tokenData, address signer, Verification calldata verification, address recipient
 
-//     console.log (await contract.methods.fixedSet (tokenId * 8, tokenId).send (from).catch (error));
+//     function claimAndMint (uint256 tokenId, TokenData[] calldata tokenData, Verification calldata verification) public payable {
 
-    console.log (await contract.methods.mint (
-        wallet,
+    console.log (await contract.methods.claimAndMint (
         tokenId,
         states,
-        wallet,
         [
             signature.r,
             signature.s,
             signature.v
-        ],
-        provider2.addresses[0]
+        ]
     ).send ({
         from: provider2.addresses[0],
-        value: 0,
-//         gas: web3.utils.toHex(1400000),
-        gas: web3.utils.toHex(1500000),
+        value: web3.utils.toHex(web3.utils.toWei('0.2', 'ether')),
+        gas: web3.utils.toHex(2000000),
         gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei'))
     }).catch (error));
-
-//     console.log (await contract.methods.testMint (
-//         tokenId,
-//         states
-//     ).send ({
-//         from: provider.addresses[0],
-//         value: 0,
-//         gas: web3.utils.toHex(5000000),
-//         gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei'))
-//     }).catch (error));
 
   process.exit();
 }
