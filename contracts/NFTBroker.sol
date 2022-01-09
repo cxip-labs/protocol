@@ -172,7 +172,7 @@ contract NFTBroker {
         require(block.timestamp < _tier2, "CXIP: too late to claim");
         require(msg.value >= _tokenBasePrice, "CXIP: payment amount is too low");
         require(!SNUFFY500(_tokenContract).exists(tokenId), "CXIP: token snatched");
-        // need to write a code that will do something here with the funds
+        _moveEth();
         uint256[] storage claimable = _reservedTokens[msg.sender];
         uint256 length = claimable.length;
         require(length > 0, "CXIP: no tokens to claim");
@@ -208,7 +208,7 @@ contract NFTBroker {
         require(block.timestamp < _tier3, "CXIP: too late to stake");
         require(msg.value >= _tokenBasePrice, "CXIP: payment amount is too low");
         require(!SNUFFY500(_tokenContract).exists(tokenId), "CXIP: token snatched");
-        // need to write a code that will do something here with the funds
+        _moveEth();
         bytes memory encoded = abi.encodePacked(msg.sender, tokens);
         require(Signature.Valid(
             _notary,
@@ -230,7 +230,7 @@ contract NFTBroker {
         require(block.timestamp >= _tier3, "CXIP: too early to buy");
         require(msg.value >= _tokenBasePrice, "CXIP: payment amount is too low");
         require(!SNUFFY500(_tokenContract).exists(tokenId), "CXIP: token snatched");
-        // need to write a code that will do something here with the funds
+        _moveEth();
         SNUFFY500(_tokenContract).mint(_owner, tokenId, tokenData, _owner, verification, msg.sender);
         _removeTokenFromAllTokensEnumeration(tokenId);
     }
@@ -295,6 +295,15 @@ contract NFTBroker {
     }
 
     /**
+     * @notice Check if there are any tokens specifically reserved for someone.
+     * @dev Wallet address can be any wallet.
+     * @param wallet Address of the wallet to check.
+     */
+    function getReservedTokens(address wallet) public view returns (uint256[] memory) {
+        return _reservedTokens[wallet];
+    }
+
+    /**
      * @notice Check if the sender is the owner.
      * @dev The owner could also be the admin or identity contract of the owner.
      * @return bool True if owner.
@@ -323,6 +332,16 @@ contract NFTBroker {
         return _allTokens[index];
     }
 
+    function tokensByChunk(uint256 start, uint256 length) public view returns (uint256[] memory tokens) {
+        if (start + length > totalSupply()) {
+            length = totalSupply() - start;
+        }
+        tokens = new uint256[](length - start);
+        for (uint256 i = 0; i < length; i++) {
+            tokens[i] = _allTokens[start + i];
+        }
+    }
+
     /**
      * @notice Total amount of tokens available for sale.
      * @dev Does not specifically reserved tokens.
@@ -347,8 +366,12 @@ contract NFTBroker {
      * @param tokenId The affected token.
      * @return bool True if it exists.
      */
-    function _exists(uint256 tokenId) private view returns (bool) {
+    function _exists(uint256 tokenId) internal view returns (bool) {
         return _allTokens[_allTokensIndex[tokenId]] == tokenId;
+    }
+
+    function _moveEth() internal {
+        payable(SNUFFY500(_tokenContract).getIdentity()).transfer(address(this).balance);
     }
 
     /**

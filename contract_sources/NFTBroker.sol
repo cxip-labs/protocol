@@ -299,7 +299,7 @@ contract NFTBroker {
      * @dev Wallet address can be any wallet.
      * @param wallet Address of the wallet to check.
      */
-    function getReservedTokens(address wallet) public view returns (uint256[]) {
+    function getReservedTokens(address wallet) public view returns (uint256[] memory) {
         return _reservedTokens[wallet];
     }
 
@@ -332,9 +332,14 @@ contract NFTBroker {
         return _allTokens[index];
     }
 
-    function tokenByIndex(uint256 index) public view returns (uint256) {
-        require(index < totalSupply(), "CXIP: index out of bounds");
-        return _allTokens[index];
+    function tokensByChunk(uint256 start, uint256 length) public view returns (uint256[] memory tokens) {
+        if (start + length > totalSupply()) {
+            length = totalSupply() - start;
+        }
+        tokens = new uint256[](length - start);
+        for (uint256 i = 0; i < length; i++) {
+            tokens[i] = _allTokens[start + i];
+        }
     }
 
     /**
