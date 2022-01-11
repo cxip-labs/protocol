@@ -67,6 +67,8 @@ async function main() {
     gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei')),
   });
 
+  console.log ('wallets', await identity.methods.getWallets ().call(from).catch(error));
+
   const result = await identity.methods
     // createCustomERC721Collection (bytes32 saltHash, address collectionCreator, Verification calldata verification, CollectionData calldata collectionData, bytes32 slot, bytes bytecode)
     .createCustomERC721Collection(

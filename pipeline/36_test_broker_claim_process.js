@@ -76,7 +76,7 @@ async function main() {
         token.raw.signature
     ).send ({
         from: buyerProvider.addresses[0],
-        value: web3.utils.toHex(web3.utils.toWei('0.2', 'ether')),
+        value: 0, // web3.utils.toHex(web3.utils.toWei('0.2', 'ether')),
         gas: web3.utils.toHex(2000000),
         gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei'))
     }).catch (error));

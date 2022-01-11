@@ -144,7 +144,6 @@ contract NFTBroker {
     }
 
     function setTierTimes (uint256 tier1, uint256 tier2, uint256 tier3) public onlyOwner {
-        require (_tier1 == 0, "CXIP: tier times already set");
         _tier1 = tier1;
         _tier2 = tier2;
         _tier3 = tier3;
@@ -190,21 +189,30 @@ contract NFTBroker {
         }
     }
 
+    function removeOpenTokens (uint256[] calldata tokens) public onlyOwner {
+        for (uint256 i = 0; i < tokens.length; i++) {
+            _removeTokenFromAllTokensEnumeration(tokens[i]);
+        }
+    }
+
     function withdrawEth () public onlyOwner {
         payable(msg.sender).transfer(address(this).balance);
     }
 
-    function getPrice (uint256/* tokenId*/) public view returns (uint256) {
+    function getPrice () public view returns (uint256) {
         return _tokenBasePrice;
+    }
+
+    function setPrice (uint256 tokenBasePrice) public onlyOwner {
+        _tokenBasePrice = tokenBasePrice;
     }
 
     /**
      * @dev This would get called for special reserved tokens. Message sender must be the approved wallet.
      * @dev Important this if claimant is eligible for multiple tokens, start with last one from array.
      */
-    function claimAndMint (uint256 tokenId, TokenData[] calldata tokenData, Verification calldata verification) public payable {
+    function claimAndMint (uint256 tokenId, TokenData[] calldata tokenData, Verification calldata verification) public {
         require(block.timestamp >= _tier1, "CXIP: too early to claim");
-        require(msg.value >= _tokenBasePrice, "CXIP: payment amount is too low");
         require(!SNUFFY500(_tokenContract).exists(tokenId), "CXIP: token snatched");
         uint256[] storage claimable = _reservedTokens[msg.sender];
         uint256 length = claimable.length;

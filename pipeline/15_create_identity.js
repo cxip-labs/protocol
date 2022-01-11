@@ -52,12 +52,15 @@ const hexify = function (input, prepend) {
 async function main() {
 
 //     let sig = await web3.eth.personal.sign (web3.utils.keccak256 ('0x'
-//         //identity
-//         + hexify ('0x19e06E56a9C1Ea33622cD27691ED36D5f562f293').padStart (64, '0')
+//         // identity
+//         // + hexify ('0x19e06E56a9C1Ea33622cD27691ED36D5f562f293')
+//         // + hexify ('0xaD566f0c0cb123D1D3E19A81c2365a343eC18F0F')
+//         // provenanceProxy
+//         + hexify ('0x579f83237D265C940503Da1454e1a62c1d4Ad9f8')
 //         // wallet
-//         + hexify ('0xE0d9f87Af4051eA8E86b3168AF2Ad27c0Bd0384D').padStart (64, '0')
+//         + hexify ('0xE0d9f87Af4051eA8E86b3168AF2Ad27c0Bd0384D')
 //         // secondary wallet
-//         + hexify ('0x0de817bEc631f2a08e78a43b3e4Fb7d4C99E49AA').padStart (64, '0')
+//         + hexify ('0x0de817bEc631f2a08e78a43b3e4Fb7d4C99E49AA')
 //     ), provider.addresses[0]);
 // 	let signature = {
 //         signature: sig,
@@ -98,8 +101,8 @@ async function main() {
          // identity
         // createIdentity (bytes32 saltHash, address secondaryWallet, Verification calldata verification)
         .createIdentity(salt, secondaryWallet, [
-          '0xfac77231c05b6dbfbf4b5e175608041ee838663207374ae3ef3fbe4df8388971',
-          '0x3c37210511ba1451831234e9a29fa8a99a1e9590a286e0c8a811eb5c1e9df748',
+          '0xb1456f4905355a6284ff10ba3e800a04c0a93b88f9b0ff1009fb7ed22fb776f3',
+          '0x0488eaf7e92841ce954475af4823768ae177c87f98931cda9ea3feebf1f02356',
           '0x1b',
         ])
         .send(from)

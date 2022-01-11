@@ -55,6 +55,8 @@ async function main() {
     // gasPrice: '20000000000',
   });
 
+  console.log ('wallets', await comtract.methods.getWallets ().call(from).catch(error));
+
   const result = await contract.methods
     // createERC721Collection (bytes32 saltHash, address collectionCreator, Verification calldata verification, CollectionData calldata collectionData)
     .createERC721Collection(
