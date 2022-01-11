@@ -92,13 +92,21 @@ async function main() {
   	);
 
     console.log ('setStateTimestamps', await contract.methods.setStateTimestamps ([
+        // level 0
         60 * 60 * 24 * 7 * 2, // two weeks
-        60 * 60 * 24 * 30, // one month
-        60 * 60 * 24 * 30, // one month
-        60 * 60 * 24 * 30, // one month
-        60 * 60 * 24 * 30, // one month
+        // level 1
+        60 * 60 * 24 * 30 * 4, // four months
+        // level 2
+        60 * 60 * 24 * 30 * 4, // eight months
+        // level 3
+        60 * 60 * 24 * 30 * 4, // twelve months
+        // level 4
+        60 * 60 * 24 * 30 * 6, // eighteen months
+        // level 5
         0,
+        // level 6
         0,
+        // level 7
         0
     ]).send(from).catch(error));
         console.log ('getStateTimestamps', await contract.methods.getStateTimestamps().call(from).catch(error));
@@ -114,13 +122,21 @@ async function main() {
         console.log ('getStatesConfig', await contract.methods.getStatesConfig().call(from).catch(error));
 
     console.log ('setMutationRequirements', await contract.methods.setMutationRequirements ([
+        // level 0
         0,
+        // level 1
+        0,
+        // level 2
         4,
-        8,
-        16,
-        32,
+        // level 3
+        12,
+        // level 4
+        18,
+        // level 5
         0,
+        // level 6
         0,
+        // level 7
         0
     ]).send(from).catch(error));
         console.log ('getMutationRequirements', await contract.methods.getMutationRequirements().call(from).catch(error));

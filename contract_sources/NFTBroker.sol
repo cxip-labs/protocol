@@ -102,6 +102,10 @@ contract NFTBroker {
 
     bool private _autoWithdraw;
 
+    uint256 private _maxPurchases;
+
+    bool private _reserveLifted;
+
     /**
      * @dev Throws if called by any account other than the owner.
      */
@@ -129,13 +133,14 @@ contract NFTBroker {
     // uint256[] memory openTokens
     // _allTokens = openTokens;
 
-    constructor (uint256 tokenPrice, address tokenContract, address notary, bool autoWithdraw) {
+    constructor (uint256 tokenPrice, address tokenContract, address notary, bool autoWithdraw, uint256 maxPurchases) {
         _admin = tx.origin;
         _owner = tx.origin;
         _tokenBasePrice = tokenPrice;
         _tokenContract = payable(tokenContract);
         _notary = notary;
         _autoWithdraw = autoWithdraw;
+        _maxPurchases = maxPurchases;
     }
 
     function setTierTimes (uint256 tier1, uint256 tier2, uint256 tier3) public onlyOwner {
@@ -151,7 +156,13 @@ contract NFTBroker {
         tier3 = _tier3;
     }
 
-    function setReservedTokens (address[] calldata wallets, uint256[][] calldata tokens) public onlyOwner {
+    function setReservedTokens (address[] calldata wallets, uint256[] calldata tokens) public onlyOwner {
+        for (uint256 i = 0; i < wallets.length; i++) {
+            _reservedTokens[wallets[i]].push (tokens[i]);
+        }
+    }
+
+    function setReservedTokensArrays (address[] calldata wallets, uint256[][] calldata tokens) public onlyOwner {
         for (uint256 i = 0; i < wallets.length; i++) {
             _reservedTokens[wallets[i]] = tokens[i];
         }
@@ -161,6 +172,10 @@ contract NFTBroker {
         for (uint256 i = 0; i < wallets.length; i++) {
             delete _reservedTokens[wallets[i]];
         }
+    }
+
+    function liftPurchaseLimits () public onlyOwner {
+        _reserveLifted = true;
     }
 
     function clearReservedTokens (address[] calldata wallets) public onlyOwner {
@@ -219,9 +234,11 @@ contract NFTBroker {
             proof.v,
             encoded
         ), "CXIP: invalid signature");
-        require(_purchasedTokens[msg.sender] < tokens, "CXIP: max allowance reached");
+        if (!_reserveLifted) {
+            require(_purchasedTokens[msg.sender] < _maxPurchases, "CXIP: max allowance reached");
+            _purchasedTokens[msg.sender] = _purchasedTokens[msg.sender] + 1;
+        }
         SNUFFY500(_tokenContract).mint(0, tokenId, tokenData, _admin, verification, msg.sender);
-        _purchasedTokens[msg.sender] = _purchasedTokens[msg.sender] + 1;
         _removeTokenFromAllTokensEnumeration(tokenId);
         if (_autoWithdraw) {
             _moveEth();
@@ -235,6 +252,10 @@ contract NFTBroker {
         require(block.timestamp >= _tier3, "CXIP: too early to buy");
         require(msg.value >= _tokenBasePrice, "CXIP: payment amount is too low");
         require(!SNUFFY500(_tokenContract).exists(tokenId), "CXIP: token snatched");
+        if (!_reserveLifted) {
+            require(_purchasedTokens[msg.sender] < _maxPurchases, "CXIP: max allowance reached");
+            _purchasedTokens[msg.sender] = _purchasedTokens[msg.sender] + 1;
+        }
         SNUFFY500(_tokenContract).mint(0, tokenId, tokenData, _admin, verification, msg.sender);
         _removeTokenFromAllTokensEnumeration(tokenId);
         if (_autoWithdraw) {

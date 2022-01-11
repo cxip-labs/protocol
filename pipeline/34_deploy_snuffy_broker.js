@@ -97,7 +97,8 @@ async function main() {
 //             openTokens,
             ERC721_CONTRACT,
             notary.addresses[0],
-            false
+            false,
+            5
         ]
     };
 
