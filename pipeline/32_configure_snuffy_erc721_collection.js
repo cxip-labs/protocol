@@ -3,11 +3,10 @@
 const fs = require('fs');
 const HDWalletProvider = require('truffle-hdwallet-provider');
 const Web3 = require('web3');
-const { NETWORK, GAS, WALLET, PRIVATE_KEY } = require('../config/env');
+const { NETWORK, GAS, WALLET } = require('../config/env');
 
 const rpc = JSON.parse(fs.readFileSync('./rpc.json', 'utf8'));
 const provider = new HDWalletProvider(WALLET, rpc[NETWORK]);
-const provider2 = new HDWalletProvider(PRIVATE_KEY, rpc[NETWORK]);
 const web3 = new Web3(provider);
 
 const PROVENANCE_ABI = JSON.parse(
@@ -125,9 +124,6 @@ async function main() {
         0
     ]).send(from).catch(error));
         console.log ('getMutationRequirements', await contract.methods.getMutationRequirements().call(from).catch(error));
-
-//     console.log ('setBroker', await contract.methods.setBroker (provider2.addresses[0]).send(from).catch(error));
-//         console.log ('getBroker', await contract.methods.getBroker().call(from).catch(error));
 
   process.exit();
 }

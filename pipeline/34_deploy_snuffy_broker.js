@@ -3,7 +3,7 @@
 const fs = require('fs');
 const HDWalletProvider = require('truffle-hdwallet-provider');
 const Web3 = require('web3');
-const { NETWORK, GAS, WALLET, PRIVATE_KEY } = require('../config/env');
+const { NETWORK, GAS, WALLET } = require('../config/env');
 
 const FACTORY_CONTRACT = JSON.parse(
   fs.readFileSync('./build/contracts/NFTBroker.json')
@@ -96,7 +96,8 @@ async function main() {
             web3.utils.toHex(web3.utils.toWei('0.2', 'ether')),
 //             openTokens,
             ERC721_CONTRACT,
-            notary.addresses[0]
+            notary.addresses[0],
+            false
         ]
     };
 

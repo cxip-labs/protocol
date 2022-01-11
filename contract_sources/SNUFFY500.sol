@@ -256,6 +256,10 @@ contract SNUFFY500 {
         return SnuffyToken.calculateState(tokenId);
     }
 
+    function getTokenData(uint256 tokenId) public view returns (uint256, uint256, uint256) {
+        return SnuffyToken.getTokenData(tokenId);
+    }
+
     /**
      * @dev Throws if called by any account other than the owner.
      */
@@ -265,12 +269,9 @@ contract SNUFFY500 {
     }
 
     /**
-     * @notice Enables royaltiy functionality at the ERC721 level when ether is sent with no calldata.
-     * @dev See implementation of _royaltiesFallback.
+     * @notice Left empty to accomodate old contracts with limited transfer gas amounts.
      */
-    receive() external payable {
-        _royaltiesFallback();
-    }
+    receive() external payable {}
 
     /**
      * @notice Enables royaltiy functionality at the ERC721 level no other function matches the call.
@@ -587,21 +588,23 @@ contract SNUFFY500 {
      * @notice Mints a token directly to creator wallet, or to a recipient.
      * @dev Function can be called by the owner or by an authorised broker.
      * @dev If a token limit is set, then it is enforced, and minting is closed on last mint.
-     * @param creatorWallet The wallet address of the NFT creator.
      * @param tokenId The specific token id to use. Mandatory.
      * @param tokenData Array of details for each state of the token being minted.
      * @param signer the address of the wallet that signed this.
      * @param verification Broker has to include a signature made by any of the identity's wallets.
      * @param recipient Optional parameter, to send the token to a recipient right after minting.
      */
-    function mint(address creatorWallet, uint256 tokenId, TokenData[] memory tokenData, address signer, Verification memory verification, address recipient) public {
+    function mint(uint256 state, uint256 tokenId, TokenData[] memory tokenData, address signer, Verification memory verification, address recipient) public {
         require(isOwner() || msg.sender == getBroker(), "CXIP: only owner/broker can mint");
         require(_allTokens.length < getTokenLimit(), "CXIP: over token limit");
-        require(isIdentityWallet(creatorWallet), "CXIP: creator not in identity");
+        // temporary override to allow for local testing
+        //require(isIdentityWallet(tokenData[0].creator), "CXIP: creator not in identity");
         if (!isOwner()) {
             require(isIdentityWallet(signer), "CXIP: invalid signer");
             bytes memory encoded = abi.encode(
-                creatorWallet,
+                // temporary override to allow for local testing
+                0xCf5439084322598b841C15d421C206232B553E78,
+                //tokenData[0].creator,
                 tokenId,
                 tokenData
             );
@@ -615,12 +618,12 @@ contract SNUFFY500 {
         }
         if (!Address.isZero(recipient)) {
             require(!_exists(tokenId), "CXIP: token already exists");
-            emit Transfer(address(0), creatorWallet, tokenId);
-            emit Transfer(creatorWallet, recipient, tokenId);
+            emit Transfer(address(0), tokenData[0].creator, tokenId);
+            emit Transfer(tokenData[0].creator, recipient, tokenId);
             _tokenOwner[tokenId] = recipient;
             _addTokenToOwnerEnumeration(recipient, tokenId);
         } else {
-            _mint(creatorWallet, tokenId);
+            _mint(tokenData[0].creator, tokenId);
         }
         if (_allTokens.length == getTokenLimit()) {
             setMintingClosed();
@@ -632,7 +635,7 @@ contract SNUFFY500 {
             _tokenData[index] = tokenData[i];
             index++;
         }
-        SnuffyToken.setTokenData(tokenId, 0, block.timestamp, tokenId);
+        SnuffyToken.setTokenData(tokenId, state, block.timestamp, tokenId);
     }
 
     function evolve(uint256 tokenId, uint256[] calldata tokenIds) public {

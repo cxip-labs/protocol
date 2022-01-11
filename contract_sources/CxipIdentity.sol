@@ -73,12 +73,9 @@ contract CxipIdentity {
     }
 
     /**
-     * @notice Enables royaltiy functionality at the ERC721 level when ether is sent with no calldata.
-     * @dev See implementation of _royaltiesFallback.
+     * @notice Left empty to accomodate old contracts with limited transfer gas amounts.
      */
-    receive() external payable {
-        _royaltiesFallback();
-    }
+    receive() external payable {}
 
     /**
      * @notice Enables royaltiy functionality at the ERC721 level no other function matches the call.

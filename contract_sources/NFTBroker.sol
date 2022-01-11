@@ -100,6 +100,8 @@ contract NFTBroker {
      */
     mapping(uint256 => uint256) private _allTokensIndex;
 
+    bool private _autoWithdraw;
+
     /**
      * @dev Throws if called by any account other than the owner.
      */
@@ -127,12 +129,13 @@ contract NFTBroker {
     // uint256[] memory openTokens
     // _allTokens = openTokens;
 
-    constructor (uint256 tokenPrice, address tokenContract, address notary) {
+    constructor (uint256 tokenPrice, address tokenContract, address notary, bool autoWithdraw) {
         _admin = tx.origin;
         _owner = tx.origin;
         _tokenBasePrice = tokenPrice;
         _tokenContract = payable(tokenContract);
         _notary = notary;
+        _autoWithdraw = autoWithdraw;
     }
 
     function setTierTimes (uint256 tier1, uint256 tier2, uint256 tier3) public onlyOwner {
@@ -154,10 +157,26 @@ contract NFTBroker {
         }
     }
 
+    function removeReservedTokens (address[] calldata wallets) public onlyOwner {
+        for (uint256 i = 0; i < wallets.length; i++) {
+            delete _reservedTokens[wallets[i]];
+        }
+    }
+
+    function clearReservedTokens (address[] calldata wallets) public onlyOwner {
+        for (uint256 i = 0; i < wallets.length; i++) {
+            _reservedTokens[wallets[i]] = new uint256[](0);
+        }
+    }
+
     function setOpenTokens (uint256[] calldata tokens) public onlyOwner {
         for (uint256 i = 0; i < tokens.length; i++) {
             _addTokenToEnumeration(tokens[i]);
         }
+    }
+
+    function withdrawEth () public onlyOwner {
+        payable(msg.sender).transfer(address(this).balance);
     }
 
     function getPrice (uint256/* tokenId*/) public view returns (uint256) {
@@ -166,38 +185,23 @@ contract NFTBroker {
 
     /**
      * @dev This would get called for special reserved tokens. Message sender must be the approved wallet.
+     * @dev Important this if claimant is eligible for multiple tokens, start with last one from array.
      */
     function claimAndMint (uint256 tokenId, TokenData[] calldata tokenData, Verification calldata verification) public payable {
         require(block.timestamp >= _tier1, "CXIP: too early to claim");
-        require(block.timestamp < _tier2, "CXIP: too late to claim");
         require(msg.value >= _tokenBasePrice, "CXIP: payment amount is too low");
         require(!SNUFFY500(_tokenContract).exists(tokenId), "CXIP: token snatched");
-        _moveEth();
         uint256[] storage claimable = _reservedTokens[msg.sender];
         uint256 length = claimable.length;
         require(length > 0, "CXIP: no tokens to claim");
-        uint256 index;
-        uint256 lastIndex = length - 1;
-        if (length == 1) {
-            index = lastIndex;
-            require(claimable[index] == tokenId, "CXIP: not your token");
-        } else {
-            bool found;
-            for (uint256 i = 0; i < claimable.length; i++) {
-                if (!found && claimable[i] == tokenId) {
-                    found = true;
-                    index = i;
-                    break;
-                }
-            }
-            require(found, "CXIP: token id not in list");
-            if (index != lastIndex) {
-                claimable[index] = claimable[lastIndex];
-            }
-        }
-        delete claimable[lastIndex];
+        uint256 index = length - 1;
+        require(claimable[index] == tokenId, "CXIP: not your token");
+        delete claimable[index];
         claimable.pop();
-        SNUFFY500(_tokenContract).mint(_owner, tokenId, tokenData, _owner, verification, msg.sender);
+        SNUFFY500(_tokenContract).mint(1, tokenId, tokenData, _admin, verification, msg.sender);
+        if (_autoWithdraw) {
+            _moveEth();
+        }
     }
 
     /**
@@ -205,10 +209,8 @@ contract NFTBroker {
      */
     function proofOfStakeAndMint (Verification calldata proof, uint256 tokens, uint256 tokenId, TokenData[] calldata tokenData, Verification calldata verification) public payable {
         require(block.timestamp >= _tier2, "CXIP: too early to stake");
-        require(block.timestamp < _tier3, "CXIP: too late to stake");
         require(msg.value >= _tokenBasePrice, "CXIP: payment amount is too low");
         require(!SNUFFY500(_tokenContract).exists(tokenId), "CXIP: token snatched");
-        _moveEth();
         bytes memory encoded = abi.encodePacked(msg.sender, tokens);
         require(Signature.Valid(
             _notary,
@@ -218,9 +220,12 @@ contract NFTBroker {
             encoded
         ), "CXIP: invalid signature");
         require(_purchasedTokens[msg.sender] < tokens, "CXIP: max allowance reached");
-        SNUFFY500(_tokenContract).mint(_owner, tokenId, tokenData, _owner, verification, msg.sender);
+        SNUFFY500(_tokenContract).mint(0, tokenId, tokenData, _admin, verification, msg.sender);
         _purchasedTokens[msg.sender] = _purchasedTokens[msg.sender] + 1;
         _removeTokenFromAllTokensEnumeration(tokenId);
+        if (_autoWithdraw) {
+            _moveEth();
+        }
     }
 
     /**
@@ -230,9 +235,11 @@ contract NFTBroker {
         require(block.timestamp >= _tier3, "CXIP: too early to buy");
         require(msg.value >= _tokenBasePrice, "CXIP: payment amount is too low");
         require(!SNUFFY500(_tokenContract).exists(tokenId), "CXIP: token snatched");
-        _moveEth();
-        SNUFFY500(_tokenContract).mint(_owner, tokenId, tokenData, _owner, verification, msg.sender);
+        SNUFFY500(_tokenContract).mint(0, tokenId, tokenData, _admin, verification, msg.sender);
         _removeTokenFromAllTokensEnumeration(tokenId);
+        if (_autoWithdraw) {
+            _moveEth();
+        }
     }
 
     /**
@@ -371,7 +378,9 @@ contract NFTBroker {
     }
 
     function _moveEth() internal {
-        payable(SNUFFY500(_tokenContract).getIdentity()).transfer(address(this).balance);
+        uint256 amount = address(this).balance;
+        amount = amount - 55500;
+        payable(SNUFFY500(_tokenContract).getIdentity()).transfer(amount);
     }
 
     /**

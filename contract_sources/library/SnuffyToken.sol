@@ -36,7 +36,7 @@ library SnuffyToken {
      * @return future3 reserved for a future value.
      */
     function getStatesConfig() internal view returns (uint256 max, uint256 limit, uint256 future0, uint256 future1, uint256 future2, uint256 future3) {
-        uint48 unpacked;
+        uint256 unpacked;
         // The slot hash has been precomputed for gas optimizaion
         // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.SnuffyToken.statesConfig')) - 1);
         assembly {
@@ -198,14 +198,14 @@ library SnuffyToken {
      * @return stencilId Mapping for which stencil the token id was assigned.
      */
     function getTokenData(uint256 tokenId) internal view returns (uint256 state, uint256 timestamp, uint256 stencilId) {
-        uint48 unpacked;
+        uint256 unpacked;
         bytes32 slot = bytes32(uint256(keccak256(abi.encodePacked("eip1967.CXIP.SnuffyToken.tokenData.", tokenId))) - 1);
         assembly {
             unpacked := sload(slot)
         }
-        state = uint256(uint32(unpacked >> 64));
+        state = uint256(uint32(unpacked >> 0));
         timestamp = uint256(uint32(unpacked >> 32));
-        stencilId = uint256(uint32(unpacked));
+        stencilId = uint256(uint32(unpacked >> 64));
     }
 
     /**
@@ -216,7 +216,10 @@ library SnuffyToken {
      */
     function setTokenData(uint256 tokenId, uint256 state, uint256 timestamp, uint256 stencilId) internal {
         bytes32 slot = bytes32(uint256(keccak256(abi.encodePacked("eip1967.CXIP.SnuffyToken.tokenData.", tokenId))) - 1);
-        uint256 packed = uint256(state << 64 | timestamp << 32 | stencilId);
+        uint256 packed;
+        packed = packed | state << 0;
+        packed = packed | timestamp << 32;
+        packed = packed | stencilId << 64;
         assembly {
             sstore(slot, packed)
         }
