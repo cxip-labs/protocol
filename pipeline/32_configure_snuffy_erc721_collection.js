@@ -93,31 +93,17 @@ async function main() {
 
     console.log ('setStateTimestamps', await contract.methods.setStateTimestamps ([
         // level 0
-        60 * 5, // 5 minutes
+        60 * 60 * 24 * 7 * 2, // two weeks
         // level 1
-        60 * 5, // 5 minutes
+        60 * 60 * 24 * 30 * 3, // three months
         // level 2
-        60 * 5, // 5 minutes
+        60 * 60 * 24 * 30 * 6, // six months
         // level 3
-        60 * 5, // 5 minutes
+        60 * 60 * 24 * 30 * 6, // six months
         // level 4
-        60 * 5, // 5 minutes
+        60 * 60 * 24 * 30 * 6, // six months
         // level 5
         0,
-
-//         ,
-//         // level 0
-//         60 * 60 * 24 * 7 * 2, // two weeks
-//         // level 1
-//         60 * 60 * 24 * 30 * 3, // three months
-//         // level 2
-//         60 * 60 * 24 * 30 * 6, // six months
-//         // level 3
-//         60 * 60 * 24 * 30 * 6, // six months
-//         // level 4
-//         60 * 60 * 24 * 30 * 6, // six months
-//         // level 5
-//         0,
         // level 6
         0,
         // level 7

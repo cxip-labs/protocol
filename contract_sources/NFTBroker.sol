@@ -81,6 +81,11 @@ contract NFTBroker {
     mapping(address => uint256[]) private _reservedTokens;
 
     /**
+     * @dev Specific map of what tokenId is allowed to mint for a specific wallet.
+     */
+    mapping(address => uint256) private _reservedTokenAmounts;
+
+    /**
      * @dev A map keeping tally of total numer of tokens purchased by a wallet. Used on drop to enforce tier purchase limits.
      */
     mapping(address => uint256) private _purchasedTokens;
@@ -161,6 +166,12 @@ contract NFTBroker {
         }
     }
 
+    function setReservedTokenAmounts (address[] calldata wallets, uint256[] calldata amounts) public onlyOwner {
+        for (uint256 i = 0; i < wallets.length; i++) {
+            _reservedTokenAmounts[wallets[i]] = amounts[i];
+        }
+    }
+
     function setReservedTokensArrays (address[] calldata wallets, uint256[][] calldata tokens) public onlyOwner {
         for (uint256 i = 0; i < wallets.length; i++) {
             _reservedTokens[wallets[i]] = tokens[i];
@@ -214,13 +225,20 @@ contract NFTBroker {
     function claimAndMint (uint256 tokenId, TokenData[] calldata tokenData, Verification calldata verification) public {
         require(block.timestamp >= _tier1, "CXIP: too early to claim");
         require(!SNUFFY500(_tokenContract).exists(tokenId), "CXIP: token snatched");
-        uint256[] storage claimable = _reservedTokens[msg.sender];
-        uint256 length = claimable.length;
-        require(length > 0, "CXIP: no tokens to claim");
-        uint256 index = length - 1;
-        require(claimable[index] == tokenId, "CXIP: not your token");
-        delete claimable[index];
-        claimable.pop();
+        if (_reservedTokenAmounts[msg.sender] > 0) {
+            require(_exists(tokenId), "CXIP: token not for sale");
+            SNUFFY500(_tokenContract).mint(0, tokenId, tokenData, _admin, verification, msg.sender);
+            _reservedTokenAmounts[msg.sender] = _reservedTokenAmounts[msg.sender] - 1;
+            _removeTokenFromAllTokensEnumeration(tokenId);
+        } else {
+            uint256[] storage claimable = _reservedTokens[msg.sender];
+            uint256 length = claimable.length;
+            require(length > 0, "CXIP: no tokens to claim");
+            uint256 index = length - 1;
+            require(claimable[index] == tokenId, "CXIP: not your token");
+            delete claimable[index];
+            claimable.pop();
+        }
         SNUFFY500(_tokenContract).mint(1, tokenId, tokenData, _admin, verification, msg.sender);
         if (_autoWithdraw) {
             _moveEth();
@@ -233,6 +251,7 @@ contract NFTBroker {
     function proofOfStakeAndMint (Verification calldata proof, uint256 tokens, uint256 tokenId, TokenData[] calldata tokenData, Verification calldata verification) public payable {
         require(block.timestamp >= _tier2, "CXIP: too early to stake");
         require(msg.value >= _tokenBasePrice, "CXIP: payment amount is too low");
+        require(_exists(tokenId), "CXIP: token not for sale");
         require(!SNUFFY500(_tokenContract).exists(tokenId), "CXIP: token snatched");
         bytes memory encoded = abi.encodePacked(msg.sender, tokens);
         require(Signature.Valid(
@@ -257,8 +276,9 @@ contract NFTBroker {
      * @dev This would get called for all regular mint purchases.
      */
     function payAndMint (uint256 tokenId, TokenData[] calldata tokenData, Verification calldata verification) public payable {
-        require(block.timestamp >= _tier3, "CXIP: too early to buy");
+        require(block.timestamp >= _tier3 || (block.timestamp >= _tier1 && _reservedTokenAmounts[msg.sender] > 0), "CXIP: too early to buy");
         require(msg.value >= _tokenBasePrice, "CXIP: payment amount is too low");
+        require(_exists(tokenId), "CXIP: token not for sale");
         require(!SNUFFY500(_tokenContract).exists(tokenId), "CXIP: token snatched");
         if (!_reserveLifted) {
             require(_purchasedTokens[msg.sender] < _maxPurchases, "CXIP: max allowance reached");
@@ -337,6 +357,10 @@ contract NFTBroker {
      */
     function getReservedTokens(address wallet) public view returns (uint256[] memory) {
         return _reservedTokens[wallet];
+    }
+
+    function getReservedTokenAmounts(address wallet) public view returns (uint256) {
+        return _reservedTokenAmounts[wallet];
     }
 
     /**

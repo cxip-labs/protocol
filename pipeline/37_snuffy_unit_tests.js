@@ -120,6 +120,8 @@ async function main() {
       .tokenURI(tokenId)
       .call(from)
       .catch(error),
+    tokenDataIndex: await contract.methods.getTokenDataIndex(tokenId).call(from).catch(error),
+    tokenState: await contract.methods.getTokenState(tokenId).call(from).catch(error)
   });
 
   process.exit();
