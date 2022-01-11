@@ -647,10 +647,12 @@ contract SNUFFY500 {
         bool included;
         for (uint256 i = 0; i < tokenIds.length; i++) {
             require(ownerOf(tokenIds[i]) == msg.sender, "CXIP: not owner of token");
+            require(SnuffyToken.getTokenState(tokenIds[i]) >= state, "CXIP: token level too low");
             if (!included && tokenId == tokenIds[i]) {
                 SnuffyToken.setTokenData(tokenId, state + 1, block.timestamp, tokenId);
                 included = true;
             } else {
+                SnuffyToken.setTokenData(tokenIds[i], 0, block.timestamp, tokenIds[i]);
                 _transferFrom(msg.sender, SnuffyToken.getBroker(), tokenIds[i]);
             }
         }

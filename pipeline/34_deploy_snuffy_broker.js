@@ -98,7 +98,8 @@ async function main() {
             ERC721_CONTRACT,
             notary.addresses[0],
             false,
-            5
+            5,
+            '0x0de817bEc631f2a08e78a43b3e4Fb7d4C99E49AA'
         ]
     };
 

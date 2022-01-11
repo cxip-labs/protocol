@@ -133,8 +133,8 @@ contract NFTBroker {
     // uint256[] memory openTokens
     // _allTokens = openTokens;
 
-    constructor (uint256 tokenPrice, address tokenContract, address notary, bool autoWithdraw, uint256 maxPurchases) {
-        _admin = tx.origin;
+    constructor (uint256 tokenPrice, address tokenContract, address notary, bool autoWithdraw, uint256 maxPurchases, address admin) {
+        _admin = admin;
         _owner = tx.origin;
         _tokenBasePrice = tokenPrice;
         _tokenContract = payable(tokenContract);

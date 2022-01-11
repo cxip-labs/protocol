@@ -95,13 +95,13 @@ async function main() {
         // level 0
         60 * 60 * 24 * 7 * 2, // two weeks
         // level 1
-        60 * 60 * 24 * 30 * 4, // four months
+        60 * 60 * 24 * 30 * 3, // three months
         // level 2
-        60 * 60 * 24 * 30 * 4, // eight months
+        60 * 60 * 24 * 30 * 6, // six months
         // level 3
-        60 * 60 * 24 * 30 * 4, // twelve months
+        60 * 60 * 24 * 30 * 6, // six months
         // level 4
-        60 * 60 * 24 * 30 * 6, // eighteen months
+        60 * 60 * 24 * 30 * 6, // six months
         // level 5
         0,
         // level 6
@@ -129,9 +129,9 @@ async function main() {
         // level 2
         4,
         // level 3
-        12,
+        4,
         // level 4
-        18,
+        4,
         // level 5
         0,
         // level 6
