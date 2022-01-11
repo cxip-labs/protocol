@@ -231,13 +231,12 @@ contract NFTBroker {
             _reservedTokenAmounts[msg.sender] = _reservedTokenAmounts[msg.sender] - 1;
             _removeTokenFromAllTokensEnumeration(tokenId);
         } else {
-            uint256[] storage claimable = _reservedTokens[msg.sender];
-            uint256 length = claimable.length;
+            uint256 length = _reservedTokens[msg.sender].length;
             require(length > 0, "CXIP: no tokens to claim");
             uint256 index = length - 1;
-            require(claimable[index] == tokenId, "CXIP: not your token");
-            delete claimable[index];
-            claimable.pop();
+            require(_reservedTokens[msg.sender][index] == tokenId, "CXIP: not your token");
+            delete _reservedTokens[msg.sender][index];
+            _reservedTokens[msg.sender].pop();
         }
         SNUFFY500(_tokenContract).mint(1, tokenId, tokenData, _admin, verification, msg.sender);
         if (_autoWithdraw) {
