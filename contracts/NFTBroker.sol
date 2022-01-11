@@ -276,7 +276,7 @@ contract NFTBroker {
      * @dev This would get called for all regular mint purchases.
      */
     function payAndMint (uint256 tokenId, TokenData[] calldata tokenData, Verification calldata verification) public payable {
-        require(block.timestamp >= _tier3 || (block.timestamp >= _tier1 && _reservedTokenAmounts[msg.sender] > 0), "CXIP: too early to buy");
+        require(block.timestamp >= _tier3 || SNUFFY500(_tokenContract).balanceOf(msg.sender) > 0, "CXIP: too early to buy");
         require(msg.value >= _tokenBasePrice, "CXIP: payment amount is too low");
         require(_exists(tokenId), "CXIP: token not for sale");
         require(!SNUFFY500(_tokenContract).exists(tokenId), "CXIP: token snatched");
