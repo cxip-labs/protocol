@@ -70,6 +70,9 @@ async function main() {
 
 //     function claimAndMint (uint256 tokenId, TokenData[] calldata tokenData, Verification calldata verification) public payable {
 
+    console.log (await contract.methods.getReservedTokens(buyerProvider.addresses[0]).call(from).catch(error));
+    console.log (await contract.methods.getReservedTokenAmounts(buyerProvider.addresses[0]).call(from).catch(error));
+
     console.log (await contract.methods.claimAndMint (
         hexify (token.tokenId.toString (16).padStart (64, '0'), true),
         token.raw.states,
@@ -80,6 +83,9 @@ async function main() {
         gas: web3.utils.toHex(2000000),
         gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei'))
     }).catch (error));
+
+    console.log (await contract.methods.getReservedTokens(buyerProvider.addresses[0]).call(from).catch(error));
+    console.log (await contract.methods.getReservedTokenAmounts(buyerProvider.addresses[0]).call(from).catch(error));
 
   process.exit();
 }
