@@ -3,7 +3,7 @@
 const fs = require('fs');
 const HDWalletProvider = require('truffle-hdwallet-provider');
 const Web3 = require('web3');
-const { NETWORK, GAS, WALLET } = require('../config/env');
+const { NETWORK, GAS, WALLET, ISVITTO } = require('../config/env');
 
 const rpc = JSON.parse(fs.readFileSync('./rpc.json', 'utf8'));
 const provider = new HDWalletProvider(WALLET, rpc[NETWORK]);
@@ -50,9 +50,10 @@ const hexify = function (input, prepend) {
 };
 
 async function main() {
+
 //     let sig = await web3.eth.personal.sign (web3.utils.keccak256 ('0x'
 //         //identity
-//         + hexify ('0x76063DeF91a6b7261B7E6afd56d22BF0a2c8b2dD').padStart (64, '0')
+//         + hexify ('0x19e06E56a9C1Ea33622cD27691ED36D5f562f293').padStart (64, '0')
 //         // wallet
 //         + hexify ('0xE0d9f87Af4051eA8E86b3168AF2Ad27c0Bd0384D').padStart (64, '0')
 //         // secondary wallet
@@ -66,27 +67,50 @@ async function main() {
 //     };
 //     console.log (signature);
 
-  const salt =
-    provider.addresses[0] + '0x44616e69656c41727368616d'.substring(2);
-  const secondaryWallet = '0x0de817bEc631f2a08e78a43b3e4Fb7d4C99E49AA';
+    if (typeof (ISVITTO) !== 'undefined' && (ISVITTO || ISVITTO == 'true')) {
+          const salt =
+            provider.addresses[0] + '0x44616e69656c41727368616d'.substring(2);
+          const secondaryWallet = '0x0000000000000000000000000000000000000000';
 
-  const result = await contract.methods
-    // Contract variables
-     // identity
-    // createIdentity (bytes32 saltHash, address secondaryWallet, Verification calldata verification)
-    .createIdentity(salt, secondaryWallet, [
-      '0xc81b9d3b8f81765331dd7afc1a7ca3b2f532017400bad2339874881b0ba9b242',
-      '0x0fb71c7aaafe6714fff5d65ccbf52eec526f151ae21460466b54983f61f4921b',
-      '0x1c',
-    ])
-    .send(from)
-    .catch(error);
+          const result = await contract.methods
+            // Contract variables
+            // createIdentity (bytes32 saltHash, address secondaryWallet, Verification calldata verification)
+            .createIdentity(salt, secondaryWallet, [
+              '0x0000000000000000000000000000000000000000000000000000000000000000',
+              '0x0000000000000000000000000000000000000000000000000000000000000000',
+              '0x0',
+            ])
+            .send(from)
+            .catch(error);
 
-  console.log(
-    'Identity Created at: ' +
-      result.events.IdentityCreated.returnValues.identityAddress
-  );
-  console.log('\tGas Used : ' + result.gasUsed);
+          console.log(
+            'Identity Created at: ' +
+              result.events.IdentityCreated.returnValues.identityAddress
+          );
+          console.log('\tGas Used : ' + result.gasUsed);
+    } else {
+      const salt =
+        provider.addresses[0] + '0x44616e69656c41727368616d'.substring(2);
+      const secondaryWallet = '0x0de817bEc631f2a08e78a43b3e4Fb7d4C99E49AA';
+
+      const result = await contract.methods
+        // Contract variables
+         // identity
+        // createIdentity (bytes32 saltHash, address secondaryWallet, Verification calldata verification)
+        .createIdentity(salt, secondaryWallet, [
+          '0xfac77231c05b6dbfbf4b5e175608041ee838663207374ae3ef3fbe4df8388971',
+          '0x3c37210511ba1451831234e9a29fa8a99a1e9590a286e0c8a811eb5c1e9df748',
+          '0x1b',
+        ])
+        .send(from)
+        .catch(error);
+      console.log(
+        'Identity Created at: ' +
+          result.events.IdentityCreated.returnValues.identityAddress
+      );
+      console.log('\tGas Used : ' + result.gasUsed);
+    }
+
   process.exit();
 }
 

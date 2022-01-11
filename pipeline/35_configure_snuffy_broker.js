@@ -59,18 +59,25 @@ async function main() {
 
     console.log ('setReservedTokens', await contract.methods.setReservedTokens (
         [
-            buyerProvider.addresses[0],
             buyerProvider.addresses[1],
             buyerProvider.addresses[2],
-            buyerProvider.addresses[3],
             buyerProvider.addresses[4]
         ],
         [
-            [1, 2, 3],
             [4],
             [5],
-            [6, 7],
             [8]
+        ]
+    ).send(from).catch(error));
+
+    console.log ('setReservedTokensArrays', await contract.methods.setReservedTokensArrays (
+        [
+            buyerProvider.addresses[0],
+            buyerProvider.addresses[3]
+        ],
+        [
+            [1, 2, 3],
+            [6, 7]
         ]
     ).send(from).catch(error));
 

@@ -55,7 +55,7 @@ const hexify = function (input, prepend) {
 const tokens = JSON.parse (fs.readFileSync ('./tokens.json', 'utf8'));
 
 async function main() {
-  const wallet = provider.addresses[0];
+//   const wallet = provider.addresses[0];
 
     // we set token id here for testing
     let targetTokenId = 3;
