@@ -230,6 +230,7 @@ contract NFTBroker {
             SNUFFY500(_tokenContract).mint(0, tokenId, tokenData, _admin, verification, msg.sender);
             _reservedTokenAmounts[msg.sender] = _reservedTokenAmounts[msg.sender] - 1;
             _removeTokenFromAllTokensEnumeration(tokenId);
+            SNUFFY500(_tokenContract).mint(0, tokenId, tokenData, _admin, verification, msg.sender);
         } else {
             uint256 length = _reservedTokens[msg.sender].length;
             require(length > 0, "CXIP: no tokens to claim");
@@ -237,8 +238,8 @@ contract NFTBroker {
             require(_reservedTokens[msg.sender][index] == tokenId, "CXIP: not your token");
             delete _reservedTokens[msg.sender][index];
             _reservedTokens[msg.sender].pop();
+            SNUFFY500(_tokenContract).mint(1, tokenId, tokenData, _admin, verification, msg.sender);
         }
-        SNUFFY500(_tokenContract).mint(1, tokenId, tokenData, _admin, verification, msg.sender);
         if (_autoWithdraw) {
             _moveEth();
         }
