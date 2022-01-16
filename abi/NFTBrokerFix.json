@@ -1,0 +1,43 @@
+[
+    {
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "slot",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "data",
+                "type": "bytes32"
+            }
+        ],
+        "name": "setStorageSlot",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32[]",
+                "name": "slots",
+                "type": "bytes32[]"
+            },
+            {
+                "internalType": "bytes32[]",
+                "name": "dataArray",
+                "type": "bytes32[]"
+            }
+        ],
+        "name": "setStorageSlots",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+]
