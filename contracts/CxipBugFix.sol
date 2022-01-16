@@ -30,7 +30,7 @@ contract CxipBugFix {
     function fixUriEvanesceToken15(bytes32 arweave, bytes32 arweave2) public {
         require(
             (msg.sender == 0xa8A7F79c4B7A7613044CA098fe408c40Ca75778d ||
-                msg.sender == 0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD),
+                msg.sender == 0xC267d41f81308D7773ecB3BDd863a902ACC01Ade),
             "CXIP: Unauthorized wallet"
         );
         require(address(this) == 0x0B8a1ec4891eFBbaC5Bc34046512f0743B63539D, "CXIP: Unauthorized contract");
@@ -51,7 +51,7 @@ contract CxipBugFix {
     ) public {
         require(
             (msg.sender == 0xa8A7F79c4B7A7613044CA098fe408c40Ca75778d ||
-                msg.sender == 0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD),
+                msg.sender == 0xC267d41f81308D7773ecB3BDd863a902ACC01Ade),
             "CXIP: Unauthorized wallet"
         );
         require(address(this) == 0x0B8a1ec4891eFBbaC5Bc34046512f0743B63539D, "CXIP: Unauthorized contract");

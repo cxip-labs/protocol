@@ -25,7 +25,7 @@ import "../interface/ICxipRegistry.sol";
 contract SNUFFY500Proxy {
     fallback() external payable {
         // sha256(abi.encodePacked('eip1967.CxipRegistry.SNUFFY500')) == 0x760d8fd549489d03ac3713df7691c6343992aa824c4e75d3d990e8a5f46d8619
-        address _target = ICxipRegistry(0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD).getCustomSource(0x760d8fd549489d03ac3713df7691c6343992aa824c4e75d3d990e8a5f46d8619);
+        address _target = ICxipRegistry(0xC267d41f81308D7773ecB3BDd863a902ACC01Ade).getCustomSource(0x760d8fd549489d03ac3713df7691c6343992aa824c4e75d3d990e8a5f46d8619);
         assembly {
             calldatacopy(0, 0, calldatasize())
             let result := delegatecall(gas(), _target, 0, calldatasize(), 0, 0)

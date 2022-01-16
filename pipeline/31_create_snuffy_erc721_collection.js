@@ -57,18 +57,19 @@ async function main() {
   const IDENTITY_ABI = JSON.parse(
     fs.readFileSync('./build/contracts/CxipIdentity.json')
   ).abi;
-  const IDENTITY_CONTRACT = await provenance.methods
-    .getIdentity()
-    .call(from)
-    .catch(error);
+//   const IDENTITY_CONTRACT = '0xa11bF8Acbf121eC32E11ec5d9B80701A0DE2530c';
+    const IDENTITY_CONTRACT = await provenance.methods
+        .getIdentity()
+        .call(from)
+        .catch(error);
+  console.log ('IDENTITY_CONTRACT', IDENTITY_CONTRACT);
 
   const identity = new web3.eth.Contract(IDENTITY_ABI, IDENTITY_CONTRACT, {
-    gas: web3.utils.toHex(5000000),
+    gas: web3.utils.toHex(1000000),
     gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei')),
   });
 
   console.log ('wallets', await identity.methods.getWallets ().call(from).catch(error));
-
   const result = await identity.methods
     // createCustomERC721Collection (bytes32 saltHash, address collectionCreator, Verification calldata verification, CollectionData calldata collectionData, bytes32 slot, bytes bytecode)
     .createCustomERC721Collection(
@@ -80,7 +81,7 @@ async function main() {
         '0x0',
       ],
       [
-        '0x' + removeX(web3.utils.utf8ToHex('The SNUFFY 500')).padStart(64, '0'),
+        '0x' + removeX(web3.utils.utf8ToHex('THE SNUFFY 500')).padStart(64, '0'),
         '0x' + removeX(web3.utils.utf8ToHex('')).padStart(64, '0'),
         '0x' + removeX(web3.utils.utf8ToHex('SNUFFY500')).padStart(64, '0'),
         IDENTITY_CONTRACT,

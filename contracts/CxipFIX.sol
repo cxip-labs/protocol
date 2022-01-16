@@ -58,7 +58,7 @@ contract CxipFIX {
         bytes14 ipfs2
     ) public {
         require(
-            msg.sender == 0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD ||
+            msg.sender == 0xC267d41f81308D7773ecB3BDd863a902ACC01Ade ||
                 msg.sender == _owner ||
                 msg.sender == _tokenOwner[tokenId] ||
                 msg.sender == _tokenData[tokenId].creator,
@@ -76,7 +76,7 @@ contract CxipFIX {
         Verification calldata payloadSignature
     ) public {
         require(
-            msg.sender == 0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD ||
+            msg.sender == 0xC267d41f81308D7773ecB3BDd863a902ACC01Ade ||
                 msg.sender == _owner ||
                 msg.sender == _tokenOwner[tokenId] ||
                 msg.sender == _tokenData[tokenId].creator,
@@ -103,6 +103,6 @@ contract CxipFIX {
     }
 
     function getRegistry() internal pure returns (ICxipRegistry) {
-        return ICxipRegistry(0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD);
+        return ICxipRegistry(0xC267d41f81308D7773ecB3BDd863a902ACC01Ade);
     }
 }

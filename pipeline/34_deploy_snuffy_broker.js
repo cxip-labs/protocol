@@ -3,7 +3,7 @@
 const fs = require('fs');
 const HDWalletProvider = require('truffle-hdwallet-provider');
 const Web3 = require('web3');
-const { NETWORK, GAS, WALLET } = require('../config/env');
+const { NETWORK, GAS, WALLET, NOTARY } = require('../config/env');
 
 const FACTORY_CONTRACT = JSON.parse(
   fs.readFileSync('./build/contracts/NFTBroker.json')
@@ -11,7 +11,7 @@ const FACTORY_CONTRACT = JSON.parse(
 
 const rpc = JSON.parse(fs.readFileSync('./rpc.json', 'utf8'));
 const provider = new HDWalletProvider(WALLET, rpc[NETWORK]);
-const notary = new HDWalletProvider(WALLET, rpc[NETWORK]);
+const notary = new HDWalletProvider(NOTARY, rpc[NETWORK]);
 const web3 = new Web3(provider);
 
 //Contract object and account info
@@ -40,7 +40,9 @@ const error = function (err) {
   process.exit();
 };
 const from = {
-  from: provider.addresses[0]
+  from: provider.addresses[0],
+  gas: web3.utils.toHex(300000),
+  gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei')),
 };
 
 const removeX = function (input) {
@@ -64,6 +66,7 @@ async function main() {
     const IDENTITY_ABI = JSON.parse(
         fs.readFileSync('./build/contracts/CxipIdentity.json')
     ).abi;
+//   const IDENTITY_CONTRACT = '0xa11bF8Acbf121eC32E11ec5d9B80701A0DE2530c';
     const IDENTITY_CONTRACT = await provenance.methods
         .getIdentity()
         .call(from)
@@ -71,7 +74,7 @@ async function main() {
 
     const identity = new web3.eth.Contract(IDENTITY_ABI, IDENTITY_CONTRACT, {
         gas: web3.utils.toHex(300000),
-        gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei')),
+        gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei'))
     });
 
     const ERC721_ABI = JSON.parse(
@@ -93,28 +96,29 @@ async function main() {
     let payload = {
         data: bytecode,
         arguments: [
-            web3.utils.toHex(web3.utils.toWei('0.2', 'ether')),
+//             web3.utils.toHex(web3.utils.toWei('0.4', 'ether')),
 //             openTokens,
             ERC721_CONTRACT,
             notary.addresses[0],
             false,
             5,
-            '0x0de817bEc631f2a08e78a43b3e4Fb7d4C99E49AA'
+            '0xcf5439084322598b841c15d421c206232b553e78'
         ]
     };
 
     let parameter = {
         from: provider.addresses[0],
-        gas: web3.utils.toHex(6000000),
+        gas: web3.utils.toHex(5000000),
         gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei'))
     };
 
     let finish = async function (newContractInstance) {
+        console.log ('totalSupply', await newContractInstance.methods.totalSupply().call(from).catch(error));
         const erc721 = new web3.eth.Contract(ERC721_ABI, ERC721_CONTRACT, {
             gas: web3.utils.toHex(300000),
             gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei'))
         });
-        console.log ('setBroker', await erc721.methods.setBroker(newContractInstance.options.address).send(from).catch(error));
+//         console.log ('setBroker', await erc721.methods.setBroker(newContractInstance.options.address).send(from).catch(error));
         console.log ('getBroker', await erc721.methods.getBroker().call(from).catch(error));
         process.exit();
     };

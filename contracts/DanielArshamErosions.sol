@@ -214,16 +214,16 @@ contract DanielArshamErosions {
     function arweaveURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
         uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
-        return string(abi.encodePacked("https://arweave.cxip.dev/", _tokenData[index].arweave, _tokenData[index].arweave2));
+        return string(abi.encodePacked("https://arweave.net/", _tokenData[index].arweave, _tokenData[index].arweave2));
     }
 
     /**
      * @notice Gets the URI of the NFT backup from CXIP.
-     * @dev Concatenates to https://nft.cxip.dev/.
+     * @dev Concatenates to https://nft.cxip.io/.
      * @return string The URI.
      */
     function contractURI() external view returns (string memory) {
-        return string(abi.encodePacked("https://nft.cxip.dev/", Strings.toHexString(address(this)), "/"));
+        return string(abi.encodePacked("https://nft.cxip.io/", Strings.toHexString(address(this)), "/"));
     }
 
     /**
@@ -255,7 +255,7 @@ contract DanielArshamErosions {
     function ipfsURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
         uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
-        return string(abi.encodePacked("https://ipfs.cxip.dev/", _tokenData[index].ipfs, _tokenData[index].ipfs2));
+        return string(abi.encodePacked("https://ipfs.io/ipfs/", _tokenData[index].ipfs, _tokenData[index].ipfs2));
     }
 
     /**
@@ -342,7 +342,7 @@ contract DanielArshamErosions {
     function tokenURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
         uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
-        return string(abi.encodePacked("https://arweave.cxip.dev/", _tokenData[index].arweave, _tokenData[index].arweave2));
+        return string(abi.encodePacked("https://arweave.net/", _tokenData[index].arweave, _tokenData[index].arweave2));
     }
 
     /**
@@ -716,7 +716,7 @@ contract DanielArshamErosions {
      * @return string the token URI.
      */
     function baseURI() public view returns (string memory) {
-        return string(abi.encodePacked("https://nft.cxip.dev/", Strings.toHexString(address(this))));
+        return string(abi.encodePacked("https://nft.cxip.io/", Strings.toHexString(address(this))));
     }
 
     /**
@@ -749,9 +749,9 @@ contract DanielArshamErosions {
         // pre-approved OpenSea and Rarible proxies removed, per Nifty Gateway's request
         return (_operatorApprovals[wallet][operator]/* ||
             // Rarible Transfer Proxy
-            0x72617269626C655472616E7366657250726F7879 == operator ||
+            0x4feE7B061C97C9c496b01DbcE9CDb10c02f0a0Be == operator ||
             // OpenSea Transfer Proxy
-            address(OpenSeaProxyRegistry(0x6f70656E5365615472616E7366657250726F7879).proxies(wallet)) == operator*/);
+            address(OpenSeaProxyRegistry(0xa5409ec958C83C3f309868babACA7c86DCB077c1).proxies(wallet)) == operator*/);
     }
 
     /**
@@ -876,7 +876,7 @@ contract DanielArshamErosions {
      * @return ICxipRegistry The address of the top-level CXIP Registry smart contract.
      */
     function getRegistry() internal pure returns (ICxipRegistry) {
-        return ICxipRegistry(0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD);
+        return ICxipRegistry(0xC267d41f81308D7773ecB3BDd863a902ACC01Ade);
     }
 
     /**

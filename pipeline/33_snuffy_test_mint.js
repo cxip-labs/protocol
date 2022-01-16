@@ -56,7 +56,7 @@ const shuffleArray = function (array) {
     }
     return array;
 }
-const tokens = shuffleArray (JSON.parse (fs.readFileSync ('./tokens.json', 'utf8')));
+const tokens = JSON.parse (fs.readFileSync ('./tokens.json', 'utf8'));
 
 async function main() {
   const wallet = provider.addresses[0];
@@ -64,14 +64,15 @@ async function main() {
   const IDENTITY_ABI = JSON.parse(
     fs.readFileSync('./build/contracts/CxipIdentity.json')
   ).abi;
-  const IDENTITY_CONTRACT = await provenance.methods
-    .getIdentity()
-    .call(from)
-    .catch(error);
+//   const IDENTITY_CONTRACT = '0xa11bF8Acbf121eC32E11ec5d9B80701A0DE2530c';
+    const IDENTITY_CONTRACT = await provenance.methods
+        .getIdentity()
+        .call(from)
+        .catch(error);
 
   const identity = new web3.eth.Contract(IDENTITY_ABI, IDENTITY_CONTRACT, {
     gas: web3.utils.toHex(300000),
-    gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei')),
+    gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei'))
   });
 
   const ERC721_ABI = JSON.parse(
@@ -88,43 +89,36 @@ async function main() {
   		ERC721_ABI,
   		ERC721_CONTRACT,
   		{
-            gas: web3.utils.toHex(5000000),
-            gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei')),
+            gas: web3.utils.toHex(1700000),
+            gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei'))
   		}
   	);
 
-    let token = tokens [0];
+//   	console.log (await contract.methods.transferOwnership (
+//   	    '0xcf5439084322598b841c15d421c206232b553e78'
+//     ).send ({
+//         from: provider.addresses[0],
+//         value: 0,
+//         gas: web3.utils.toHex(1700000),
+//         gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei'))
+//     }).catch (error));
+
+    let token = tokens [369 - 1];
     console.log (token);
 
-    // this is here temporarily to allow a non-Snuffy wallet as the creator
-    for (let i = 0; i < 6; i++) {
-        token.raw.states [i] [2] = wallet;
-    }
-
     console.log (await contract.methods.mint (
-        0,
+        1,
         token.tokenId,
         token.raw.states,
         wallet,
         token.raw.signature,
-        provider.addresses[0]
+        '0xcf5439084322598b841c15d421c206232b553e78'
     ).send ({
         from: provider.addresses[0],
         value: 0,
-//         gas: web3.utils.toHex(1400000),
-        gas: web3.utils.toHex(1500000),
+        gas: web3.utils.toHex(1700000),
         gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei'))
     }).catch (error));
-
-//     console.log (await contract.methods.testMint (
-//         tokenId,
-//         states
-//     ).send ({
-//         from: provider.addresses[0],
-//         value: 0,
-//         gas: web3.utils.toHex(5000000),
-//         gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei'))
-//     }).catch (error));
 
   process.exit();
 }

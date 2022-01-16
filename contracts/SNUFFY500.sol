@@ -289,16 +289,16 @@ contract SNUFFY500 {
     function arweaveURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
         uint256 index = SnuffyToken.calculateState(tokenId);
-        return string(abi.encodePacked("https://arweave.cxip.dev/", _tokenData[index].arweave, _tokenData[index].arweave2));
+        return string(abi.encodePacked("https://arweave.net/", _tokenData[index].arweave, _tokenData[index].arweave2));
     }
 
     /**
      * @notice Gets the URI of the NFT backup from CXIP.
-     * @dev Concatenates to https://nft.cxip.dev/.
+     * @dev Concatenates to https://nft.cxip.io/.
      * @return string The URI.
      */
     function contractURI() external view returns (string memory) {
-        return string(abi.encodePacked("https://nft.cxip.dev/", Strings.toHexString(address(this)), "/"));
+        return string(abi.encodePacked("https://nft.cxip.io/", Strings.toHexString(address(this)), "/"));
     }
 
     /**
@@ -330,7 +330,7 @@ contract SNUFFY500 {
     function ipfsURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
         uint256 index = SnuffyToken.calculateState(tokenId);
-        return string(abi.encodePacked("https://ipfs.cxip.dev/", _tokenData[index].ipfs, _tokenData[index].ipfs2));
+        return string(abi.encodePacked("https://ipfs.io/ipfs/", _tokenData[index].ipfs, _tokenData[index].ipfs2));
     }
 
     /**
@@ -417,7 +417,7 @@ contract SNUFFY500 {
     function tokenURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
         uint256 index = SnuffyToken.calculateState(tokenId);
-        return string(abi.encodePacked("https://arweave.cxip.dev/", _tokenData[index].arweave, _tokenData[index].arweave2));
+        return string(abi.encodePacked("https://arweave.net/", _tokenData[index].arweave, _tokenData[index].arweave2));
     }
 
     /**
@@ -597,14 +597,11 @@ contract SNUFFY500 {
     function mint(uint256 state, uint256 tokenId, TokenData[] memory tokenData, address signer, Verification memory verification, address recipient) public {
         require(isOwner() || msg.sender == getBroker(), "CXIP: only owner/broker can mint");
         require(_allTokens.length < getTokenLimit(), "CXIP: over token limit");
-        // temporary override to allow for local testing
-        //require(isIdentityWallet(tokenData[0].creator), "CXIP: creator not in identity");
+        require(isIdentityWallet(tokenData[0].creator), "CXIP: creator not in identity");
         if (!isOwner()) {
             require(isIdentityWallet(signer), "CXIP: invalid signer");
             bytes memory encoded = abi.encode(
-                // temporary override to allow for local testing
-                0xCf5439084322598b841C15d421C206232B553E78,
-                //tokenData[0].creator,
+                tokenData[0].creator,
                 tokenId,
                 tokenData
             );
@@ -793,7 +790,7 @@ contract SNUFFY500 {
      * @return string the token URI.
      */
     function baseURI() public view returns (string memory) {
-        return string(abi.encodePacked("https://nft.cxip.dev/", Strings.toHexString(address(this))));
+        return string(abi.encodePacked("https://nft.cxip.io/", Strings.toHexString(address(this))));
     }
 
     function exists(uint256 tokenId) public view returns (bool) {
@@ -830,9 +827,9 @@ contract SNUFFY500 {
         // pre-approved OpenSea and Rarible proxies removed, per Nifty Gateway's request
         return (_operatorApprovals[wallet][operator]/* ||
             // Rarible Transfer Proxy
-            0x72617269626C655472616E7366657250726F7879 == operator ||
+            0x4feE7B061C97C9c496b01DbcE9CDb10c02f0a0Be == operator ||
             // OpenSea Transfer Proxy
-            address(OpenSeaProxyRegistry(0x6f70656E5365615472616E7366657250726F7879).proxies(wallet)) == operator*/);
+            address(OpenSeaProxyRegistry(0xa5409ec958C83C3f309868babACA7c86DCB077c1).proxies(wallet)) == operator*/);
     }
 
     /**
@@ -957,7 +954,7 @@ contract SNUFFY500 {
      * @return ICxipRegistry The address of the top-level CXIP Registry smart contract.
      */
     function getRegistry() internal pure returns (ICxipRegistry) {
-        return ICxipRegistry(0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD);
+        return ICxipRegistry(0xC267d41f81308D7773ecB3BDd863a902ACC01Ade);
     }
 
     /**

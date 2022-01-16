@@ -157,6 +157,7 @@ contract CxipProvenance {
         _notifyIdentityCreated(identityAddress);
         _notifyIdentityWalletAdded(identityAddress, wallet, wallet);
         if(usingSecondaryWallet) {
+            _walletToIdentityMap[secondaryWallet] = identityAddress;
             _notifyIdentityWalletAdded(
                 identityAddress,
                 wallet,

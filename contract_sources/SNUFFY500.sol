@@ -597,14 +597,11 @@ contract SNUFFY500 {
     function mint(uint256 state, uint256 tokenId, TokenData[] memory tokenData, address signer, Verification memory verification, address recipient) public {
         require(isOwner() || msg.sender == getBroker(), "CXIP: only owner/broker can mint");
         require(_allTokens.length < getTokenLimit(), "CXIP: over token limit");
-        // temporary override to allow for local testing
-        //require(isIdentityWallet(tokenData[0].creator), "CXIP: creator not in identity");
+        require(isIdentityWallet(tokenData[0].creator), "CXIP: creator not in identity");
         if (!isOwner()) {
             require(isIdentityWallet(signer), "CXIP: invalid signer");
             bytes memory encoded = abi.encode(
-                // temporary override to allow for local testing
-                0xCf5439084322598b841C15d421C206232B553E78,
-                //tokenData[0].creator,
+                tokenData[0].creator,
                 tokenId,
                 tokenData
             );

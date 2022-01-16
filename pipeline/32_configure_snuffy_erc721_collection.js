@@ -62,14 +62,15 @@ async function main() {
   const IDENTITY_ABI = JSON.parse(
     fs.readFileSync('./build/contracts/CxipIdentity.json')
   ).abi;
-  const IDENTITY_CONTRACT = await provenance.methods
-    .getIdentity()
-    .call(from)
-    .catch(error);
+//   const IDENTITY_CONTRACT = '0xa11bF8Acbf121eC32E11ec5d9B80701A0DE2530c';
+    const IDENTITY_CONTRACT = await provenance.methods
+        .getIdentity()
+        .call(from)
+        .catch(error);
 
   const identity = new web3.eth.Contract(IDENTITY_ABI, IDENTITY_CONTRACT, {
     gas: web3.utils.toHex(300000),
-    gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei')),
+    gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei'))
   });
 
   const ERC721_ABI = JSON.parse(
@@ -87,7 +88,7 @@ async function main() {
   		ERC721_CONTRACT,
   		{
             gas: web3.utils.toHex(300000),
-            gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei')),
+            gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei'))
   		}
   	);
 

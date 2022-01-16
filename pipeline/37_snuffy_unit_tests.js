@@ -60,10 +60,11 @@ async function main() {
   const IDENTITY_ABI = JSON.parse(
     fs.readFileSync('./build/contracts/CxipIdentity.json')
   ).abi;
-  const IDENTITY_CONTRACT = await provenance.methods
-    .getIdentity()
-    .call(from)
-    .catch(error);
+  const IDENTITY_CONTRACT = '0xa11bF8Acbf121eC32E11ec5d9B80701A0DE2530c';
+//   const IDENTITY_CONTRACT = await provenance.methods
+//     .getIdentity()
+//     .call(from)
+//     .catch(error);
 
   const identity = new web3.eth.Contract(IDENTITY_ABI, IDENTITY_CONTRACT, {
     gas: web3.utils.toHex(300000),
@@ -89,7 +90,7 @@ async function main() {
   		}
   	);
 
-    let tokenId = 3;
+    let tokenId = 1;
 
   console.log({
     statesConfig: await contract.methods.getStatesConfig().call(from).catch(error),

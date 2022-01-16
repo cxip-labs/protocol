@@ -18,7 +18,7 @@ const web3 = new Web3(provider);
 
 const contract = new web3.eth.Contract(REGISTRY_ABI, REGISTRY_ADDRESS, {
   gasLimit: web3.utils.toHex(55555),
-  gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei')),
+  gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei'))
 });
 
 const error = function (err) {
