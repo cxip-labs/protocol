@@ -15,7 +15,7 @@ const BROKER_ABI = JSON.parse(
   fs.readFileSync('./build/contracts/NFTBroker.json')
 ).abi;
 const BROKER_ADDRESS = fs
-  .readFileSync('./data/' + NETWORK + '.snuffy.broker.address', 'utf8')
+  .readFileSync('./data/' + NETWORK + '.snuffy.broker.proxy.address', 'utf8')
   .trim();
 
 const contract = new web3.eth.Contract(BROKER_ABI, BROKER_ADDRESS, {
@@ -29,7 +29,7 @@ const error = function (err) {
 };
 const from = {
     from: provider.addresses[0],
-    gas: web3.utils.toHex(2000000),
+    gas: web3.utils.toHex(1000000),
     gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei'))
 };
 
@@ -218,71 +218,96 @@ async function main() {
         multiWallets.push (d.wallet);
         multiTokens.push (d.tokenIds);
     }
-    console.log ('setReservedTokensArrays', await contract.methods.setReservedTokensArrays (
-        multiWallets,
-        multiTokens
-    ).send(from).catch(error));
+//     console.log ('setReservedTokensArrays', await contract.methods.setReservedTokensArrays (
+//         multiWallets,
+//         multiTokens
+//     ).send(from).catch(error));
 
     let friendsAndFamily = [
-        '0xa198FA5db682a2A828A90b42D3Cd938DAcc01ADE',
-        '0x9F28a74249698A1517713398F93cc47374690772',
-        '0xCC403720a44d27916089029bedD4aC3A3F6CFd62',
-        '0xde01076afcc9b86592afb77b5856f7d653c19f94',
-        '0xB56b21f575c6A181E852413Fc5a4b838e7A50D0e',
-        '0x2786D0e23d1960644291eB7c26A01581A50d94c2',
-        '0xbb34d08c67373e54f066e6e7e6c77846ff7d2714',
-        '0xb0728e38704fcc7ab3fc87d7aaff434e6b4b6ea8',
-        '0xB7E5e785657388E286F633bf793a0B6B307992C6',
-        '0xE9012a724562B96785B09250152a601F4970503d',
-        '0x61a94BD03562BeF44093bd38b26F148B61Aa7f01',
-        '0x25f71a5e1b2bb01624c390eb2d99b29b71f8d359',
-        '0xa883b60c5ead0efd604b41a7c0509c3c6b81739e',
-        '0xcf33f3402574785b1ca4b2d03234a7d99280bf4e',
-        '0x19847a32B0eB348b006C79c1FB2d3aE1276c6028',
-        '0x2213431dF63F04A7250ad16BE1BA6DE0695e3Da8',
-        '0x41AB87ae7552B11D993b774F62F38De07Cf6ad40',
-        '0x626a751a90e872F23a67645676deda57b09807cE',
-        '0xfea037b0b5edCc90c626e2E1D5D792b949888892',
-        '0xc842Ce7214A14Fa98186a010bcb43c7e99e4caF3',
-        '0x782d0a6bb5e4709da3c53f9f27f3fd31529fa3f1',
-        '0x1F257188e3b426D97e50a8482aC871c15C7180c2',
-        '0x950f0dd952fE8da9F2935A760d4a5aE9BFACD366',
-        '0x81Dc59975429f58C93D7ee9a536a92c9cA469aAA',
-        '0x275Cf8F5318AF3f17e4e57344D362D2204d0e12D',
-        '0xAF2a7b802C38E584472e34351E7447810D8510AC',
-        '0x47d663e837c84f3fd6ab1e02a347ba2e0423cbc5',
-        '0x321ed5739440bdbd731d54a19aa20b18398d374f',
-        '0xFD926e0E26B673dC10D670742861c474a80D6773',
-        '0xdfbDB9b9174862eCB1010C39ca72409C1D63B18F',
-        '0xb8663D418298aE47CAcaa75145649032FeCe923f',
-        '0x88092b00147af02a69fe764bbcd7be4c78a97710',
-        '0x6d1c46842DeD926339Bf665bE4474cB951E275F8',
-        '0x3e5f46ad03a924d0c1ddc9aa311fdd265be312df',
-        '0x7FcBdf98c5099CFDEA1F4b23967856a05E48C465',
-        '0x8e3632743163f6a4d38a6953e071958f95d88fb3',
-        '0x81aeb18677c608c05e9c4848320cad9a2a7fa196',
-        '0x8B1bF8f4D32FBa8ACf5aCef758d47D035994D31d',
-        '0xd208F9da74A8C9573A45360A08887BbCc6908534',
-        '0xaf24438ac4ad1ff9cbb7aa47e980fb558348b8df',
-        '0x1E30988D83d4273dfd3a2d90E482f6Efa7980155',
-        '0x521C836f912c0b4710F954e4983080f94d8da572',
-        '0xC9d13Bdcf27B24569d02D28411a9F20852fA8A0a',
-        '0xdFBB06683a882E827907422dbFE836E5430fE2aC',
-        '0xcfb96bc298aadf182d9f1300c37bd4c5fef25b45',
-        '0x6f78a6C41E3a5CB650899729cD99F1bF136C609C',
-        '0x76E019f86C4898B3823bb398713fD72fDa470E4D',
-        '0xd4a5bf76d0300359efa7cfb428ec739e538a7fe3',
-        '0xB704033F0C6ac7cD9295F1E274FC4A1a6C00F1Bf',
-        '0xb13edc109c0b2a512F476B0Ae2051F42eB8A6754',
-        '0xfbA5aAB6113719d468894CB2e6B502f4F4B741C1',
-        '0xF7bcCC29ae64F761A887eFc486Bcbd2d54209620',
-        '0x2b9DE8833EE543433Bf0BeEde6c6101f2c93885e',
-        '0x60065A92F316b6b04f89b3555b90703DCc9e30F9',
-        '0x81F971d94328f5833E4aB8eC7591Ee148C651996',
-        '0xB0c4E94188c0acBC722bb41ec4772272010F088f',
-        '0x0Ea763Ad59E88FD55455283d480523b280D7AfE1',
-        '0x3eA006418d140081d6876A869148B9A238599D90',
-        '0x7dBa2777F42Ec368145E2426b7880690DBE53902'
+//         '0xa198FA5db682a2A828A90b42D3Cd938DAcc01ADE',
+//         '0x9F28a74249698A1517713398F93cc47374690772',
+//         '0xCC403720a44d27916089029bedD4aC3A3F6CFd62',
+//         '0xde01076afcc9b86592afb77b5856f7d653c19f94',
+//         '0xB56b21f575c6A181E852413Fc5a4b838e7A50D0e',
+//         '0x2786D0e23d1960644291eB7c26A01581A50d94c2',
+//         '0xbb34d08c67373e54f066e6e7e6c77846ff7d2714',
+//         '0xb0728e38704fcc7ab3fc87d7aaff434e6b4b6ea8',
+//         '0xB7E5e785657388E286F633bf793a0B6B307992C6',
+//         '0xE9012a724562B96785B09250152a601F4970503d',
+//         '0x61a94BD03562BeF44093bd38b26F148B61Aa7f01',
+//         '0x25f71a5e1b2bb01624c390eb2d99b29b71f8d359',
+//         '0xa883b60c5ead0efd604b41a7c0509c3c6b81739e',
+//         '0xcf33f3402574785b1ca4b2d03234a7d99280bf4e',
+//         '0x19847a32B0eB348b006C79c1FB2d3aE1276c6028',
+//         '0x2213431dF63F04A7250ad16BE1BA6DE0695e3Da8',
+//         '0x41AB87ae7552B11D993b774F62F38De07Cf6ad40',
+//         '0x626a751a90e872F23a67645676deda57b09807cE',
+//         '0xfea037b0b5edCc90c626e2E1D5D792b949888892',
+//         '0xc842Ce7214A14Fa98186a010bcb43c7e99e4caF3',
+//         '0x782d0a6bb5e4709da3c53f9f27f3fd31529fa3f1',
+//         '0x1F257188e3b426D97e50a8482aC871c15C7180c2',
+//         '0x950f0dd952fE8da9F2935A760d4a5aE9BFACD366',
+//         '0x81Dc59975429f58C93D7ee9a536a92c9cA469aAA',
+//         '0x275Cf8F5318AF3f17e4e57344D362D2204d0e12D',
+//         '0xAF2a7b802C38E584472e34351E7447810D8510AC',
+//         '0x47d663e837c84f3fd6ab1e02a347ba2e0423cbc5',
+//         '0x321ed5739440bdbd731d54a19aa20b18398d374f',
+//         '0xFD926e0E26B673dC10D670742861c474a80D6773',
+//         '0xdfbDB9b9174862eCB1010C39ca72409C1D63B18F',
+//         '0xb8663D418298aE47CAcaa75145649032FeCe923f',
+//         '0x88092b00147af02a69fe764bbcd7be4c78a97710',
+//         '0x6d1c46842DeD926339Bf665bE4474cB951E275F8',
+//         '0x3e5f46ad03a924d0c1ddc9aa311fdd265be312df',
+//         '0x7FcBdf98c5099CFDEA1F4b23967856a05E48C465',
+//         '0x8e3632743163f6a4d38a6953e071958f95d88fb3',
+//         '0x81aeb18677c608c05e9c4848320cad9a2a7fa196',
+//         '0x8B1bF8f4D32FBa8ACf5aCef758d47D035994D31d',
+//         '0xd208F9da74A8C9573A45360A08887BbCc6908534',
+//         '0xaf24438ac4ad1ff9cbb7aa47e980fb558348b8df',
+//         '0x1E30988D83d4273dfd3a2d90E482f6Efa7980155',
+//         '0x521C836f912c0b4710F954e4983080f94d8da572',
+//         '0xC9d13Bdcf27B24569d02D28411a9F20852fA8A0a',
+//         '0xdFBB06683a882E827907422dbFE836E5430fE2aC',
+//         '0xcfb96bc298aadf182d9f1300c37bd4c5fef25b45',
+//         '0x6f78a6C41E3a5CB650899729cD99F1bF136C609C',
+//         '0x76E019f86C4898B3823bb398713fD72fDa470E4D',
+//         '0xd4a5bf76d0300359efa7cfb428ec739e538a7fe3',
+//         '0xB704033F0C6ac7cD9295F1E274FC4A1a6C00F1Bf',
+//         '0xb13edc109c0b2a512F476B0Ae2051F42eB8A6754',
+//         '0xfbA5aAB6113719d468894CB2e6B502f4F4B741C1',
+//         '0xF7bcCC29ae64F761A887eFc486Bcbd2d54209620',
+//         '0x2b9DE8833EE543433Bf0BeEde6c6101f2c93885e',
+//         '0x60065A92F316b6b04f89b3555b90703DCc9e30F9',
+//         '0x81F971d94328f5833E4aB8eC7591Ee148C651996',
+//         '0xB0c4E94188c0acBC722bb41ec4772272010F088f',
+//         '0x0Ea763Ad59E88FD55455283d480523b280D7AfE1',
+//         '0x3eA006418d140081d6876A869148B9A238599D90',
+//         '0x7dBa2777F42Ec368145E2426b7880690DBE53902',
+//         '0x4502679FA4484F708efe050C8e3404eF229D9621',
+//         '0x06d12a7C173de6b9e7eafaa97Be609d9667AE1D2',
+//         '0xDfd9A4d42b8C2D5ae88A9c8566d0D441A522e602',
+//         '0x44a3227807850e918FdA28C13FD7c38d3649CFB5',
+//         '0xc43644b7287a63cB4B964D611C88cB1f8cfcFc55',
+//         '0xCcF43Dcc4e52e0216E461955bd98B08DA53213eA',
+//         '0xa83fa9c834bb5abe25f9c56eb5845b3203df94f2',
+//         '0x9b0Ca8911bdc11A919209541c01328Ee10053fcD',
+//         '0x332Af6E7C39276a5A83DA16aE3576Ba3508c5bcE',
+//         '0x837ca59C72bDCc902Ae1aabf9B5E49caa628cd80',
+//         '0x8b5eA8B4692F38086DbFB14D28088455BBF5b8dE',
+//         '0x804C4932f3e2e4243282f5102387eCe134D239Fd',
+//         '0x74205C844f0a6c8510a03e68008B3e5be2d642e4',
+//         '0x199d68f140c3dec500f80b0198ca7ef55d5e587f',
+//         '0xf17eEDf7523cC63Dc41a8664FE2f0cE895504787',
+//         '0x88e76E904bf2Ae273d00619795a64F13BD546817',
+//         '0x651f2DB4d368f5B4d105C002C481e5Ad4C9A2038',
+//         '0xD323e4b040111B3FEba91091290685CF0BE3080a',
+//         '0x2e3CB57a8b81bCd3623fdB014d4D173A2ebE0654',
+//         '0x367ff64dA0668D86E7Ac5d43dD9459Fd4CE381d6',
+//         '0x4f3316D5403602b1C803CA038a7882ec18c0d00b',
+//         '0x5878C5f497d5df24ec164518f9D6224f3A5EcF93',
+//         '0xb2Ba39f255649359517CCE05D852065bE351807B',
+//         '0x01C4943cD0A5BeB9d5856e55C67547E1172041Fc',
+//         '0x332Af6E7C39276a5A83DA16aE3576Ba3508c5bcE'
     ];
     let reservedAmounts = [];
     for (let i = 0, l = friendsAndFamily.length; i < l; i++) {
@@ -294,7 +319,23 @@ async function main() {
 //     ).send(from).catch(error));
 
 
-    let unavailableTokens = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 46, 50, 51, 54, 55, 60, 63, 65, 66, 68, 75, 79, 89, 96, 104, 105, 110, 112, 114, 116, 121, 124, 128, 141, 162, 166, 172, 174, 175, 176, 179, 180, 185, 187, 188, 191, 195, 199, 202, 213, 214, 215, 216, 218, 219, 221, 234, 235, 237, 242, 250, 255, 256, 260, 269, 274, 275, 279, 280, 281, 283, 285, 287, 288, 299, 303, 310, 311, 312, 319, 330, 331, 339, 344, 347, 348, 355, 363, 364, 365, 368, 369, 387, 394, 406, 415, 421, 432, 435, 446, 453, 457, 472, 492, 501, 505, 506, 511, 516, 521, 523, 525, 527, 530, 532, 539, 545, 548, 553, 555];
+    let unavailableTokens = [
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+        11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+        21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+        31, 32, 33, 34, 35, 36, 37, 38, 46, 50,
+        51, 54, 55, 60, 63, 65, 66, 68, 75, 79,
+        89, 96, 104, 105, 110, 112, 114, 116, 121, 124,
+        128, 141, 162, 166, 172, 174, 175, 176, 179, 180,
+        185, 187, 188, 191, 195, 199, 202, 213, 214, 215,
+        216, 218, 219, 221, 234, 235, 237, 242, 250, 255,
+        256, 260, 269, 274, 275, 279, 280, 281, 283, 285,
+        287, 288, 299, 303, 310, 311, 312, 319, 330, 331,
+        339, 344, 347, 348, 355, 363, 364, 365, 368, 369,
+        387, 394, 406, 415, 421, 432, 435, 446, 453, 457,
+        472, 492, 501, 505, 506, 511, 516, 521, 523, 525,
+        527, 530, 532, 539, 545, 548, 553, 555
+    ];
     let availableTokens = [];
     for (let i = 1, l = 555; i <= l; i++) {
         if (!unavailableTokens.includes (i)) {

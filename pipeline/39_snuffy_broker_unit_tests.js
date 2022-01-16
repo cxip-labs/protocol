@@ -77,8 +77,8 @@ async function main() {
         tokenByIndex3: await contract.methods.tokenByIndex(20).call(from).catch(error),
         tokenByIndex4: await contract.methods.tokenByIndex(125).call(from).catch(error),
         tokenByIndex5: await contract.methods.tokenByIndex(406).call(from).catch(error),
-//         tokensByChunk: await contract.methods.tokensByChunk(0, 10).call(from).catch(error),
-//         tokensByChunk: await contract.methods.tokensByChunk(400, 6).call(from).catch(error),
+        tokensByChunk: await contract.methods.tokensByChunk(0, 400).call(from).catch(error),
+//         tokensByChunk: await contract.methods.tokensByChunk(10, 10).call(from).catch(error),
         totalSupply: await contract.methods.totalSupply().call(from).catch(error)
     });
 
