@@ -66,10 +66,7 @@ async function main() {
 //     .call(from)
 //     .catch(error);
 
-  const identity = new web3.eth.Contract(IDENTITY_ABI, IDENTITY_CONTRACT, {
-    gas: web3.utils.toHex(300000),
-    gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei')),
-  });
+  const identity = new web3.eth.Contract(IDENTITY_ABI, IDENTITY_CONTRACT);
 
   const ERC721_ABI = JSON.parse(
     fs.readFileSync('./build/contracts/SNUFFY500.json')
@@ -83,14 +80,10 @@ async function main() {
 
   	const contract = new buyerWeb3.eth.Contract (
   		ERC721_ABI,
-  		ERC721_CONTRACT,
-  		{
-            gas: web3.utils.toHex(5000000),
-            gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei')),
-  		}
+  		ERC721_CONTRACT
   	);
 
-    let tokenId = 1;
+    let tokenId = 385;
 
   console.log({
     statesConfig: await contract.methods.getStatesConfig().call(from).catch(error),
