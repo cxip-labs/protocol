@@ -41,7 +41,7 @@ contract NFTBroker {
     address private _owner;
 
     /**
-     * @dev Address of wallet that can authorise special claims.
+     * @dev Address of wallet that can authorise proof of stake claims.
      */
     address private _notary;
 
@@ -76,12 +76,12 @@ contract NFTBroker {
     mapping(address => uint256[]) private _reservedTokens;
 
     /**
-     * @dev Specific map of what tokenId is allowed to mint for a specific wallet.
+     * @dev Specific map of amount of free tokens that a specific wallet can mint.
      */
     mapping(address => uint256) private _reservedTokenAmounts;
 
     /**
-     * @dev A map keeping tally of total numer of tokens purchased by a wallet. Used on drop to enforce tier purchase limits.
+     * @dev A map keeping tally of total numer of tokens purchased by a wallet.
      */
     mapping(address => uint256) private _purchasedTokens;
 
@@ -110,41 +110,41 @@ contract NFTBroker {
      */
     mapping(uint256 => uint256) private _allTokensIndex;
 
+    /**
+     * @dev Boolean indicating whether to automatically withdraw payments made for minting.
+     */
     bool private _autoWithdraw;
 
+    /**
+     * @dev Capped limit of how many purchases can be made per wallet.
+     */
     uint256 private _maxPurchases;
 
+    /**
+     * @dev Boolean indicating whether _maxPurchases should be enforced.
+     */
     bool private _reserveLifted;
 
+    /**
+     * @dev Mapping of all approved functions for specific contracts. To be used for delegate calls.
+     */
     mapping(address => mapping(bytes4 => bool)) private _approvedFunctions;
 
     /**
-     * @dev Throws if called by any account other than the owner.
+     * @dev Throws if called by any account other than the owner/admin.
      */
     modifier onlyOwner() {
         require(isOwner(), "CXIP: caller not an owner");
         _;
     }
 
-/*
-
-    What we are trying to do
-
-    Tier 1 is open for 24 hours. Limited to specific list of wallets and a specific set of NFTs.
-    We need a mapping, where we wallet to token id.
-
-    We need a generic array of all available NFTs. The Tier 1 NFTs are removed from that list.
-
-    When wallet steps in to purchase their specific NFT, they are checked against the list, and if approved, they get the NFT minted. Otherwise they are told that the NFT has already been minted.
-
-    When Tier 1 closes, we need to have a function that can transfer the remaining NFTs back into the list of all available NFT.
-
-*/
-
-    // we have to set separately for gas efficiency
-    // uint256[] memory openTokens
-    // _allTokens = openTokens;
-
+    /**
+     * @dev Can be deployed with factory contracts, _admin will always be set to transaction initiator.
+     * @param tokenContract Address of the contract that will mint the tokens.
+     * @param notary Address of the wallet that will be used for validating stake&mint function values.
+     * @param autoWithdraw If enabled, eth will be sent to Identity automatically on payment for minting.
+     * @param newOwner Address of wallet/contract that will have authorization to make onlyOwner calls.
+     */
     constructor (address tokenContract, address notary, bool autoWithdraw, uint256 maxPurchases, address newOwner) {
         _admin = tx.origin;
         _owner = newOwner;
@@ -154,109 +154,38 @@ contract NFTBroker {
         _maxPurchases = maxPurchases;
     }
 
-    function setApprovedFunction (address target, bytes4 functionHash, bool value) public onlyOwner {
-        _approvedFunctions[target][functionHash] = value;
-    }
-
-    function setNotary (address notary) public onlyOwner {
-        _notary = notary;
-    }
-
-    function getNotary () public view returns (address) {
-        return _notary;
-    }
-
-    function setTierTimes (uint256 tier1, uint256 tier2, uint256 tier3) public onlyOwner {
-        _tier1 = tier1;
-        _tier2 = tier2;
-        _tier3 = tier3;
-    }
-
-    function getTierTimes () public view returns (uint256 tier1, uint256 tier2, uint256 tier3) {
-        tier1 = _tier1;
-        tier2 = _tier2;
-        tier3 = _tier3;
-    }
-
-    function setReservedTokens (address[] calldata wallets, uint256[] calldata tokens) public onlyOwner {
-        for (uint256 i = 0; i < wallets.length; i++) {
-            _reservedTokens[wallets[i]].push (tokens[i]);
+    /**
+     * @notice Pay eth and buy a token.
+     * @dev Token must first be added to list of available tokens. A non-minted token will fail this call.
+     * @param tokenId The id of token to buy.
+     */
+    function buyToken (uint256 tokenId) public payable {
+        ISNUFFY500 snuffy = ISNUFFY500(_tokenContract);
+        require(snuffy.exists(tokenId), "CXIP: token not minted");
+        require(_exists(tokenId), "CXIP: token not for sale");
+        require(snuffy.ownerOf(tokenId) == address(this), "CXIP: broker not owner of token");
+        if (_tier1wallets[msg.sender]) {
+            require(msg.value >= _tokenClaimPrice, "CXIP: payment amount is too low");
+        } else {
+            require(msg.value >= _tokenBasePrice, "CXIP: payment amount is too low");
         }
-    }
-
-    function setReservedTokenAmounts (address[] calldata wallets, uint256[] calldata amounts) public onlyOwner {
-        for (uint256 i = 0; i < wallets.length; i++) {
-            _reservedTokenAmounts[wallets[i]] = amounts[i];
+        if (!_reserveLifted) {
+            require(_purchasedTokens[msg.sender] < _maxPurchases, "CXIP: max allowance reached");
         }
-    }
-
-    function setReservedTokensArrays (address[] calldata wallets, uint256[][] calldata tokens) public onlyOwner {
-        for (uint256 i = 0; i < wallets.length; i++) {
-            _reservedTokens[wallets[i]] = tokens[i];
-        }
-    }
-
-    function removeReservedTokens (address[] calldata wallets) public onlyOwner {
-        for (uint256 i = 0; i < wallets.length; i++) {
-            delete _reservedTokens[wallets[i]];
-        }
-    }
-
-    function liftPurchaseLimits () public onlyOwner {
-        _reserveLifted = true;
-    }
-
-    function arePurchasesLimited () public view returns (bool) {
-        return !_reserveLifted;
-    }
-
-    function clearReservedTokens (address[] calldata wallets) public onlyOwner {
-        for (uint256 i = 0; i < wallets.length; i++) {
-            _reservedTokens[wallets[i]] = new uint256[](0);
-        }
-    }
-
-    function setOpenTokens (uint256[] calldata tokens) public onlyOwner {
-        for (uint256 i = 0; i < tokens.length; i++) {
-            _addTokenToEnumeration(tokens[i]);
-        }
-    }
-
-    function removeOpenTokens (uint256[] calldata tokens) public onlyOwner {
-        for (uint256 i = 0; i < tokens.length; i++) {
-            _removeTokenFromAllTokensEnumeration(tokens[i]);
-        }
-    }
-
-    function withdrawEth () public onlyOwner {
-        payable(msg.sender).transfer(address(this).balance);
-    }
-
-    function getPrices () public view returns (uint256 basePrice, uint256 claimPrice, uint256 stakePrice) {
-        basePrice = _tokenBasePrice;
-        claimPrice = _tokenClaimPrice;
-        stakePrice = _tokenStakePrice;
-    }
-
-    function setPrices (uint256 basePrice, uint256 claimPrice, uint256 stakePrice) public onlyOwner {
-        _tokenBasePrice = basePrice;
-        _tokenClaimPrice = claimPrice;
-        _tokenStakePrice = stakePrice;
-    }
-
-    function isVIP (address wallet) public view returns (bool) {
-        return _tier1wallets[wallet];
-    }
-
-    function setVIPs (address[] calldata wallets) public onlyOwner {
-        for (uint256 i = 0; i < wallets.length; i++) {
-            _tier1wallets[wallets[i]] = true;
+        _purchasedTokens[msg.sender] = _purchasedTokens[msg.sender] + 1;
+        snuffy.safeTransferFrom(address(this), msg.sender, tokenId);
+        _removeTokenFromAllTokensEnumeration(tokenId);
+        if (_autoWithdraw) {
+            _moveEth();
         }
     }
 
     /**
-     * @dev This would get called for special reserved tokens. Message sender must be the approved wallet.
-     * @dev Important this if claimant is eligible for multiple tokens, start with last one from array.
+     * @notice Claim and mint free token.
+     * @dev Wallets needs to be added to whitelist in order for this function to work.
+     * @param tokenId The id of token to mint.
+     * @param tokenData The complete data for the minted token.
+     * @param verification A signature for the tokenId and tokenData, made by a wallet authorized by Identity
      */
     function claimAndMint (uint256 tokenId, TokenData[] calldata tokenData, Verification calldata verification) public {
         require(block.timestamp >= _tier1, "CXIP: too early to claim");
@@ -284,36 +213,24 @@ contract NFTBroker {
     }
 
     /**
-     * @dev This would get called for when a proof of stake (token holder) is needed for a purchase.
+     * @notice Call a pre-approved external function.
+     * @dev This allows to extend the functionality of the contract, without the need of a complete re-deployment.
+     * @param target Address of smart contract to call.
+     * @param functionHash Function hash of the external contract function to call.
+     * @param payload Entire payload to include in the external call. Keep in mind to not include function hash.
      */
-    function proofOfStakeAndMint (Verification calldata proof, uint256 tokens, uint256 tokenId, TokenData[] calldata tokenData, Verification calldata verification) public payable {
-        require(block.timestamp >= _tier2, "CXIP: too early to stake");
-        if (_purchasedTokens[msg.sender] > 0) {
-            require(msg.value >= _tokenStakePrice, "CXIP: payment amount is too low");
-        }
-        require(!ISNUFFY500(_tokenContract).exists(tokenId), "CXIP: token snatched");
-        require(_exists(tokenId), "CXIP: token not for sale");
-        bytes memory encoded = abi.encodePacked(msg.sender, tokens);
-        require(Signature.Valid(
-            _notary,
-            proof.r,
-            proof.s,
-            proof.v,
-            encoded
-        ), "CXIP: invalid signature");
-        if (!_reserveLifted) {
-            require(_purchasedTokens[msg.sender] < _maxPurchases, "CXIP: max allowance reached");
-        }
-        _purchasedTokens[msg.sender] = _purchasedTokens[msg.sender] + 1;
-        ISNUFFY500(_tokenContract).mint(0, tokenId, tokenData, _admin, verification, msg.sender);
-        _removeTokenFromAllTokensEnumeration(tokenId);
-        if (_autoWithdraw) {
-            _moveEth();
-        }
+    function delegateApproved (address target, bytes4 functionHash, bytes calldata payload) public payable {
+        require(_approvedFunctions[target][functionHash], "CXIP: not approved delegate call");
+        (bool success, bytes memory data) = target.delegatecall(abi.encodePacked(functionHash, payload));
+        require(success, string(data));
     }
 
     /**
-     * @dev This would get called for all regular mint purchases.
+     * @notice Pay eth and mint a token.
+     * @dev Token must first be added to list of available tokens. An already minted token will fail on mint.
+     * @param tokenId The id of token to mint.
+     * @param tokenData The complete data for the minted token.
+     * @param verification A signature for the tokenId and tokenData, made by a wallet authorized by Identity
      */
     function payAndMint (uint256 tokenId, TokenData[] calldata tokenData, Verification calldata verification) public payable {
         require(block.timestamp >= _tier3 || _tier1wallets[msg.sender], "CXIP: too early to buy");
@@ -338,8 +255,58 @@ contract NFTBroker {
     }
 
     /**
+     * @notice Show proof of stake, and mint a token.
+     * @dev First an off-chain validation of staking must be made, and signed by the notary wallet.
+     * @param proof Signature made by the notary wallet, proving validity of stake.
+     * @param tokens The total number of tokens staked by wallet.
+     * @param tokenId The id of token to mint.
+     * @param tokenData The complete data for the minted token.
+     * @param verification A signature for the tokenId and tokenData, made by a wallet authorized by Identity
+     */
+    function proofOfStakeAndMint (Verification calldata proof, uint256 tokens, uint256 tokenId, TokenData[] calldata tokenData, Verification calldata verification) public payable {
+        require(block.timestamp >= _tier2, "CXIP: too early to stake");
+        require(msg.value >= _tokenStakePrice, "CXIP: payment amount is too low");
+        require(!ISNUFFY500(_tokenContract).exists(tokenId), "CXIP: token snatched");
+        require(_exists(tokenId), "CXIP: token not for sale");
+        bytes memory encoded = abi.encodePacked(msg.sender, tokens);
+        require(Signature.Valid(
+            _notary,
+            proof.r,
+            proof.s,
+            proof.v,
+            encoded
+        ), "CXIP: invalid signature");
+        if (!_reserveLifted) {
+            require(_purchasedTokens[msg.sender] < _maxPurchases, "CXIP: max allowance reached");
+        }
+        _purchasedTokens[msg.sender] = _purchasedTokens[msg.sender] + 1;
+        ISNUFFY500(_tokenContract).mint(0, tokenId, tokenData, _admin, verification, msg.sender);
+        _removeTokenFromAllTokensEnumeration(tokenId);
+        if (_autoWithdraw) {
+            _moveEth();
+        }
+    }
+
+    /**
+     * @notice Remove a token id from being reserved by a wallet.
+     * @dev If you want to add a token id to for sale list, first remove it from a wallet if it has been reserved.
+     * @param wallets Array of wallets for which to remove reserved tokens for.
+     */
+    function clearReservedTokens (address[] calldata wallets) public onlyOwner {
+        for (uint256 i = 0; i < wallets.length; i++) {
+            _reservedTokens[wallets[i]] = new uint256[](0);
+        }
+    }
+
+    /**
      * @notice Can be used to bring logic from other smart contracts in (temporarily).
      * @dev Useful for fixing critical bugs, recovering lost tokens, and reversing accidental payments to contract.
+     */
+    /**
+     * @notice Use an external contract's logic for internal use.
+     * @dev This will make a delegate call and use an external contract's logic, while using internal storage.
+     * @param target Address of smart contract to call.
+     * @param payload Bytes of the payload to send. Including the 4 byte function hash.
      */
     function delegate (address target, bytes calldata payload) public onlyOwner {
         (bool success, bytes memory data) = target.delegatecall(payload);
@@ -347,18 +314,185 @@ contract NFTBroker {
     }
 
     /**
-     * @notice Can be used to bring logic from other smart contracts in.
-     * @dev Requires that the function hash and contract address is pre-approved.
+     * @notice Lift the imposed purchase limits.
+     * @dev Use this function after purchasing is opened to all with no limits.
      */
-    function delegateApproved (address target, bytes4 functionHash, bytes calldata payload) public payable {
-        require(_approvedFunctions[target][functionHash], "CXIP: not approved delegate call");
-        (bool success, bytes memory data) = target.delegatecall(abi.encodePacked(functionHash, payload));
-        require(success, string(data));
+    function liftPurchaseLimits () public onlyOwner {
+        _reserveLifted = true;
     }
 
     /**
-     * @notice Can be used to bring logic from other smart contracts in.
-     * @dev Requires that the function hash and contract address is pre-approved.
+     * @notice Remove a token from being for sale.
+     * @dev If you want to reserve a token, or it is no longer available, make sure to use this function and remove it.
+     * @param tokens Array of token ids to remove from being for sale.
+     */
+    function removeOpenTokens (uint256[] calldata tokens) public onlyOwner {
+        for (uint256 i = 0; i < tokens.length; i++) {
+            _removeTokenFromAllTokensEnumeration(tokens[i]);
+        }
+    }
+
+    /**
+     * @notice Remove a token id from being reserved by a wallet.
+     * @dev If you want to add a token id to for sale list, first remove it from a wallet if it has been reserved.
+     * @param wallets Array of wallets for which to remove reserved tokens for.
+     */
+    function removeReservedTokens (address[] calldata wallets) public onlyOwner {
+        for (uint256 i = 0; i < wallets.length; i++) {
+            delete _reservedTokens[wallets[i]];
+        }
+    }
+
+    /**
+     * @notice Configure a delegate function call for use.
+     * @dev This will allow users to call delegate calls on external contracts to the approved function.
+     * @param target Address of smart contract that will be called.
+     * @param functionHash Hash of function that will be called.
+     * @param value Boolean indicating whether to approve or deny such a call.
+     */
+    function setApprovedFunction (address target, bytes4 functionHash, bool value) public onlyOwner {
+        _approvedFunctions[target][functionHash] = value;
+    }
+
+    /**
+     * @notice Set notary wallet address.
+     * @dev The notary is used as a way to sign and validate proof of stake function calls.
+     * @param notary Address of notary wallet to use.
+     */
+    function setNotary (address notary) public onlyOwner {
+        _notary = notary;
+    }
+
+    /**
+     * @notice Add token ids that are available for purchase.
+     * @dev These tokens can be either those that still need to be minted, or already minted tokens.
+     * @param tokens Array of token ids to add as available for sale.
+     */
+    function setOpenTokens (uint256[] calldata tokens) public onlyOwner {
+        for (uint256 i = 0; i < tokens.length; i++) {
+            _addTokenToEnumeration(tokens[i]);
+        }
+    }
+
+    /**
+     * @notice Set prices for each tier.
+     * @dev It is recommended to make tier 1 price lowest, and tier 3 price highest.
+     * @param claimPrice Amount in wei for Tier 3 purchase price.
+     * @param claimPrice Amount in wei for Tier 1 purchase price.
+     * @param stakePrice Amount in wei for Tier 2 purchase price.
+     */
+    function setPrices (uint256 basePrice, uint256 claimPrice, uint256 stakePrice) public onlyOwner {
+        _tokenBasePrice = basePrice;
+        _tokenClaimPrice = claimPrice;
+        _tokenStakePrice = stakePrice;
+    }
+
+    /**
+     * @notice Set maximum amount of purchases allowed to be made by a single wallet.
+     * @dev This is only enforced if arePurchasesLimited is true. Claims do not count toward purchases.
+     * @param limit Amount of token purchases that can be made.
+     */
+    function setPurchaseLimit (uint256 limit) public onlyOwner {
+        _maxPurchases = limit;
+    }
+
+    /**
+     * @notice Set the amounts of tokens that have already been purchased by wallets.
+     * @dev Use this to add information for sales that occurred outside of this contract.
+     * @param wallets Array of wallets to set specific amounts for.
+     * @param amounts Array of specific amounts to set for the wallets.
+     */
+    function setPurchasedTokensAmount (address[] calldata wallets, uint256[] calldata amounts) public onlyOwner {
+        for (uint256 i = 0; i < wallets.length; i++) {
+            _purchasedTokens[wallets[i]] = amounts[i];
+        }
+    }
+
+    /**
+     * @notice Set a specific amount of tokens that can be claimed by a wallet.
+     * @dev Use this if a wallet is allowed to claim, but no specific token ids have been assigned.
+     * @param wallets Array of wallets to add specific amounts for.
+     * @param amounts Array of specific amounts to set for the wallets.
+     */
+    function setReservedTokenAmounts (address[] calldata wallets, uint256[] calldata amounts) public onlyOwner {
+        for (uint256 i = 0; i < wallets.length; i++) {
+            _reservedTokenAmounts[wallets[i]] = amounts[i];
+        }
+    }
+
+    /**
+     * @notice Add a token that a wallet is pre-authorized to claim and mint.
+     * @dev This function adds to the list of claimable tokens.
+     * @param wallets Array of wallets for which to add a token that can be claimed.
+     * @param tokens Array of token ids that a wallet can claim.
+     */
+    function setReservedTokens (address[] calldata wallets, uint256[] calldata tokens) public onlyOwner {
+        for (uint256 i = 0; i < wallets.length; i++) {
+            _reservedTokens[wallets[i]].push (tokens[i]);
+        }
+    }
+
+    /**
+     * @notice Set the list of tokens that a wallet is pre-authorized to claim and mint.
+     * @dev Resets the list of tokens for wallet to new submitted list.
+     * @param wallets Array of wallets for which to set the list of tokens that can be claimed.
+     * @param tokens Array of token ids that a wallet can claim.
+     */
+    function setReservedTokensArrays (address[] calldata wallets, uint256[][] calldata tokens) public onlyOwner {
+        for (uint256 i = 0; i < wallets.length; i++) {
+            _reservedTokens[wallets[i]] = tokens[i];
+        }
+    }
+
+    /**
+     * @notice Set the time of each tier's activation.
+     * @dev Can be changed at any time to push forward/back the activation times of each tier.
+     * @param tier1 UNIX timestamp of when Tier 1 activates.
+     * @param tier2 UNIX timestamp of when Tier 2 activates.
+     * @param tier3 UNIX timestamp of when Tier 3 activates.
+     */
+    function setTierTimes (uint256 tier1, uint256 tier2, uint256 tier3) public onlyOwner {
+        _tier1 = tier1;
+        _tier2 = tier2;
+        _tier3 = tier3;
+    }
+
+    /**
+     * @notice Set a list of wallets as VIP.
+     * @dev This allows to have wallets skip claim process and get discounted pricing directly.
+     * @param wallets Array of wallets to set as VIPs.
+     */
+    function setVIPs (address[] calldata wallets) public onlyOwner {
+        for (uint256 i = 0; i < wallets.length; i++) {
+            _tier1wallets[wallets[i]] = true;
+        }
+    }
+
+    /**
+     * @notice Transfers ownership of the smart contract.
+     * @dev Can't be transferred to a zero address.
+     * @param newOwner Address of new owner.
+     */
+    function transferOwnership(address newOwner) public onlyOwner {
+        require(!Address.isZero(newOwner), "CXIP: zero address");
+        _owner = newOwner;
+    }
+
+    /**
+     * @notice Withdraws all smart contract ETH.
+     * @dev Can only be called by _admin or _owner. All contract ETH is send to sender.
+     */
+    function withdrawEth () public onlyOwner {
+        payable(msg.sender).transfer(address(this).balance);
+    }
+
+    /**
+     * @notice Call a pre-approved external function.
+     * @dev This allows to extend the functionality of the contract, without the need of a complete re-deployment.
+     * @param target Address of smart contract to call.
+     * @param functionHash Function hash of the external contract function to call.
+     * @param payload Entire payload to include in the external call. Keep in mind to not include function hash.
+     * @return bytes Returns data of response as raw bytes.
      */
     function delegateApprovedCall (address target, bytes4 functionHash, bytes calldata payload) public returns (bytes memory) {
         require(_approvedFunctions[target][functionHash], "CXIP: not approved delegate call");
@@ -391,6 +525,154 @@ contract NFTBroker {
     }
 
     /**
+     * @notice Check if purchasing is limited.
+     * @dev Call getPurchaseLimit if this returns true, to find out purchase limits.
+     * @return bool Returns true if purchases are limited.
+     */
+    function arePurchasesLimited () public view returns (bool) {
+        return !_reserveLifted;
+    }
+
+    /**
+     * @notice Get the notary wallet address.
+     * @dev This wallet is used to sign and validate proof of stake wallets.
+     * @return address Returns address of wallet that signs the proof of stake messages.
+     */
+    function getNotary () public view returns (address) {
+        return _notary;
+    }
+
+    /**
+     * @notice Get the purchase prices for each tier.
+     * @dev VIP wallets that are claiming tokens are not charged a fee.
+     * @return basePrice Price of Tier 3 purchases.
+     * @return claimPrice Price of Tier 1 purchases.
+     * @return stakePrice Price of Tier 2 purchases.
+     */
+    function getPrices () public view returns (uint256 basePrice, uint256 claimPrice, uint256 stakePrice) {
+        basePrice = _tokenBasePrice;
+        claimPrice = _tokenClaimPrice;
+        stakePrice = _tokenStakePrice;
+    }
+
+    /**
+     * @notice Get maximum number of tokens that can be purchased.
+     * @dev Used in conjunction with arePurchasesLimited function.
+     * @return uint256 Returns the maximum amount of tokens that can be purchased at the moment.
+     */
+    function getPurchaseLimit() public view returns (uint256) {
+        return _maxPurchases;
+    }
+
+    /**
+     * @notice Check how many tokens have been purchased by a wallet.
+     * @dev Used in conjunction with arePurchasesLimited function.
+     * @param wallet Address of wallet in question.
+     * @return uint256 Returns number of tokens that a wallet has already claimed/minted.
+     */
+    function getPurchasedTokensAmount (address wallet) public view returns (uint256) {
+        return _purchasedTokens[wallet];
+    }
+
+    /**
+     * @notice Check how many free token claims are available for a wallet.
+     * @dev These are not token id locked claims.
+     * @param wallet Address of wallet in question.
+     * @return uint256 Returns the number of free claims available.
+     */
+    function getReservedTokenAmounts(address wallet) public view returns (uint256) {
+        return _reservedTokenAmounts[wallet];
+    }
+
+    /**
+     * @notice Check if there are any tokens specifically reserved for a wallet.
+     * @dev Helpful function for front-end UI development.
+     * @param wallet Address of the wallet to check.
+     * @return uint256[] Returns an array of token ids that are reserved for that wallet to claim.
+     */
+    function getReservedTokens(address wallet) public view returns (uint256[] memory) {
+        return _reservedTokens[wallet];
+    }
+
+    /**
+     * @notice Get the timestamps for when each tier is activated.
+     * @dev Check if a tier is active, meaning that relevant functions will work.
+     * @return tier1 UNIX timestamp of when Tier 1 activates.
+     * @return tier2 UNIX timestamp of when Tier 2 activates.
+     * @return tier3 UNIX timestamp of when Tier 3 activates.
+     */
+    function getTierTimes () public view returns (uint256 tier1, uint256 tier2, uint256 tier3) {
+        tier1 = _tier1;
+        tier2 = _tier2;
+        tier3 = _tier3;
+    }
+
+    /**
+     * @notice Check if the sender is the owner.
+     * @dev The owner could also be the admin.
+     * @return bool Returns true if owner.
+     */
+    function isOwner() public view returns (bool) {
+        return (msg.sender == _owner || msg.sender == _admin);
+    }
+
+    /**
+     * @notice Check if a wallet is VIP.
+     * @dev Any wallet that was whitelisted for specific tokenId or amount, is marked as VIP after first claim.
+     * @param wallet Address of wallet in question.
+     * @return bool Returns true if wallet is VIP.
+     */
+    function isVIP (address wallet) public view returns (bool) {
+        return _tier1wallets[wallet];
+    }
+
+    /**
+     * @notice Gets the owner's address.
+     * @dev _owner is first set in init.
+     * @return address Returns the address of owner.
+     */
+    function owner() public view returns (address) {
+        return _owner;
+    }
+
+    /**
+     * @notice Get token by index.
+     * @dev Used in conjunction with totalSupply function to iterate over all tokens in collection.
+     * @param index Index of token in array.
+     * @return uint256 Returns the token id of token located at that index.
+     */
+    function tokenByIndex(uint256 index) public view returns (uint256) {
+        require(index < totalSupply(), "CXIP: index out of bounds");
+        return _allTokens[index];
+    }
+
+    /**
+     * @notice Get x amount of token ids, starting from index x.
+     * @dev Can be used as pagination, to not have to get each token id through separate call.
+     * @param start Index from which to start from.
+     * @param length Total number of items to read in array.
+     * @return tokens Returns an array of token ids.
+     */
+    function tokensByChunk(uint256 start, uint256 length) public view returns (uint256[] memory tokens) {
+        if (start + length > totalSupply()) {
+            length = totalSupply() - start;
+        }
+        tokens = new uint256[](length);
+        for (uint256 i = 0; i < length; i++) {
+            tokens[i] = _allTokens[start + i];
+        }
+    }
+
+    /**
+     * @notice Total amount of tokens available for sale.
+     * @dev Does not include/count reserved tokens.
+     * @return uint256 Returns the total number of available tokens.
+     */
+    function totalSupply() public view returns (uint256) {
+        return _allTokens.length;
+    }
+
+    /**
      * @notice Shows the interfaces the contracts support
      * @dev Must add new 4 byte interface Ids here to acknowledge support
      * @param interfaceId ERC165 style 4 byte interfaceId.
@@ -408,95 +690,6 @@ contract NFTBroker {
     }
 
     /**
-     * @notice Transfers ownership of the collection.
-     * @dev Can't be the zero address.
-     * @param newOwner Address of new owner.
-     */
-    function transferOwnership(address newOwner) public onlyOwner {
-        require(!Address.isZero(newOwner), "CXIP: zero address");
-        _owner = newOwner;
-    }
-
-    function getPurchasedTokensAmount (address wallet) public view returns (uint256) {
-        return _purchasedTokens[wallet];
-    }
-
-    function setPurchasedTokensAmount (address[] calldata wallets, uint256[] calldata amounts) public onlyOwner {
-        for (uint256 i = 0; i < wallets.length; i++) {
-            _purchasedTokens[wallets[i]] = amounts[i];
-        }
-    }
-
-    function setPurchaseLimit (uint256 limit) public onlyOwner {
-        _maxPurchases = limit;
-    }
-
-    function getPurchaseLimit() public view returns (uint256) {
-        return _maxPurchases;
-    }
-
-    /**
-     * @notice Check if there are any tokens specifically reserved for someone.
-     * @dev Wallet address can be any wallet.
-     * @param wallet Address of the wallet to check.
-     */
-    function getReservedTokens(address wallet) public view returns (uint256[] memory) {
-        return _reservedTokens[wallet];
-    }
-
-    function getReservedTokenAmounts(address wallet) public view returns (uint256) {
-        return _reservedTokenAmounts[wallet];
-    }
-
-    /**
-     * @notice Check if the sender is the owner.
-     * @dev The owner could also be the admin or identity contract of the owner.
-     * @return bool True if owner.
-     */
-    function isOwner() public view returns (bool) {
-        return (msg.sender == _owner || msg.sender == _admin);
-    }
-
-    /**
-     * @notice Gets the owner's address.
-     * @dev _owner is first set in init.
-     * @return address Of ower.
-     */
-    function owner() public view returns (address) {
-        return _owner;
-    }
-
-    /**
-     * @notice Get token by index.
-     * @dev Used in conjunction with totalSupply function to iterate over all tokens in collection.
-     * @param index Index of token in array.
-     * @return uint256 Returns the token id of token located at that index.
-     */
-    function tokenByIndex(uint256 index) public view returns (uint256) {
-        require(index < totalSupply(), "CXIP: index out of bounds");
-        return _allTokens[index];
-    }
-
-    function tokensByChunk(uint256 start, uint256 length) public view returns (uint256[] memory tokens) {
-        if (start + length > totalSupply()) {
-            length = totalSupply() - start;
-        }
-        tokens = new uint256[](length - start);
-        for (uint256 i = 0; i < length; i++) {
-            tokens[i] = _allTokens[start + i];
-        }
-    }
-
-    /**
-     * @notice Total amount of tokens available for sale.
-     * @dev Does not specifically reserved tokens.
-     * @return uint256 Returns the total number of active (not burned) tokens.
-     */
-    function totalSupply() public view returns (uint256) {
-        return _allTokens.length;
-    }
-
-    /**
      * @dev Add a newly added token into managed list of tokens.
      * @param tokenId Id of token to add.
      */
@@ -506,15 +699,8 @@ contract NFTBroker {
     }
 
     /**
-     * @notice Checks if the token is in our possession.
-     * @dev To avoid the possible as unset value issue, we check that returned value actually matches the tokenId.
-     * @param tokenId The affected token.
-     * @return bool True if it exists.
+     * @dev Transfer all smart contract ETH to token contract's Identity contract.
      */
-    function _exists(uint256 tokenId) internal view returns (bool) {
-        return _allTokens[_allTokensIndex[tokenId]] == tokenId;
-    }
-
     function _moveEth() internal {
         uint256 amount = address(this).balance;
         payable(ISNUFFY500(_tokenContract).getIdentity()).transfer(amount);
@@ -533,6 +719,16 @@ contract NFTBroker {
         delete _allTokensIndex[tokenId];
         delete _allTokens[lastTokenIndex];
         _allTokens.pop();
+    }
+
+    /**
+     * @notice Checks if the token is in our possession.
+     * @dev We check that returned value actually matches the tokenId, to avoid zero index issue.
+     * @param tokenId The token in question.
+     * @return bool Returns true if token exists.
+     */
+    function _exists(uint256 tokenId) internal view returns (bool) {
+        return _allTokens[_allTokensIndex[tokenId]] == tokenId;
     }
 
 }

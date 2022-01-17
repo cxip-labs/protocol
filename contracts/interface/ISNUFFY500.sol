@@ -24,14 +24,18 @@ import "../struct/Verification.sol";
 
 interface ISNUFFY500 {
 
-    function exists(uint256 tokenId) external view returns (bool);
-
     function mint(uint256 state, uint256 tokenId, TokenData[] memory tokenData, address signer, Verification memory verification, address recipient) external;
+
+    function safeTransferFrom(address from, address to, uint256 tokenId) external;
+
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) external;
 
     function balanceOf(address wallet) external view returns (uint256);
 
-    function ownerOf(uint256 tokenId) external view returns (address);
+    function exists(uint256 tokenId) external view returns (bool);
 
     function getIdentity() external view returns (address);
+
+    function ownerOf(uint256 tokenId) external view returns (address);
 
 }

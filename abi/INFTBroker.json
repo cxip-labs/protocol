@@ -2,37 +2,6 @@
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "tokenContract",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "notary",
-                "type": "address"
-            },
-            {
-                "internalType": "bool",
-                "name": "autoWithdraw",
-                "type": "bool"
-            },
-            {
-                "internalType": "uint256",
-                "name": "maxPurchases",
-                "type": "uint256"
-            },
-            {
-                "internalType": "address",
-                "name": "newOwner",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-    },
-    {
-        "inputs": [
-            {
                 "internalType": "uint256",
                 "name": "tokenId",
                 "type": "uint256"
@@ -690,7 +659,7 @@
             },
             {
                 "internalType": "address",
-                "name": "",
+                "name": "_from",
                 "type": "address"
             },
             {
@@ -700,7 +669,7 @@
             },
             {
                 "internalType": "bytes",
-                "name": "",
+                "name": "_data",
                 "type": "bytes"
             }
         ],
