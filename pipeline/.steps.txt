@@ -7,7 +7,7 @@ npm run-script ganache-cli
 
 echo 'development' > network
 echo 'cxip' > network
-echo 'live' > network
+echo 'mainnet' > network
 
 
 fund the wallet 0xa198FA5db682a2A828A90b42D3Cd938DAcc01ADE

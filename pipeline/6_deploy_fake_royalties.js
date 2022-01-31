@@ -5,7 +5,7 @@ const HDWalletProvider = require('truffle-hdwallet-provider');
 const Web3 = require('web3');
 const { NETWORK, GAS, PRIVATE_KEY } = require('../config/env');
 
-if (NETWORK == 'live') {
+if (NETWORK == 'mainnet') {
   // we drop proxy address reference
   fs.writeFileSync(
     './data/' + NETWORK + '.rarible.address',
