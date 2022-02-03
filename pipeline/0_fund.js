@@ -24,34 +24,30 @@ web3.eth.sendTransaction(
   },
   function (error, result) {
     if (error) {
-      console.log(
-        `Could not fund 11 ETH to ${signer.addresses[0]}\n${error}`
-      );
+      console.log(`Could not fund 11 ETH to ${signer.addresses[0]}\n${error}`);
     } else {
       console.log('Funded 11 ETH to ' + signer.addresses[0]);
     }
 
-web3.eth.sendTransaction(
-  {
-    from: provider.addresses[0],
-    to: wallet.addresses[0],
-    value: web3.utils.toWei('11', 'ether'),
-  },
-  function (error, result) {
-    if (error) {
-      console.log(
-        `Could not fund 11 ETH to ${wallet.addresses[0]}\n${error}`
-      );
-    } else {
-      console.log('Funded 11 ETH to ' + wallet.addresses[0]);
-    }
-    process.exit();
+    web3.eth.sendTransaction(
+      {
+        from: provider.addresses[0],
+        to: wallet.addresses[0],
+        value: web3.utils.toWei('11', 'ether'),
+      },
+      function (error, result) {
+        if (error) {
+          console.log(
+            `Could not fund 11 ETH to ${wallet.addresses[0]}\n${error}`
+          );
+        } else {
+          console.log('Funded 11 ETH to ' + wallet.addresses[0]);
+        }
+        process.exit();
+      }
+    );
   }
 );
-
-  }
-);
-
 
 if (!fs.existsSync('./data')) {
   fs.mkdirSync('./data');

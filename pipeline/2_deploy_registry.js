@@ -43,7 +43,8 @@ async function main() {
   if (result.status) {
     console.log('Transaction hash :', result.transactionHash);
     console.log(
-      'Deployed Registry Contract : ' + result.events.Deployed.returnValues.contractAddress
+      'Deployed Registry Contract : ' +
+        result.events.Deployed.returnValues.contractAddress
     );
     fs.writeFileSync(
       './data/' + NETWORK + '.registry.address',

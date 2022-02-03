@@ -72,25 +72,21 @@ async function main() {
 
   console.log('ERC721_CONTRACT', ERC721_CONTRACT);
 
-  	const contract = new web3.eth.Contract (
-  		ERC721_ABI,
-  		ERC721_CONTRACT,
-  		{
-  			gasLimit: '6721975',
-  			gasPrice: '20000000000'
-  		}
-  	);
+  const contract = new web3.eth.Contract(ERC721_ABI, ERC721_CONTRACT, {
+    gasLimit: '6721975',
+    gasPrice: '20000000000',
+  });
 
-  	console.log ({
-  		'owner': await contract.methods.isOwner ().call (from).catch (error),
-  // 		'collectionId': await contract.methods.collectionId ().call (from).catch (error),
-  // 		'totalSupply': await contract.methods.totalSupply ().call (from).catch (error),
-  		'name': await contract.methods.name ().call (from).catch (error),
-  		'symbol': await contract.methods.symbol ().call (from).catch (error),
-  // 		'description': await contract.methods.description ().call (from).catch (error),
-  		'baseURI': await contract.methods.baseURI ().call (from).catch (error),
-  		'contractURI': await contract.methods.contractURI ().call (from).catch (error)
-  	});
+  console.log({
+    owner: await contract.methods.isOwner().call(from).catch(error),
+    // 		'collectionId': await contract.methods.collectionId ().call (from).catch (error),
+    // 		'totalSupply': await contract.methods.totalSupply ().call (from).catch (error),
+    name: await contract.methods.name().call(from).catch(error),
+    symbol: await contract.methods.symbol().call(from).catch(error),
+    // 		'description': await contract.methods.description ().call (from).catch (error),
+    baseURI: await contract.methods.baseURI().call(from).catch(error),
+    contractURI: await contract.methods.contractURI().call(from).catch(error),
+  });
 
   process.exit();
 }

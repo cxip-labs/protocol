@@ -59,10 +59,10 @@ async function main() {
       'Deployed Royalties Proxy Contract : ' +
         result.events.Deployed.returnValues.contractAddress
     );
-  fs.writeFileSync(
-    './data/' + NETWORK + '.royalties.proxy.address',
-    result.events.Deployed.returnValues.contractAddress
-  );
+    fs.writeFileSync(
+      './data/' + NETWORK + '.royalties.proxy.address',
+      result.events.Deployed.returnValues.contractAddress
+    );
   } else {
     console.log('\n');
     console.log(result);

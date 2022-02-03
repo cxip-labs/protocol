@@ -57,8 +57,8 @@ async function main() {
         result.events.Deployed.returnValues.contractAddress
     );
     fs.writeFileSync(
-        './data/' + NETWORK + '.provenance.proxy.address',
-        result.events.Deployed.returnValues.contractAddress
+      './data/' + NETWORK + '.provenance.proxy.address',
+      result.events.Deployed.returnValues.contractAddress
     );
   } else {
     console.log('\n');

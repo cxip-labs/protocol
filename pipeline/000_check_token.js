@@ -3,16 +3,13 @@
 const fs = require('fs');
 const HDWalletProvider = require('truffle-hdwallet-provider');
 const Web3 = require('web3');
-const dotenv = require ('dotenv');
+const dotenv = require('dotenv');
 dotenv.config();
 
 const NETWORK = process.env.NETWORK || 'local';
 const PRIVATE_KEY = process.env.PRIVATE_KEY || '';
 const rpc = JSON.parse(fs.readFileSync('./rpc.json', 'utf8'));
-const provider = new HDWalletProvider(
-  PRIVATE_KEY,
-  rpc[NETWORK]
-);
+const provider = new HDWalletProvider(PRIVATE_KEY, rpc[NETWORK]);
 const web3 = new Web3(provider);
 
 const processEvents = function (result) {
