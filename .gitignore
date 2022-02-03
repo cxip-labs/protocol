@@ -4,7 +4,7 @@ data
 data_previous
 db
 node_modules
-pipeline/wallet
+deploy/wallet
 sign
 cxip_mnemonic
 cxip_priv_key

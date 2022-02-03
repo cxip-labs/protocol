@@ -17,7 +17,7 @@ if (NETWORK == 'mainnet') {
   );
 } else {
   // we actually deploy a dummy contract
-  const rpc = JSON.parse(fs.readFileSync('./rpc.json', 'utf8'));
+  const rpc = JSON.parse(fs.readFileSync('./config/rpc.json', 'utf8'));
 
   const FACTORY_CONTRACT = JSON.parse(
     fs.readFileSync('./build/contracts/RaribleRoyalties.json')

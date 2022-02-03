@@ -13,7 +13,7 @@ const FACTORY_ADDRESS = fs.readFileSync(
   'utf8'
 );
 
-const rpc = JSON.parse(fs.readFileSync('./rpc.json', 'utf8'));
+const rpc = JSON.parse(fs.readFileSync('./config/rpc.json', 'utf8'));
 const provider = new HDWalletProvider(PRIVATE_KEY, rpc[NETWORK]);
 const web3 = new Web3(provider);
 
@@ -22,13 +22,21 @@ const contract = new web3.eth.Contract(FACTORY_CONTRACT, FACTORY_ADDRESS, {
   gasPrice: web3.utils.toHex(web3.utils.toWei(GAS, 'gwei')),
 });
 
+const error = function (err) {
+  console.log(err);
+  process.exit();
+};
+const from = {
+  from: provider.addresses[0],
+};
+
 const bytecode = JSON.parse(
-  fs.readFileSync('./build/contracts/CxipAssetProxy.json')
+  fs.readFileSync('./build/contracts/PA1DProxy.json')
 ).bytecode;
 
 async function main() {
   const salt =
-    '0x0000000000000000000000000000000000000000000000000000000000000001';
+    '0x0000000000000000000000000000000000000000000000000000000000000000';
   const result = await contract.methods
 
     .deploy(
@@ -42,22 +50,17 @@ async function main() {
       salt
     )
 
-    .send({
-      from: provider.addresses[0],
-    })
-    .catch(function (err) {
-      console.log(err);
-      process.exit();
-    });
+    .send(from)
+    .catch(error);
 
   if (result.status) {
     console.log('Transaction hash :', result.transactionHash);
     console.log(
-      'Deployed Asset Proxy Contract : ' +
+      'Deployed Royalties Proxy Contract : ' +
         result.events.Deployed.returnValues.contractAddress
     );
     fs.writeFileSync(
-      './data/' + NETWORK + '.asset.proxy.address',
+      './data/' + NETWORK + '.royalties.proxy.address',
       result.events.Deployed.returnValues.contractAddress
     );
   } else {

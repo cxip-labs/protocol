@@ -11,87 +11,87 @@ echo 'mainnet' > network
 
 
 fund the wallet 0xa198FA5db682a2A828A90b42D3Cd938DAcc01ADE
-	node pipeline/0_fund.js
+	node deploy/0_fund.js
 
 
 deploy factory with 0xa198FA5db682a2A828A90b42D3Cd938DAcc01ADE wallet
-	node pipeline/1_deploy_factory.js
+	node deploy/1_deploy_factory.js
 
 factory address will be 0xEcc11FC50Bf6D2B428714eE2450FfB384BC6306D
 
 
 deploy registry using 0x0000000000000000000000000000000000000000000000000000000044E1DD04 salt
-	node pipeline/2_deploy_registry.js
+	node deploy/2_deploy_registry.js
 
 registry address will be 0xC267d41f81308D7773ecB3BDd863a902ACC01Ade
 
 
 deploy provenance proxy using 0x0000000000000000000000000000000000000000000000000000000000000000 salt
-	node pipeline/3_deploy_provenance_proxy.js
+	node deploy/3_deploy_provenance_proxy.js
 
 provenance proxy address will be 0x8c7876aE9618746E111E0a4FFb6bd37dC99BB707
 
 
 deploy asset proxy using 0x0000000000000000000000000000000000000000000000000000000000000000 salt
-	node pipeline/4_deploy_asset_proxy.js
+	node deploy/4_deploy_asset_proxy.js
 
 asset proxy address will be 0x2007226e4Db0857Bd6b9EC8Ccc86BB0F20280CfC
 
 
 deploy royalties proxy using 0x0000000000000000000000000000000000000000000000000000000000000000 salt
-	node pipeline/5_deploy_royalties_proxy.js
+	node deploy/5_deploy_royalties_proxy.js
 
 royalties proxy address will be 0x8A48025332ee0092094df896DB8f1de43aC6afdA
 
 
 ####
 
-node pipeline/6_deploy_fake_royalties.js
-node pipeline/7_deploy_provenance.js
-node pipeline/8_deploy_asset.js
-node pipeline/9_deploy_royalties.js
-node pipeline/10_deploy_identity.js
-node pipeline/11_deploy_collection.js
+node deploy/6_deploy_fake_royalties.js
+node deploy/7_deploy_provenance.js
+node deploy/8_deploy_asset.js
+node deploy/9_deploy_royalties.js
+node deploy/10_deploy_identity.js
+node deploy/11_deploy_collection.js
 
 ####
 
 Register all addresses into registry using 0xa198FA5db682a2A828A90b42D3Cd938DAcc01ADE wallet
-	node pipeline/12_register.js
+	node deploy/12_register.js
 
 Verify all the registry entries
-	node pipeline/13_check_registry.js
+	node deploy/13_check_registry.js
 
 ####
 
 Fund the wallet
-	node pipeline/14_fund_wallet.js
+	node deploy/14_fund_wallet.js
 
 #### !!! !!! !!! ####
 We use wallet 0x0c12a8ea81ea25978544095a8eccf4b55211f625 from now on
 
 Create identity
-	node pipeline/15_create_identity.js
+	node deploy/15_create_identity.js
 
 identity address will be 0x95415d633Dd24593677Dc7D4358ED4c1c590defa
 
 Check identity
-	node pipeline/16_check_identity.js
+	node deploy/16_check_identity.js
 
 Create erc721 collection
-	node pipeline/17_create_erc721_collection.js
+	node deploy/17_create_erc721_collection.js
 
 collection address will be 0xF3563a72e48F5dd770B2c648c9278b0BB9C13e42
 
 Check erc721 collection
-	node pipeline/18_check_erc721_collection.js
+	node deploy/18_check_erc721_collection.js
 
 Create erc721 token
-	node pipeline/19_create_erc721_token.js
+	node deploy/19_create_erc721_token.js
 
 token id will be 0x0000000000000000000000000000000000000000000000000000000000000001
 
 Check erc721 token
-	node pipeline/20_check_erc721_token.js
+	node deploy/20_check_erc721_token.js
 
 ###
 

@@ -12,7 +12,7 @@ const REGISTRY_ADDRESS = fs
   .readFileSync('./data/' + NETWORK + '.registry.address', 'utf8')
   .trim();
 
-const rpc = JSON.parse(fs.readFileSync('./rpc.json', 'utf8'));
+const rpc = JSON.parse(fs.readFileSync('./config/rpc.json', 'utf8'));
 const provider = new HDWalletProvider(PRIVATE_KEY, rpc[NETWORK]);
 const web3 = new Web3(provider);
 
