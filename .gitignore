@@ -4,14 +4,16 @@ data
 data_previous
 db
 node_modules
-pipeline/wallet
+deploy/wallet
 sign
 cxip_mnemonic
 cxip_priv_key
 gas
 keys.json
 live_mnemonic
+mainnet_mnemonic
 live_priv_key
+mainnet_priv_key
 local_mnemonic
 local_priv_key
 mnemonic

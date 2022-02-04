@@ -15,7 +15,7 @@
   "prettier.jsxSingleQuote": false,
   "prettier.packageManager": "npm",
   "prettier.prettierPath": "",
-  "prettier.printWidth": 80,
+  "prettier.printWidth": 100,
   "prettier.proseWrap": "preserve",
   "prettier.quoteProps": "as-needed",
   "prettier.requireConfig": false,
@@ -45,7 +45,7 @@
     {
       "files": "*.sol",
       "options": {
-        "printWidth": 120,
+        "printWidth": 100,
         "tabWidth": 4,
         "useTabs": false,
         "singleQuote": false,
