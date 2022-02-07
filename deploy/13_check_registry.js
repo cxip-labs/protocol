@@ -61,19 +61,6 @@ async function main() {
     .call(from)
     .catch(error);
 
-  const daniel = await contract.methods
-    .getCustomSource(
-      '0x748042799f1a8ea5aa2ae183edddb216f96c3c6ada37066aa2ce51a56438ede7'
-    )
-    .call(from)
-    .catch(error);
-  const danielProxy = await contract.methods
-    .getCustomSource(
-      '0x34614b2160c4ad0a9004a062b1210e491f551c3b3eb86397949dc0279cf60c0d'
-    )
-    .call(from)
-    .catch(error);
-
   console.log({
     asset,
     assetProxy,
@@ -88,9 +75,7 @@ async function main() {
       'utf8'
     ),
     royalties,
-    royaltiesProxy,
-    daniel,
-    danielProxy,
+    royaltiesProxy
   });
   process.exit();
 }

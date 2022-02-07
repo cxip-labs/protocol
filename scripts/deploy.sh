@@ -20,10 +20,10 @@ node deploy/13_check_registry.js
 node deploy/14_fund_wallet.js
 node deploy/15_create_identity.js
 node deploy/16_check_identity.js
-# node deploy/17_create_erc721_collection.js
-# node deploy/18_check_erc721_collection.js
-# node deploy/19_create_erc721_token.js
-# node deploy/20_check_erc721_token.js
-# node deploy/21_get_bytecodes.js
+node deploy/17_create_erc721_collection.js
+node deploy/18_check_erc721_collection.js
+node deploy/19_create_erc721_token.js
+node deploy/20_check_erc721_token.js
+node deploy/21_get_bytecodes.js
 
 exit

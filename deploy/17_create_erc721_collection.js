@@ -78,7 +78,12 @@ async function main() {
     .send(from)
     .catch(error);
 
-  console.log('ERC721 Collection Created at: ' + result.events[0].address);
+  const collectionAddress = await contract.methods
+    .getCollectionById(0)
+    .call(from)
+    .catch(error);
+
+  console.log('ERC721 Collection Created at: ' + collectionAddress);
   console.log('\tGas Used : ' + result.gasUsed);
   process.exit();
 }

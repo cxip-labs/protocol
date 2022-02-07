@@ -11,8 +11,8 @@
     "build-compile": "rm -fr contracts/*; rm -fr build/*; npm run-script build; npm run-script compile",
     "cleanup": "rm -fr contracts/*; rm -fr build; rm -fr data/*; touch data/.gitkeep",
     "compile": "truffle compile --all",
-    "deploy": "npm run-script ganache & sh ./scripts/_deploy.sh",
-    "ganache": "rm -fr ./db; mkdir db; rm ./keys.json; ganache-cli --accounts=10 --defaultBalanceEther=100 --deterministic --mnemonic=\"$(cat ./.mnemonic)\" --port=8545 --hostname=0.0.0.0 --gasPrice=0 --gasLimit=10000000 --networkId=5777 --db=./db --acctKeys=./keys.json",
+    "deploy": "npm run-script ganache & sh ./scripts/deploy.sh",
+    "ganache": "rm -fr ./db; mkdir db; rm ./keys.json; ganache-cli --accounts=10 --defaultBalanceEther=100 --deterministic --mnemonic=\"$(cat ./.mnemonic)\" --port=8545 --hostname=0.0.0.0 --gasPrice=0 --gasLimit=10000000 --networkId=5777 --db=./db --acctKeys=./keys.json"
   },
   "dependencies": {
     "@0x/subproviders": "^2.1.4",
