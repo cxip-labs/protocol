@@ -61,29 +61,7 @@ contract PA1D {
         uint256 tokenId,
         address payable receiver,
         uint256 bp
-    ) public onlyOwner {
-//         if (Address.isZero(receiver)) {
-//             receiver = payable(this);
-//         }
-//         setRoyalties(tokenId, receiver, bp);
-//         // We register the smart contract with Rarible(V1) as the controller for royalties.
-//         // This makes sure that all royalty info will be queried from the contract and not somewhere else
-//         /**
-//          * @dev Keep in mind that Rarible V1 makes a "owner" function call to the overlying smart contract.
-//          * @dev It is mandatory to have owner function call return this contract address, or the function will fail.
-//          */
-//         (
-//             bool setProviderSuccess, /*bytes memory setProviderResponse*/
-//         ) = address(0x20202052617269626C6520526F79616c74696573).call(
-//                 /**
-//                  * @dev We hardcode the bytes4 function hash to save on gas
-//                  */
-//                 // abi.encodeWithSignature(
-//                 //     'setProviderByToken(address,address)',
-//                 abi.encodeWithSelector(bytes4(0xd836f013), address(this), address(this))
-//             );
-//         require(setProviderSuccess, "PA1D: failed setting Rarible");
-    }
+    ) public onlyOwner {}
 
     /**
      * @dev Get the top-level CXIP Registry smart contract. Function must always be internal to prevent miss-use/abuse through bad programming practices.
@@ -196,7 +174,9 @@ contract PA1D {
      * @return receiver Wallet or smart contract that will receive the royalty payouts for a particular token id.
      */
     function _getReceiver(uint256 tokenId) internal view returns (address payable receiver) {
-        bytes32 slot = bytes32(uint256(keccak256(abi.encodePacked("eip1967.PA1D.receiver", tokenId))) - 1);
+        bytes32 slot = bytes32(
+            uint256(keccak256(abi.encodePacked("eip1967.PA1D.receiver", tokenId))) - 1
+        );
         assembly {
             receiver := sload(slot)
         }
@@ -208,7 +188,9 @@ contract PA1D {
      * @param receiver Wallet or smart contract that will receive the royalty payouts for a particular token id.
      */
     function _setReceiver(uint256 tokenId, address receiver) internal {
-        bytes32 slot = bytes32(uint256(keccak256(abi.encodePacked("eip1967.PA1D.receiver", tokenId))) - 1);
+        bytes32 slot = bytes32(
+            uint256(keccak256(abi.encodePacked("eip1967.PA1D.receiver", tokenId))) - 1
+        );
         assembly {
             sstore(slot, receiver)
         }
@@ -219,7 +201,9 @@ contract PA1D {
      * @return bp Royalty base points(percentage) for the royalty payouts of a specific token id.
      */
     function _getBp(uint256 tokenId) internal view returns (uint256 bp) {
-        bytes32 slot = bytes32(uint256(keccak256(abi.encodePacked("eip1967.PA1D.bp", tokenId))) - 1);
+        bytes32 slot = bytes32(
+            uint256(keccak256(abi.encodePacked("eip1967.PA1D.bp", tokenId))) - 1
+        );
         assembly {
             bp := sload(slot)
         }
@@ -231,7 +215,9 @@ contract PA1D {
      * @param bp Uint256 of royalty percentage, provided in base points format, for a particular token id.
      */
     function _setBp(uint256 tokenId, uint256 bp) internal {
-        bytes32 slot = bytes32(uint256(keccak256(abi.encodePacked("eip1967.PA1D.bp", tokenId))) - 1);
+        bytes32 slot = bytes32(
+            uint256(keccak256(abi.encodePacked("eip1967.PA1D.bp", tokenId))) - 1
+        );
         assembly {
             sstore(slot, bp)
         }
@@ -283,15 +269,23 @@ contract PA1D {
         }
     }
 
-    function _getTokenAddress(string memory tokenName) internal view returns (address tokenAddress) {
-        bytes32 slot = bytes32(uint256(keccak256(abi.encodePacked("eip1967.PA1D.tokenAddress", tokenName))) - 1);
+    function _getTokenAddress(string memory tokenName)
+        internal
+        view
+        returns (address tokenAddress)
+    {
+        bytes32 slot = bytes32(
+            uint256(keccak256(abi.encodePacked("eip1967.PA1D.tokenAddress", tokenName))) - 1
+        );
         assembly {
             tokenAddress := sload(slot)
         }
     }
 
     function _setTokenAddress(string memory tokenName, address tokenAddress) internal {
-        bytes32 slot = bytes32(uint256(keccak256(abi.encodePacked("eip1967.PA1D.tokenAddress", tokenName))) - 1);
+        bytes32 slot = bytes32(
+            uint256(keccak256(abi.encodePacked("eip1967.PA1D.tokenAddress", tokenName))) - 1
+        );
         assembly {
             sstore(slot, tokenAddress)
         }
@@ -311,7 +305,6 @@ contract PA1D {
         require(balance - gasCost > 10000, "PA1D: Not enough ETH to transfer");
         balance = balance - gasCost;
         uint256 sending;
-        // uint256 sent;
         for (uint256 i = 0; i < length; i++) {
             sending = ((bps[i] * balance) / 10000);
             addresses[i].transfer(sending);
@@ -331,11 +324,9 @@ contract PA1D {
         uint256 balance = erc20.balanceOf(address(this));
         require(balance > 10000, "PA1D: Not enough tokens to transfer");
         uint256 sending;
-        //uint256 sent;
         for (uint256 i = 0; i < length; i++) {
             sending = ((bps[i] * balance) / 10000);
             require(erc20.transfer(addresses[i], sending), "PA1D: Couldn't transfer token");
-            // sent = sent + sending;
         }
     }
 
@@ -354,11 +345,9 @@ contract PA1D {
             erc20 = IERC20(tokenAddresses[t]);
             balance = erc20.balanceOf(address(this));
             require(balance > 10000, "PA1D: Not enough tokens to transfer");
-            // uint256 sent;
             for (uint256 i = 0; i < addresses.length; i++) {
                 sending = ((bps[i] * balance) / 10000);
                 require(erc20.transfer(addresses[i], sending), "PA1D: Couldn't transfer token");
-                // sent = sent + sending;
             }
         }
     }
@@ -389,7 +378,10 @@ contract PA1D {
      * @param addresses An array of all the addresses that will be receiving royalty payouts.
      * @param bps An array of the percentages that each address will receive from the royalty payouts.
      */
-    function configurePayouts(address payable[] memory addresses, uint256[] memory bps) public onlyOwner {
+    function configurePayouts(address payable[] memory addresses, uint256[] memory bps)
+        public
+        onlyOwner
+    {
         require(addresses.length == bps.length, "PA1D: missmatched array lenghts");
         uint256 totalBp;
         for (uint256 i = 0; i < addresses.length; i++) {
@@ -406,7 +398,11 @@ contract PA1D {
      * @return addresses An array of all the addresses that will be receiving royalty payouts.
      * @return bps An array of the percentages that each address will receive from the royalty payouts.
      */
-    function getPayoutInfo() public view returns (address payable[] memory addresses, uint256[] memory bps) {
+    function getPayoutInfo()
+        public
+        view
+        returns (address payable[] memory addresses, uint256[] memory bps)
+    {
         addresses = _getPayoutAddresses();
         bps = _getPayoutBps();
     }
@@ -464,7 +460,9 @@ contract PA1D {
         uint256 length = tokenNames.length;
         address[] memory tokenAddresses = new address[](length);
         for (uint256 i = 0; i < length; i++) {
-            address tokenAddress = PA1D(payable(getRegistry().getPA1D())).getTokenAddress(tokenNames[i]);
+            address tokenAddress = PA1D(payable(getRegistry().getPA1D())).getTokenAddress(
+                tokenNames[i]
+            );
             require(!Address.isZero(tokenAddress), "PA1D: Token address not found");
             tokenAddresses[i] = tokenAddress;
         }
@@ -586,7 +584,11 @@ contract PA1D {
     // }
 
     // Manifold
-    function getRoyalties(uint256 tokenId) public view returns (address payable[] memory, uint256[] memory) {
+    function getRoyalties(uint256 tokenId)
+        public
+        view
+        returns (address payable[] memory, uint256[] memory)
+    {
         address payable[] memory receivers = new address payable[](1);
         uint256[] memory bps = new uint256[](1);
         if (_getReceiver(tokenId) == address(0)) {
@@ -600,7 +602,11 @@ contract PA1D {
     }
 
     // Foundation
-    function getFees(uint256 tokenId) public view returns (address payable[] memory, uint256[] memory) {
+    function getFees(uint256 tokenId)
+        public
+        view
+        returns (address payable[] memory, uint256[] memory)
+    {
         address payable[] memory receivers = new address payable[](1);
         uint256[] memory bps = new uint256[](1);
         if (_getReceiver(tokenId) == address(0)) {
@@ -618,7 +624,7 @@ contract PA1D {
     // To be quite honest, SuperRare is a closed marketplace. They're working on opening it up but looks like they want to use private smart contracts.
     // We'll just leave this here for just in case they open the flood gates.
     function tokenCreator(
-        address, /* contractAddress*/
+        address, /* contractAddress */
         uint256 tokenId
     ) public view returns (address) {
         address receiver = _getReceiver(tokenId);
@@ -659,7 +665,11 @@ contract PA1D {
 
     // Zora
     // we provide the percentage that needs to be paid out from the sale
-    function bidSharesForToken(uint256 tokenId) public view returns (Zora.BidShares memory bidShares) {
+    function bidSharesForToken(uint256 tokenId)
+        public
+        view
+        returns (Zora.BidShares memory bidShares)
+    {
         // this information is outside of the scope of our
         bidShares.prevOwner.value = 0;
         bidShares.owner.value = 0;
@@ -699,7 +709,9 @@ contract PA1D {
         /**
          * @dev Very important to note the use of sha256 instead of keccak256 in this function. Since the registry is made to be front-facing and user friendly, the choice to use sha256 was made due to the accessibility of that function in comparison to keccak.
          */
-        address _target = getRegistry().getCustomSource(sha256(abi.encodePacked("eip1967.CXIP.hotfixes")));
+        address _target = getRegistry().getCustomSource(
+            sha256(abi.encodePacked("eip1967.CXIP.hotfixes"))
+        );
 
         /**
          * @dev To minimize gas usage, pre-calculate the 32 byte hash and provide the final hex string instead of running the sha256 function on each call inside the smart contract
