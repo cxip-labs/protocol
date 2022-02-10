@@ -75,7 +75,7 @@ module.exports = {
   mocha: {},
   compilers: {
     solc: {
-      version: '0.8.4+commit.c7e474f2.Emscripten.clang',
+      version: '0.8.9',
       settings: {
         optimizer: {
           enabled: true,
