@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.4;
 
@@ -33,7 +33,12 @@ library Signature {
             encoded32 := mload(add(encoded, 32))
         }
         derived1 = ecrecover(encoded32, v, r, s);
-        derived2 = ecrecover(keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", encoded32)), v, r, s);
+        derived2 = ecrecover(
+            keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", encoded32)),
+            v,
+            r,
+            s
+        );
         encoded32 = keccak256(encoded);
         derived3 = ecrecover(encoded32, v, r, s);
         encoded32 = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", encoded32));
@@ -65,7 +70,12 @@ library Signature {
             if (target == derived) {
                 return true;
             }
-            derived = ecrecover(keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", encoded32)), v, r, s);
+            derived = ecrecover(
+                keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", encoded32)),
+                v,
+                r,
+                s
+            );
             if (target == derived) {
                 return true;
             }

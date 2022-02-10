@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.4;
 
@@ -76,7 +76,10 @@ interface ICxipIdentity {
 
     function isWalletRegistered(address wallet) external view returns (bool);
 
-    function listCollections(uint256 offset, uint256 length) external view returns (address[] memory);
+    function listCollections(uint256 offset, uint256 length)
+        external
+        view
+        returns (address[] memory);
 
     function nextNonce(address wallet) external view returns (uint256);
 

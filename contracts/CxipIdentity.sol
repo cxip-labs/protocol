@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.4;
 
@@ -105,7 +105,7 @@ contract CxipIdentity {
      * @return bool Returns true of false, to indicate if a specific collection is open/shared.
      */
     function isCollectionOpen(
-        address/* collection*/
+        address /* collection*/
     ) external pure returns (bool) {
         return false;
     }
@@ -129,30 +129,22 @@ contract CxipIdentity {
         require(!Address.isContract(newWallet), "CXIP: contract not allowed");
         require(
             Address.isZero(
-                ICxipProvenance(
-                    getRegistry().getProvenance()
-                ).getWalletIdentity(newWallet)
+                ICxipProvenance(getRegistry().getProvenance()).getWalletIdentity(newWallet)
             ),
             "CXIP: wallet already registered"
         );
-        if(
-            r != 0x00
-            && s != 0x0000000000000000000000000000000000000000000000000000000000000000
-            && v != 0x0000000000000000000000000000000000000000000000000000000000000000
+        if (
+            r != 0x00 &&
+            s != 0x0000000000000000000000000000000000000000000000000000000000000000 &&
+            v != 0x0000000000000000000000000000000000000000000000000000000000000000
         ) {
             uint256 nonce = nextNonce(newWallet);
-            bytes memory encoded = abi.encodePacked(
-                address(this),
-                newWallet,
-                nonce
-            );
+            bytes memory encoded = abi.encodePacked(address(this), newWallet, nonce);
             bool validSig = Signature.Valid(newWallet, r, s, v, encoded);
             require(validSig, "CXIP: invalid signature");
             _lastNonce[newWallet] = nonce;
             _addWalletToEnumeration(newWallet);
-            ICxipProvenance(
-                getRegistry().getProvenance()
-            ).informAboutNewWallet(newWallet);
+            ICxipProvenance(getRegistry().getProvenance()).informAboutNewWallet(newWallet);
         } else {
             _preAuthWallets[newWallet] = msg.sender;
         }
@@ -178,16 +170,12 @@ contract CxipIdentity {
         require(_isOwner(authorizer), "CXIP: authorizer no longer owner");
         require(
             Address.isZero(
-                ICxipProvenance(
-                    getRegistry().getProvenance()
-                ).getWalletIdentity(newWallet)
+                ICxipProvenance(getRegistry().getProvenance()).getWalletIdentity(newWallet)
             ),
             "CXIP: wallet already registered"
         );
         _addWalletToEnumeration(newWallet);
-        ICxipProvenance(getRegistry().getProvenance()).informAboutNewWallet(
-            newWallet
-        );
+        ICxipProvenance(getRegistry().getProvenance()).informAboutNewWallet(newWallet);
         delete _preAuthWallets[newWallet];
     }
 
@@ -209,10 +197,7 @@ contract CxipIdentity {
     ) public nonReentrant returns (uint256) {
         require(_isOwner(msg.sender), "CXIP: you are not an the owner");
         require(_isOwner(tokenData.creator), "CXIP: creator not owner");
-        require(
-            _additionalInfo[collection] == InterfaceType.ERC721,
-            "CXIP: collection not ERC721"
-        );
+        require(_additionalInfo[collection] == InterfaceType.ERC721, "CXIP: collection not ERC721");
         bytes memory encoded = abi.encodePacked(
             address(this),
             tokenData.creator,
@@ -227,13 +212,16 @@ contract CxipIdentity {
             tokenData.ipfs,
             tokenData.ipfs2
         );
-        require(Signature.Valid(
-            getRegistry().getAssetSigner(),
-            verification.r,
-            verification.s,
-            verification.v,
-            encoded
-        ), "CXIP: invalid signature");
+        require(
+            Signature.Valid(
+                getRegistry().getAssetSigner(),
+                verification.r,
+                verification.s,
+                verification.v,
+                encoded
+            ),
+            "CXIP: invalid signature"
+        );
         return ICxipERC721(collection).cxipMint(id, tokenData);
     }
 
@@ -252,7 +240,7 @@ contract CxipIdentity {
         Verification calldata verification,
         CollectionData calldata collectionData
     ) public nonReentrant returns (address) {
-        if(collectionCreator != msg.sender) {
+        if (collectionCreator != msg.sender) {
             require(
                 Signature.Valid(
                     collectionCreator,
@@ -273,19 +261,15 @@ contract CxipIdentity {
             );
         }
         require(_isOwner(collectionCreator), "CXIP: creator not owner");
-        bytes memory bytecode = hex"608060405234801561001057600080fd5b50610128806100206000396000f3fe608060408190527f58bfd99600000000000000000000000000000000000000000000000000000000815260009073deaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD906358bfd9969060849060209060048186803b158015605f57600080fd5b505afa1580156072573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906094919060b9565b90503660008037600080366000845af43d6000803e80801560b4573d6000f35b3d6000fd5b60006020828403121560c9578081fd5b815173ffffffffffffffffffffffffffffffffffffffff8116811460eb578182fd5b939250505056fea2646970667358221220e40db164da39a10669859af903c7c9d1a96e3a2e162855f6b00aa89d483e4c6164736f6c63430008040033";
+        bytes
+            memory bytecode = hex"608060405234801561001057600080fd5b50610128806100206000396000f3fe608060408190527f58bfd99600000000000000000000000000000000000000000000000000000000815260009073deaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD906358bfd9969060849060209060048186803b158015605f57600080fd5b505afa1580156072573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906094919060b9565b90503660008037600080366000845af43d6000803e80801560b4573d6000f35b3d6000fd5b60006020828403121560c9578081fd5b815173ffffffffffffffffffffffffffffffffffffffff8116811460eb578182fd5b939250505056fea2646970667358221220e40db164da39a10669859af903c7c9d1a96e3a2e162855f6b00aa89d483e4c6164736f6c63430008040033";
         address cxipAddress;
         assembly {
-            cxipAddress := create2(
-                0,
-                add(bytecode, 0x20),
-                mload(bytecode),
-                saltHash
-            )
+            cxipAddress := create2(0, add(bytecode, 0x20), mload(bytecode), saltHash)
         }
         ICxipERC721(cxipAddress).init(collectionCreator, collectionData);
         _addCollectionToEnumeration(cxipAddress, InterfaceType.ERC721);
-        return(cxipAddress);
+        return (cxipAddress);
     }
 
     /**
@@ -307,7 +291,7 @@ contract CxipIdentity {
         bytes32 slot,
         bytes memory bytecode
     ) public nonReentrant returns (address) {
-        if(collectionCreator != msg.sender) {
+        if (collectionCreator != msg.sender) {
             require(
                 Signature.Valid(
                     collectionCreator,
@@ -330,20 +314,20 @@ contract CxipIdentity {
         require(_isOwner(collectionCreator), "CXIP: creator not owner");
         address cxipAddress;
         assembly {
-            cxipAddress := create2(
-                0,
-                add(bytecode, 0x20),
-                mload(bytecode),
-                saltHash
-            )
+            cxipAddress := create2(0, add(bytecode, 0x20), mload(bytecode), saltHash)
         }
         require(
-            keccak256(cxipAddress.code) == keccak256(ICxipRegistry(0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD).getCustomSource(slot).code),
+            keccak256(cxipAddress.code) ==
+                keccak256(
+                    ICxipRegistry(0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD)
+                        .getCustomSource(slot)
+                        .code
+                ),
             "CXIP: byte code missmatch"
         );
         ICxipERC721(cxipAddress).init(collectionCreator, collectionData);
         _addCollectionToEnumeration(cxipAddress, InterfaceType.ERC721);
-        return(cxipAddress);
+        return (cxipAddress);
     }
 
     /**
@@ -355,7 +339,7 @@ contract CxipIdentity {
     function init(address wallet, address secondaryWallet) public nonReentrant {
         require(_walletArray.length == 0, "CXIP: already initialized");
         _addWalletToEnumeration(wallet);
-        if(!Address.isZero(secondaryWallet)) {
+        if (!Address.isZero(secondaryWallet)) {
             _addWalletToEnumeration(secondaryWallet);
         }
     }
@@ -403,9 +387,7 @@ contract CxipIdentity {
      * @param collection Contract address of the collection.
      * @return bool Returns true if collection is associated with the identity.
      */
-    function isCollectionCertified(
-        address collection
-    ) public view returns (bool) {
+    function isCollectionCertified(address collection) public view returns (bool) {
         return _isCollectionValid(collection);
     }
 
@@ -415,9 +397,7 @@ contract CxipIdentity {
      * @param collection Contract address of the collection.
      * @return bool Returns true if collection is associated with the identity.
      */
-    function isCollectionRegistered(
-        address collection
-    ) public view returns (bool) {
+    function isCollectionRegistered(address collection) public view returns (bool) {
         return _isCollectionValid(collection);
     }
 
@@ -445,10 +425,7 @@ contract CxipIdentity {
      * @param tokenId Id of the token.
      * @return bool Returns true if token is associated with the identity.
      */
-    function isTokenCertified(
-        address collection,
-        uint256 tokenId
-    ) public view returns (bool) {
+    function isTokenCertified(address collection, uint256 tokenId) public view returns (bool) {
         return _isValidToken(collection, tokenId);
     }
 
@@ -459,10 +436,7 @@ contract CxipIdentity {
      * @param tokenId Id of the token.
      * @return bool Returns true if token is associated with the identity.
      */
-    function isTokenRegistered(
-        address collection,
-        uint256 tokenId
-    ) public view returns (bool) {
+    function isTokenRegistered(address collection, uint256 tokenId) public view returns (bool) {
         return _isValidToken(collection, tokenId);
     }
 
@@ -483,17 +457,18 @@ contract CxipIdentity {
      * @param length Length of slice to return, starting from offset index.
      * @return address[] Returns a fixed length array starting from offset.
      */
-    function listCollections(
-        uint256 offset,
-        uint256 length
-    ) public view returns (address[] memory) {
+    function listCollections(uint256 offset, uint256 length)
+        public
+        view
+        returns (address[] memory)
+    {
         uint256 limit = offset + length;
-        if(limit > _collectionArray.length) {
+        if (limit > _collectionArray.length) {
             limit = _collectionArray.length;
         }
         address[] memory collections = new address[](limit - offset);
         uint256 n = 0;
-        for(uint256 i = offset; i < limit; i++) {
+        for (uint256 i = offset; i < limit; i++) {
             collections[n] = _collectionArray[i];
             n++;
         }
@@ -525,10 +500,9 @@ contract CxipIdentity {
      * @param collection Contract address of the collection to add.
      * @param collectionType Interface type of the collection being added.
      */
-    function _addCollectionToEnumeration(
-        address collection,
-        InterfaceType collectionType
-    ) internal {
+    function _addCollectionToEnumeration(address collection, InterfaceType collectionType)
+        internal
+    {
         _collectionArray.push(collection);
         _additionalInfo[collection] = collectionType;
     }
@@ -548,19 +522,16 @@ contract CxipIdentity {
      * @param index Array index of the collection to remove.
      */
     function _removeCollectionFromEnumeration(uint256 index) internal {
-        require(
-            _collectionArray.length != 0,
-            "CXIP: removing from empty array"
-        );
+        require(_collectionArray.length != 0, "CXIP: removing from empty array");
         delete _additionalInfo[_collectionArray[index]];
         uint256 lastIndex = _collectionArray.length - 1;
-        if(lastIndex != 0) {
-            if(index != lastIndex) {
+        if (lastIndex != 0) {
+            if (index != lastIndex) {
                 address lastCollection = _collectionArray[lastIndex];
                 _collectionArray[index] = lastCollection;
             }
         }
-        if(lastIndex == 0) {
+        if (lastIndex == 0) {
             delete _collectionArray;
         } else {
             delete _collectionArray[lastIndex];
@@ -576,7 +547,7 @@ contract CxipIdentity {
         uint256 lastIndex = _walletArray.length - 1;
         require(lastIndex != 0, "CXIP: cannot remove last wallet");
         uint256 walletIndex = _walletIndexMap[wallet];
-        if(walletIndex != lastIndex) {
+        if (walletIndex != lastIndex) {
             address lastWallet = _walletArray[lastIndex];
             _walletArray[walletIndex] = lastWallet;
             _walletIndexMap[lastWallet] = walletIndex;
@@ -610,9 +581,7 @@ contract CxipIdentity {
      * @param collection Contract address of the collection.
      * @return bool Returns true if collection is associated with this identity.
      */
-    function _isCollectionValid(
-        address collection
-    ) internal view returns (bool) {
+    function _isCollectionValid(address collection) internal view returns (bool) {
         return _additionalInfo[collection] != InterfaceType.NULL;
     }
 
@@ -633,7 +602,7 @@ contract CxipIdentity {
      */
     function _isValidToken(
         address collection,
-        uint256/* tokenId*/
+        uint256 /* tokenId*/
     ) internal view returns (bool) {
         return _additionalInfo[collection] != InterfaceType.NULL;
     }

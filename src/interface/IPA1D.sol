@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.4;
 
@@ -23,7 +23,10 @@ interface IPA1D {
 
     function configurePayouts(address payable[] memory addresses, uint256[] memory bps) external;
 
-    function getPayoutInfo() external view returns (address payable[] memory addresses, uint256[] memory bps);
+    function getPayoutInfo()
+        external
+        view
+        returns (address payable[] memory addresses, uint256[] memory bps);
 
     function getEthPayout() external;
 
@@ -49,9 +52,15 @@ interface IPA1D {
 
     function getFeeRecipients(uint256 tokenId) external view returns (address payable[] memory);
 
-    function getRoyalties(uint256 tokenId) external view returns (address payable[] memory, uint256[] memory);
+    function getRoyalties(uint256 tokenId)
+        external
+        view
+        returns (address payable[] memory, uint256[] memory);
 
-    function getFees(uint256 tokenId) external view returns (address payable[] memory, uint256[] memory);
+    function getFees(uint256 tokenId)
+        external
+        view
+        returns (address payable[] memory, uint256[] memory);
 
     function tokenCreator(address contractAddress, uint256 tokenId) external view returns (address);
 
@@ -65,7 +74,10 @@ interface IPA1D {
 
     function tokenCreators(uint256 tokenId) external view returns (address);
 
-    function bidSharesForToken(uint256 tokenId) external view returns (Zora.BidShares memory bidShares);
+    function bidSharesForToken(uint256 tokenId)
+        external
+        view
+        returns (Zora.BidShares memory bidShares);
 
     function getStorageSlot(string calldata slot) external pure returns (bytes32);
 

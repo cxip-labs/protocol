@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.4;
 
@@ -60,7 +60,11 @@ contract CxipAsset {
      * @param identityAddress Address of the identity smart contract.
      * @param tokenId Id of the token being added.
      */
-    event TokenAdded(address indexed collectionAddress, address indexed identityAddress, uint256 indexed tokenId);
+    event TokenAdded(
+        address indexed collectionAddress,
+        address indexed identityAddress,
+        uint256 indexed tokenId
+    );
 
     /**
      * @notice Event emitted when a new token is created and added to an Identity.
@@ -69,7 +73,11 @@ contract CxipAsset {
      * @param identityAddress Address of the identity smart contract.
      * @param tokenId Id of the token being created.
      */
-    event TokenCreated(address indexed collectionAddress, address indexed identityAddress, uint256 indexed tokenId);
+    event TokenCreated(
+        address indexed collectionAddress,
+        address indexed identityAddress,
+        uint256 indexed tokenId
+    );
 
     /**
      * @notice Constructor is empty and not utilised of anything but setting a default URI type.

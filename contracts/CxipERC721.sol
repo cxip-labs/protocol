@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.4;
 
@@ -171,7 +171,13 @@ contract CxipERC721 {
      */
     function arweaveURI(uint256 tokenId) external view returns (string memory) {
         return
-            string(abi.encodePacked("https://arweave.cxip.dev/", _tokenData[tokenId].arweave, _tokenData[tokenId].arweave2));
+            string(
+                abi.encodePacked(
+                    "https://arweave.cxip.dev/",
+                    _tokenData[tokenId].arweave,
+                    _tokenData[tokenId].arweave2
+                )
+            );
     }
 
     /**
@@ -180,7 +186,10 @@ contract CxipERC721 {
      * @return string The URI.
      */
     function contractURI() external view returns (string memory) {
-        return string(abi.encodePacked("https://nft.cxip.dev/", Strings.toHexString(address(this)), "/"));
+        return
+            string(
+                abi.encodePacked("https://nft.cxip.dev/", Strings.toHexString(address(this)), "/")
+            );
     }
 
     /**
@@ -209,7 +218,14 @@ contract CxipERC721 {
      * @return string The URI.
      */
     function ipfsURI(uint256 tokenId) external view returns (string memory) {
-        return string(abi.encodePacked("https://ipfs.cxip.dev/", _tokenData[tokenId].ipfs, _tokenData[tokenId].ipfs2));
+        return
+            string(
+                abi.encodePacked(
+                    "https://ipfs.cxip.dev/",
+                    _tokenData[tokenId].ipfs,
+                    _tokenData[tokenId].ipfs2
+                )
+            );
     }
 
     /**
@@ -218,7 +234,13 @@ contract CxipERC721 {
      * @return string The collection name.
      */
     function name() external view returns (string memory) {
-        return string(abi.encodePacked(Bytes.trim(_collectionData.name), Bytes.trim(_collectionData.name2)));
+        return
+            string(
+                abi.encodePacked(
+                    Bytes.trim(_collectionData.name),
+                    Bytes.trim(_collectionData.name2)
+                )
+            );
     }
 
     /**
@@ -290,7 +312,13 @@ contract CxipERC721 {
      */
     function tokenURI(uint256 tokenId) external view returns (string memory) {
         return
-            string(abi.encodePacked("https://arweave.cxip.dev/", _tokenData[tokenId].arweave, _tokenData[tokenId].arweave2));
+            string(
+                abi.encodePacked(
+                    "https://arweave.cxip.dev/",
+                    _tokenData[tokenId].arweave,
+                    _tokenData[tokenId].arweave2
+                )
+            );
     }
 
     /** Disabled due to tokenEnumeration not enabled.
@@ -365,7 +393,7 @@ contract CxipERC721 {
         // temporary set to self, to pass rarible royalties logic trap
         _owner = address(this);
         _collectionData = collectionData;
-        IPA1D(address(this)).init (0, payable(collectionData.royalties), collectionData.bps);
+        IPA1D(address(this)).init(0, payable(collectionData.royalties), collectionData.bps);
         // set to actual owner
         _owner = newOwner;
     }
@@ -492,7 +520,12 @@ contract CxipERC721 {
         }
         _mint(tokenData.creator, id);
         _tokenData[id] = tokenData;
-        emit PermanentURI(string(abi.encodePacked("https://arweave.cxip.dev/", tokenData.arweave, tokenData.arweave2)), id);
+        emit PermanentURI(
+            string(
+                abi.encodePacked("https://arweave.cxip.dev/", tokenData.arweave, tokenData.arweave2)
+            ),
+            id
+        );
         return id;
     }
 
@@ -544,7 +577,8 @@ contract CxipERC721 {
      * @return string the token URI.
      */
     function baseURI() public view returns (string memory) {
-        return string(abi.encodePacked("https://cxip.dev/nft/", Strings.toHexString(address(this))));
+        return
+            string(abi.encodePacked("https://cxip.dev/nft/", Strings.toHexString(address(this))));
     }
 
     /**
@@ -578,7 +612,10 @@ contract CxipERC721 {
             // Rarible Transfer Proxy
             0x72617269626C655472616E7366657250726F7879 == operator ||
             // OpenSea Transfer Proxy
-            address(OpenSeaProxyRegistry(0x6f70656E5365615472616E7366657250726F7879).proxies(wallet)) == operator);
+            address(
+                OpenSeaProxyRegistry(0x6f70656E5365615472616E7366657250726F7879).proxies(wallet)
+            ) ==
+            operator);
     }
 
     /**
@@ -821,10 +858,8 @@ contract CxipERC721 {
     function _isApproved(address spender, uint256 tokenId) private view returns (bool) {
         require(_exists(tokenId));
         address tokenOwner = _tokenOwner[tokenId];
-        return (
-            spender == tokenOwner ||
+        return (spender == tokenOwner ||
             getApproved(tokenId) == spender ||
-            isApprovedForAll(tokenOwner, spender)
-        );
+            isApprovedForAll(tokenOwner, spender));
     }
 }
