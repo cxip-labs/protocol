@@ -521,9 +521,7 @@ contract CxipERC721 {
         _mint(tokenData.creator, id);
         _tokenData[id] = tokenData;
         emit PermanentURI(
-            string(
-                abi.encodePacked("https://arweave.cxip.dev/", tokenData.arweave, tokenData.arweave2)
-            ),
+            string(abi.encodePacked("https://arweave.cxip.dev/", tokenData.arweave, tokenData.arweave2)),
             id
         );
         return id;
@@ -577,8 +575,7 @@ contract CxipERC721 {
      * @return string the token URI.
      */
     function baseURI() public view returns (string memory) {
-        return
-            string(abi.encodePacked("https://cxip.dev/nft/", Strings.toHexString(address(this))));
+        return string(abi.encodePacked("https://cxip.dev/nft/", Strings.toHexString(address(this))));
     }
 
     /**

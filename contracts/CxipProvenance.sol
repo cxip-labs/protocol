@@ -101,11 +101,27 @@ contract CxipProvenance {
     ) public nonReentrant {
         bool usingSecondaryWallet = !Address.isZero(secondaryWallet);
         address wallet = msg.sender;
-        require(!Address.isContract(wallet), "CXIP: cannot use smart contracts");
-        require(Address.isZero(_walletToIdentityMap[wallet]), "CXIP: wallet already used");
-        require(address(uint160(bytes20(saltHash))) == wallet, "CXIP: invalid salt hash");
-        if (usingSecondaryWallet) {
-            require(!Address.isContract(secondaryWallet), "CXIP: cannot use smart contracts");
+        require(
+            !Address.isContract(wallet),
+            "CXIP: cannot use smart contracts"
+        );
+        require(
+            Address.isZero(_walletToIdentityMap[wallet]),
+            "CXIP: wallet already used"
+        );
+        require(
+            address(
+                uint160(
+                    bytes20(saltHash)
+                )
+            ) == wallet,
+            "CXIP: invalid salt hash"
+        );
+        if(usingSecondaryWallet) {
+            require(
+                !Address.isContract(secondaryWallet),
+                "CXIP: cannot use smart contracts"
+            );
             require(
                 Address.isZero(_walletToIdentityMap[secondaryWallet]),
                 "CXIP: second wallet already used"
@@ -116,24 +132,36 @@ contract CxipProvenance {
                     verification.r,
                     verification.s,
                     verification.v,
-                    abi.encodePacked(address(this), wallet, secondaryWallet)
+                    abi.encodePacked(
+                        address(this),
+                        wallet,
+                        secondaryWallet
+                    )
                 ),
                 "CXIP: invalid signature"
             );
         }
-        bytes
-            memory bytecode = hex"608060405234801561001057600080fd5b50610128806100206000396000f3fe608060408190527f38dc9c6800000000000000000000000000000000000000000000000000000000815260009073deaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD906338dc9c689060849060209060048186803b158015605f57600080fd5b505afa1580156072573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906094919060b9565b90503660008037600080366000845af43d6000803e80801560b4573d6000f35b3d6000fd5b60006020828403121560c9578081fd5b815173ffffffffffffffffffffffffffffffffffffffff8116811460eb578182fd5b939250505056fea2646970667358221220fdc58b44f80b9f0e5d40441fd91201d5e8359fd755ec84feeef0b794c446ba9a64736f6c63430008040033";
+        bytes memory bytecode = hex"608060405234801561001057600080fd5b50610128806100206000396000f3fe608060408190527f38dc9c6800000000000000000000000000000000000000000000000000000000815260009073deaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD906338dc9c689060849060209060048186803b158015605f57600080fd5b505afa1580156072573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906094919060b9565b90503660008037600080366000845af43d6000803e80801560b4573d6000f35b3d6000fd5b60006020828403121560c9578081fd5b815173ffffffffffffffffffffffffffffffffffffffff8116811460eb578182fd5b939250505056fea2646970667358221220fdc58b44f80b9f0e5d40441fd91201d5e8359fd755ec84feeef0b794c446ba9a64736f6c63430008040033";
         address identityAddress;
         assembly {
-            identityAddress := create2(0, add(bytecode, 0x20), mload(bytecode), saltHash)
+            identityAddress := create2(
+                0,
+                add(bytecode, 0x20),
+                mload(bytecode),
+                saltHash
+            )
         }
         ICxipIdentity(identityAddress).init(wallet, secondaryWallet);
         _walletToIdentityMap[wallet] = identityAddress;
         _identityMap[identityAddress] = true;
         _notifyIdentityCreated(identityAddress);
         _notifyIdentityWalletAdded(identityAddress, wallet, wallet);
-        if (usingSecondaryWallet) {
-            _notifyIdentityWalletAdded(identityAddress, wallet, secondaryWallet);
+        if(usingSecondaryWallet) {
+            _notifyIdentityWalletAdded(
+                identityAddress,
+                wallet,
+                secondaryWallet
+            );
         }
     }
 
@@ -144,11 +172,24 @@ contract CxipProvenance {
      */
     function informAboutNewWallet(address newWallet) public nonReentrant {
         address identityAddress = msg.sender;
-        require(_identityMap[identityAddress], "CXIP: invalid Identity contract");
-        require(Address.isZero(_walletToIdentityMap[newWallet]), "CXIP: wallet already added");
+        require(
+            _identityMap[identityAddress],
+            "CXIP: invalid Identity contract"
+        );
+        require(
+            Address.isZero(_walletToIdentityMap[newWallet]),
+            "CXIP: wallet already added"
+        );
         ICxipIdentity identity = ICxipIdentity(identityAddress);
-        require(identity.isWalletRegistered(newWallet), "CXIP: unregistered wallet");
-        _notifyIdentityWalletAdded(identityAddress, identity.getAuthorizer(newWallet), newWallet);
+        require(
+            identity.isWalletRegistered(newWallet),
+            "CXIP: unregistered wallet"
+        );
+        _notifyIdentityWalletAdded(
+            identityAddress,
+            identity.getAuthorizer(newWallet),
+            newWallet
+        );
         _walletToIdentityMap[newWallet] = identityAddress;
     }
 
@@ -177,7 +218,9 @@ contract CxipProvenance {
      * @param identityAddress Contract address of the identity
      * @return bool Returns true if identity was blacklisted.
      */
-    function isIdentityBlacklisted(address identityAddress) public view returns (bool) {
+    function isIdentityBlacklisted(
+        address identityAddress
+    ) public view returns (bool) {
         return _blacklistMap[identityAddress];
     }
 
@@ -187,8 +230,13 @@ contract CxipProvenance {
      * @param identityAddress Contract address of the identity
      * @return bool Returns true if identity was created through proper provenance.
      */
-    function isIdentityValid(address identityAddress) public view returns (bool) {
-        return (_identityMap[identityAddress] && !_blacklistMap[identityAddress]);
+    function isIdentityValid(
+        address identityAddress
+    ) public view returns (bool) {
+        return (
+            _identityMap[identityAddress]
+            && !_blacklistMap[identityAddress]
+        );
     }
 
     /**
@@ -196,7 +244,10 @@ contract CxipProvenance {
      * @param contractAddress Address of identity that is being blacklisted.
      * @param reason String URI of Arweave, IPFS, or HTTP link explaining reason for blacklisting.
      */
-    function _notifyIdentityBlacklisted(address contractAddress, string calldata reason) internal {
+    function _notifyIdentityBlacklisted(
+        address contractAddress,
+        string calldata reason
+    ) internal {
         emit IdentityBlacklisted(contractAddress, reason);
     }
 
