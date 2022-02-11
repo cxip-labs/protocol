@@ -41,7 +41,6 @@ async function main() {
       ),
       salt
     )
-
     .send({
       from: provider.addresses[0],
     })

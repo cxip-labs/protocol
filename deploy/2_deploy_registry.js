@@ -29,9 +29,7 @@ async function main() {
   const salt =
     '0x0000000000000000000000000000000000000000000000000000000044E1DD04';
   const result = await contract.methods
-
     .deploy(bytecode, salt)
-
     .send({
       from: provider.addresses[0],
     })

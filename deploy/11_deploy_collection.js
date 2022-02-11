@@ -45,10 +45,6 @@ let parameter = {
 
 // Function Call
 FACTORY.deploy(payload)
-  // .estimateGas(function(err, gas){
-  //     console.log(gas);
-  //     process.exit ();
-  // });
   .send(parameter, function (err, transactionHash) {
     console.log('Transaction Hash :', transactionHash);
   })

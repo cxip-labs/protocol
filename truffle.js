@@ -1,8 +1,7 @@
 const fs = require('fs');
 const HDWalletProvider = require('truffle-hdwallet-provider');
 const MNEMONIC = process.env.MNEMONIC || '';
-const INFURA_API_KEY =
-  process.env.INFURA_API_KEY || '0429681acb2a4a9d869c63e831d64425';
+const INFURA_API_KEY = process.env.INFURA_API_KEY || '';
 const LOCAL_HOST_URL = 'http://localhost:8545';
 const CXIP_NODE_URL = 'https://rpc.cxip.dev';
 const RINKEBY_NODE_URL = 'https://rinkeby.infura.io/v3/' + INFURA_API_KEY;

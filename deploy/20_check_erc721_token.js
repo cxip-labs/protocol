@@ -16,10 +16,11 @@ const PROVENANCE_ADDRESS = fs
   .readFileSync('./data/' + NETWORK + '.provenance.proxy.address', 'utf8')
   .trim();
 
-const provenance = new web3.eth.Contract(PROVENANCE_ABI, PROVENANCE_ADDRESS, {
-  // gasLimit: '1721975',
-  // gasPrice: '70000000000',
-});
+const provenance = new web3.eth.Contract(
+  PROVENANCE_ABI,
+  PROVENANCE_ADDRESS,
+  {}
+);
 
 const error = function (err) {
   console.log(err);

@@ -16,10 +16,11 @@ const PROVENANCE_ADDRESS = fs
   .readFileSync('./data/' + NETWORK + '.provenance.proxy.address', 'utf8')
   .trim();
 
-const provenance = new web3.eth.Contract(PROVENANCE_ABI, PROVENANCE_ADDRESS, {
-  // gasLimit: '1721975',
-  // gasPrice: '70000000000',
-});
+const provenance = new web3.eth.Contract(
+  PROVENANCE_ABI,
+  PROVENANCE_ADDRESS,
+  {}
+);
 
 const error = function (err) {
   console.log(err);
@@ -50,13 +51,10 @@ async function main() {
     .call(from)
     .catch(error);
 
-  const contract = new web3.eth.Contract(IDENTITY_ABI, IDENTITY_CONTRACT, {
-    // gasLimit: '6721975',
-    // gasPrice: '20000000000',
-  });
+  const contract = new web3.eth.Contract(IDENTITY_ABI, IDENTITY_CONTRACT, {});
 
   const result = await contract.methods
-    // createERC721Collection (bytes32 saltHash, address collectionCreator, Verification calldata verification, CollectionData calldata collectionData)
+    // createERC721Collection(bytes32 saltHash, address collectionCreator, Verification calldata verification, CollectionData calldata collectionData)
     .createERC721Collection(
       salt,
       wallet,
