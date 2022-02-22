@@ -173,7 +173,7 @@ contract CxipERC721 {
         return
             string(
                 abi.encodePacked(
-                    "https://arweave.net/",
+                    "https://arweave.cxip.dev/",
                     _tokenData[tokenId].arweave,
                     _tokenData[tokenId].arweave2
                 )
@@ -182,13 +182,13 @@ contract CxipERC721 {
 
     /**
      * @notice Gets the URI of the NFT backup from CXIP.
-     * @dev Concatenates to https://nft.cxip.io/.
+     * @dev Concatenates to https://nft.cxip.dev/.
      * @return string The URI.
      */
     function contractURI() external view returns (string memory) {
         return
             string(
-                abi.encodePacked("https://nft.cxip.io/", Strings.toHexString(address(this)), "/")
+                abi.encodePacked("https://nft.cxip.dev/", Strings.toHexString(address(this)), "/")
             );
     }
 
@@ -221,7 +221,7 @@ contract CxipERC721 {
         return
             string(
                 abi.encodePacked(
-                    "https://ipfs.io/ipfs/",
+                    "https://ipfs.cxip.dev/",
                     _tokenData[tokenId].ipfs,
                     _tokenData[tokenId].ipfs2
                 )
@@ -314,7 +314,7 @@ contract CxipERC721 {
         return
             string(
                 abi.encodePacked(
-                    "https://arweave.net/",
+                    "https://arweave.cxip.dev/",
                     _tokenData[tokenId].arweave,
                     _tokenData[tokenId].arweave2
                 )
@@ -521,7 +521,7 @@ contract CxipERC721 {
         _mint(tokenData.creator, id);
         _tokenData[id] = tokenData;
         emit PermanentURI(
-            string(abi.encodePacked("https://arweave.net/", tokenData.arweave, tokenData.arweave2)),
+            string(abi.encodePacked("https://arweave.cxip.dev/", tokenData.arweave, tokenData.arweave2)),
             id
         );
         return id;
@@ -575,7 +575,7 @@ contract CxipERC721 {
      * @return string the token URI.
      */
     function baseURI() public view returns (string memory) {
-        return string(abi.encodePacked("https://cxip.io/nft/", Strings.toHexString(address(this))));
+        return string(abi.encodePacked("https://cxip.dev/nft/", Strings.toHexString(address(this))));
     }
 
     /**
@@ -607,10 +607,10 @@ contract CxipERC721 {
     function isApprovedForAll(address wallet, address operator) public view returns (bool) {
         return (_operatorApprovals[wallet][operator] ||
             // Rarible Transfer Proxy
-            0x4feE7B061C97C9c496b01DbcE9CDb10c02f0a0Be == operator ||
+            0x72617269626C655472616E7366657250726F7879 == operator ||
             // OpenSea Transfer Proxy
             address(
-                OpenSeaProxyRegistry(0xa5409ec958C83C3f309868babACA7c86DCB077c1).proxies(wallet)
+                OpenSeaProxyRegistry(0x6f70656E5365615472616E7366657250726F7879).proxies(wallet)
             ) ==
             operator);
     }
@@ -748,7 +748,7 @@ contract CxipERC721 {
      * @return ICxipRegistry The address of the top-level CXIP Registry smart contract.
      */
     function getRegistry() internal pure returns (ICxipRegistry) {
-        return ICxipRegistry(0xC267d41f81308D7773ecB3BDd863a902ACC01Ade);
+        return ICxipRegistry(0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD);
     }
 
     /** Disabled due to tokenEnumeration not enabled.

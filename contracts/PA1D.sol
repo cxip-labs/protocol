@@ -74,7 +74,7 @@ contract PA1D {
         //          */
         //         (
         //             bool setProviderSuccess, /*bytes memory setProviderResponse*/
-        //         ) = address(0xEa90CFad1b8e030B8Fd3E63D22074E0AEb8E0DCD).call(
+        //         ) = address(0x20202052617269626C6520526F79616c74696573).call(
         //                 /**
         //                  * @dev We hardcode the bytes4 function hash to save on gas
         //                  */
@@ -90,7 +90,7 @@ contract PA1D {
      * @return The address of the top-level CXIP Registry smart contract.
      */
     function getRegistry() internal pure returns (ICxipRegistry) {
-        return ICxipRegistry(0xC267d41f81308D7773ecB3BDd863a902ACC01Ade);
+        return ICxipRegistry(0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD);
     }
 
     /**

@@ -4,7 +4,9 @@ const MNEMONIC = process.env.MNEMONIC || '';
 const INFURA_API_KEY = process.env.INFURA_API_KEY || '';
 const LOCAL_HOST_URL = 'http://localhost:8545';
 const CXIP_NODE_URL = 'https://rpc.cxip.dev';
-const RINKEBY_NODE_URL = 'https://rinkeby.infura.io/v3/' + INFURA_API_KEY;
+// const RINKEBY_NODE_URL = 'https://rinkeby.infura.io/v3/' + INFURA_API_KEY;
+const RINKEBY_NODE_URL =
+  'https://eth-rinkeby.alchemyapi.io/v2/p_nUOsWwtpAhKlKHuMNPIuxfeMpYkCmg';
 const MAINNET_NODE_URL =
   'https://97a530cec94a42fcb0e5fbaea538f149.eth.rpc.rivet.cloud';
 

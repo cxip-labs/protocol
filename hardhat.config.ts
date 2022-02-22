@@ -36,6 +36,10 @@ const config: HardhatUserConfig = {
       url: MAINNET_URL,
       accounts: [MAINNET_PRIVATE_KEY],
     },
+    rinkeby: {
+      url: RINKEBY_URL,
+      accounts: [RINKEBY_PRIVATE_KEY],
+    },
     coverage: {
       url: 'http://127.0.0.1:8555',
     },
@@ -43,7 +47,7 @@ const config: HardhatUserConfig = {
   solidity: {
     compilers: [
       {
-        version: '0.8.9',
+        version: '0.8.4',
       },
     ],
     settings: {
