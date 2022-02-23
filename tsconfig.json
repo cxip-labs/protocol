@@ -1,18 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es2018",
+    "target": "es5",
     "module": "commonjs",
-    "moduleResolution": "node",
-    "importHelpers": true,
-    "declaration": true,
-    "sourceMap": true,
-    "strict": false,
+    "strict": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "outDir": "dist",
-    "rootDirs": ["./src", "./scripts", "./test"],
     "resolveJsonModule": true
   },
-  "include": ["./typechain", "./addresses", "./test", "index.ts"],
+  "include": ["./scripts", "./deploy", "./test"],
   "files": ["./hardhat.config.ts"]
 }

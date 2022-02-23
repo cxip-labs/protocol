@@ -30,7 +30,6 @@ async function main() {
   const salt =
     '0x0000000000000000000000000000000000000000000000000000000000000001';
   const result = await contract.methods
-
     .deploy(
       bytecode.replace(
         /deaddeaddeaddeaddeaddeaddeaddeaddeaddead/gi,
