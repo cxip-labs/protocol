@@ -748,7 +748,7 @@ contract CxipERC721 {
      * @return ICxipRegistry The address of the top-level CXIP Registry smart contract.
      */
     function getRegistry() internal pure returns (ICxipRegistry) {
-        return ICxipRegistry(0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512);
+        return ICxipRegistry(0xdFbb74177C45C82aC06327C204bB5Ef2dAeC57B8);
     }
 
     /** Disabled due to tokenEnumeration not enabled.
