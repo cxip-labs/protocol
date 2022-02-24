@@ -521,9 +521,7 @@ contract CxipERC721 {
         _mint(tokenData.creator, id);
         _tokenData[id] = tokenData;
         emit PermanentURI(
-            string(
-                abi.encodePacked("https://arweave.cxip.dev/", tokenData.arweave, tokenData.arweave2)
-            ),
+            string(abi.encodePacked("https://arweave.cxip.dev/", tokenData.arweave, tokenData.arweave2)),
             id
         );
         return id;
@@ -577,8 +575,7 @@ contract CxipERC721 {
      * @return string the token URI.
      */
     function baseURI() public view returns (string memory) {
-        return
-            string(abi.encodePacked("https://cxip.dev/nft/", Strings.toHexString(address(this))));
+        return string(abi.encodePacked("https://cxip.dev/nft/", Strings.toHexString(address(this))));
     }
 
     /**
@@ -751,7 +748,7 @@ contract CxipERC721 {
      * @return ICxipRegistry The address of the top-level CXIP Registry smart contract.
      */
     function getRegistry() internal pure returns (ICxipRegistry) {
-        return ICxipRegistry(0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD);
+        return ICxipRegistry(0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512);
     }
 
     /** Disabled due to tokenEnumeration not enabled.

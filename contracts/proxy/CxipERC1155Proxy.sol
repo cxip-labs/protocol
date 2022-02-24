@@ -16,7 +16,7 @@ import "../interface/ICxipRegistry.sol";
 
 contract CxipERC1155Proxy {
     fallback() external payable {
-        address _target = ICxipRegistry(0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD)
+        address _target = ICxipRegistry(0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512)
             .getERC1155CollectionSource();
         assembly {
             calldatacopy(0, 0, calldatasize())
