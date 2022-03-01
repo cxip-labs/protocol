@@ -1,10 +1,12 @@
 {
-  "registry": "0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD",
+  "registry": "this gets injected by the build/deploy process",
   "raribleRoyaltiesProxy": "0x20202052617269626C6520526F79616c74696573",
   "raribleTransferProxy": "0x72617269626C655472616E7366657250726F7879",
   "openSeaTransferProxy": "0x6f70656E5365615472616E7366657250726F7879",
   "cxipDomainName": "https://cxip.dev/",
   "cxipNFTDomainName": "https://nft.cxip.dev/",
   "ipfsDomainName": "https://ipfs.cxip.dev/",
-  "arweaveDomainName": "https://arweave.cxip.dev/"
+  "arweaveDomainName": "https://arweave.cxip.dev/",
+  "identityProxyBytecode": "this gets injected by the build/deploy process",
+  "erc721ProxyBytecode": "this gets injected by the build/deploy process"
 }
