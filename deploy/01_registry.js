@@ -40,54 +40,54 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     return;
   }
 
-  // const replaceValues = function (data) {
-  //   Object.keys(buildConfig).forEach(function (key, index) {
-  //     data = data.replace(new RegExp(buildConfig[key], 'gi'), config[key]);
-  //   });
-  //   return data;
-  // };
+  const replaceValues = function (data) {
+    Object.keys(buildConfig).forEach(function (key, index) {
+      data = data.replace(new RegExp(buildConfig[key], 'gi'), config[key]);
+    });
+    return data;
+  };
 
-  // const recursiveBuild = function (buildDir, deployDir) {
-  //   fs.readdir(buildDir, function (err, files) {
-  //     if (err) {
-  //       throw err;
-  //     }
-  //     files.forEach(function (file) {
-  //       fs.stat(buildDir + '/' + file, function (err, stats) {
-  //         if (err) {
-  //           throw err;
-  //         }
-  //         if (stats.isDirectory()) {
-  //           // we go into it
-  //           fs.mkdir(deployDir + '/' + file, function () {
-  //             recursiveBuild(buildDir + '/' + file, deployDir + '/' + file);
-  //           });
-  //         } else {
-  //           if (file.endsWith('.sol')) {
-  //             console.log(file);
-  //             fs.readFile(buildDir + '/' + file, 'utf8', function (err, data) {
-  //               if (err) {
-  //                 throw err;
-  //               }
-  //               fs.writeFile(
-  //                 deployDir + '/' + file,
-  //                 replaceValues(data),
-  //                 function (err) {
-  //                   if (err) {
-  //                     throw err;
-  //                   }
-  //                 }
-  //               );
-  //             });
-  //           }
-  //         }
-  //       });
-  //     });
-  //   });
-  // };
-  // fs.mkdir(deployDir, function () {
-  //   recursiveBuild(buildDir, deployDir);
-  // });
+  const recursiveBuild = function (buildDir, deployDir) {
+    fs.readdir(buildDir, function (err, files) {
+      if (err) {
+        throw err;
+      }
+      files.forEach(function (file) {
+        fs.stat(buildDir + '/' + file, function (err, stats) {
+          if (err) {
+            throw err;
+          }
+          if (stats.isDirectory()) {
+            // we go into it
+            fs.mkdir(deployDir + '/' + file, function () {
+              recursiveBuild(buildDir + '/' + file, deployDir + '/' + file);
+            });
+          } else {
+            if (file.endsWith('.sol')) {
+              console.log(file);
+              fs.readFile(buildDir + '/' + file, 'utf8', function (err, data) {
+                if (err) {
+                  throw err;
+                }
+                fs.writeFile(
+                  deployDir + '/' + file,
+                  replaceValues(data),
+                  function (err) {
+                    if (err) {
+                      throw err;
+                    }
+                  }
+                );
+              });
+            }
+          }
+        });
+      });
+    });
+  };
+  fs.mkdir(deployDir, function () {
+    recursiveBuild(buildDir, deployDir);
+  });
 };
 
 module.exports.tags = ['CxipRegistry'];
