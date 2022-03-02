@@ -1,32 +1,40 @@
-import * as dotenv from 'dotenv';
-dotenv.config();
-
-import { HardhatUserConfig } from 'hardhat/config';
-// import 'hardhat-typechain';
+import '@nomiclabs/hardhat-waffle';
+import '@typechain/hardhat';
 import 'hardhat-gas-reporter';
-import '@nomiclabs/hardhat-etherscan';
-
+import 'hardhat-deploy';
 import '@nomiclabs/hardhat-ethers';
-import '@openzeppelin/hardhat-upgrades';
+import '@nomiclabs/hardhat-etherscan';
+import { HardhatUserConfig } from 'hardhat/config';
+import dotenv from 'dotenv';
 dotenv.config();
 
-const RINKEBY_URL = process.env.RINKEBY_URL || '';
-const RINKEBY_PRIVATE_KEY =
-  process.env.RINKEBY_PRIVATE_KEY! ||
-  '0xc87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3'; // well known private key
+// avoid hardhat error if no key in .env file
+const MOCK_PRIVATE_KEY = '0x' + '11'.repeat(32);
 
 const ROPSTEN_URL = process.env.ROPSTEN_URL || '';
 const ROPSTEN_PRIVATE_KEY =
-  process.env.ROPSTEN_PRIVATE_KEY! ||
-  '0xc87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3'; // well known private key
+  process.env.ROPSTEN_PRIVATE_KEY! || MOCK_PRIVATE_KEY;
+
+const RINKEBY_URL = process.env.RINKEBY_URL || '';
+const RINKEBY_PRIVATE_KEY =
+  process.env.RINKEBY_PRIVATE_KEY! || MOCK_PRIVATE_KEY;
 
 const MAINNET_URL = process.env.MAINNET_URL || '';
 const MAINNET_PRIVATE_KEY =
-  process.env.MAINNET_PRIVATE_KEY || '0x' + '11'.repeat(32); // this is to avoid hardhat error
+  process.env.MAINNET_PRIVATE_KEY || '0x' + '11'.repeat(32);
+
+const CXIP_URL = process.env.MAINNET_URL || '';
+const CXIP_PRIVATE_KEY =
+  process.env.MAINNET_PRIVATE_KEY || '0x' + '11'.repeat(32);
 
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY;
 
+/**
+ * Go to https://hardhat.org/config/ to learn more
+ * @type import('hardhat/config').HardhatUserConfig
+ */
 const config: HardhatUserConfig = {
+  defaultNetwork: 'hardhat',
   networks: {
     localhost: {},
     hardhat: {
@@ -36,20 +44,28 @@ const config: HardhatUserConfig = {
       url: MAINNET_URL,
       accounts: [MAINNET_PRIVATE_KEY],
     },
+    rinkeby: {
+      url: RINKEBY_URL,
+      accounts: [RINKEBY_PRIVATE_KEY],
+    },
+    cxip: {
+      url: CXIP_URL,
+      accounts: [CXIP_PRIVATE_KEY],
+    },
     coverage: {
       url: 'http://127.0.0.1:8555',
     },
   },
+  namedAccounts: {
+    deployer: 0,
+    purchaser: 0,
+  },
   solidity: {
-    compilers: [
-      {
-        version: '0.8.4',
-      },
-    ],
+    version: '0.8.12',
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200,
+        runs: 100,
       },
     },
   },

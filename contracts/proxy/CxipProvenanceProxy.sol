@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.12;
 
 /*______/\\\\\\\\\__/\\\_______/\\\__/\\\\\\\\\\\__/\\\\\\\\\\\\\___
  _____/\\\////////__\///\\\___/\\\/__\/////\\\///__\/\\\/////////\\\_
@@ -16,7 +16,7 @@ import "../interface/ICxipRegistry.sol";
 
 contract CxipProvenanceProxy {
     fallback() external payable {
-        address _target = ICxipRegistry(0xC267d41f81308D7773ecB3BDd863a902ACC01Ade)
+        address _target = ICxipRegistry(0xdFbb74177C45C82aC06327C204bB5Ef2dAeC57B8)
             .getProvenanceSource();
         assembly {
             calldatacopy(0, 0, calldatasize())

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.12;
 
 /*______/\\\\\\\\\__/\\\_______/\\\__/\\\\\\\\\\\__/\\\\\\\\\\\\\___
  _____/\\\////////__\///\\\___/\\\/__\/////\\\///__\/\\\/////////\\\_
@@ -269,6 +269,6 @@ contract CxipAsset {
      * @return ICxipRegistry The address of the top-level CXIP Registry smart contract.
      */
     function getRegistry() internal pure returns (ICxipRegistry) {
-        return ICxipRegistry(0xC267d41f81308D7773ecB3BDd863a902ACC01Ade);
+        return ICxipRegistry(0xdFbb74177C45C82aC06327C204bB5Ef2dAeC57B8);
     }
 }
