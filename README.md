@@ -1,16 +1,15 @@
 ![Architecture Diagram](./static/readme-banner.jpg)
 
-**How to load the Smart Contracts**
+# CXIP Protocol
 
-`npm install`
+### Install:
 
-Rename `sample.env` to just `.env`
-Rename `sample.mnemonic` to just `mnemonic`
+`yarn`
 
-For first time setup, run `npm run-script build-compile` to create the contracts folders needed for running deployments.
+### Deploying:
 
-Run two terminal windows, in first window run `npm run-script ganache`, in second window run `sh ./scripts/deploy.sh`
+`hardhat deploy --network <network-to-deploy-to>`
 
-This should get you to full deployment on localhost
+### Verifying:
 
-For most up-to-date ABI codes for external use, run `npm run-script abi` to generate clean JSON files in the `abi` dir.
+`hardhat sourcify --network rinkeby && hardhat etherscan-verify --network rinkeby`
