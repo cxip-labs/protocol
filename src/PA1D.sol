@@ -61,29 +61,7 @@ contract PA1D {
         uint256 tokenId,
         address payable receiver,
         uint256 bp
-    ) public onlyOwner {
-        // if (Address.isZero(receiver)) {
-        //     receiver = payable(this);
-        // }
-        // setRoyalties(tokenId, receiver, bp);
-        // // We register the smart contract with Rarible(V1) as the controller for royalties.
-        // // This makes sure that all royalty info will be queried from the contract and not somewhere else
-        // /**
-        //  * @dev Keep in mind that Rarible V1 makes a "owner" function call to the overlying smart contract.
-        //  * @dev It is mandatory to have owner function call return this contract address, or the function will fail.
-        //  */
-        // (
-        //     bool setProviderSuccess, /*bytes memory setProviderResponse*/
-        // ) = address(0x20202052617269626C6520526F79616c74696573).call(
-        //         /**
-        //          * @dev We hardcode the bytes4 function hash to save on gas
-        //          */
-        //         // abi.encodeWithSignature(
-        //         //     'setProviderByToken(address,address)',
-        //         abi.encodeWithSelector(bytes4(0xd836f013), address(this), address(this))
-        //     );
-        // require(setProviderSuccess, "PA1D: failed setting Rarible");
-    }
+    ) public onlyOwner {}
 
     /**
      * @dev Get the top-level CXIP Registry smart contract. Function must always be internal to prevent miss-use/abuse through bad programming practices.
@@ -327,11 +305,9 @@ contract PA1D {
         require(balance - gasCost > 10000, "PA1D: Not enough ETH to transfer");
         balance = balance - gasCost;
         uint256 sending;
-        // uint256 sent;
         for (uint256 i = 0; i < length; i++) {
             sending = ((bps[i] * balance) / 10000);
             addresses[i].transfer(sending);
-            // sent = sent + sending;
         }
     }
 
@@ -351,7 +327,6 @@ contract PA1D {
         for (uint256 i = 0; i < length; i++) {
             sending = ((bps[i] * balance) / 10000);
             require(erc20.transfer(addresses[i], sending), "PA1D: Couldn't transfer token");
-            // sent = sent + sending;
         }
     }
 
@@ -370,11 +345,9 @@ contract PA1D {
             erc20 = IERC20(tokenAddresses[t]);
             balance = erc20.balanceOf(address(this));
             require(balance > 10000, "PA1D: Not enough tokens to transfer");
-            // uint256 sent;
             for (uint256 i = 0; i < addresses.length; i++) {
                 sending = ((bps[i] * balance) / 10000);
                 require(erc20.transfer(addresses[i], sending), "PA1D: Couldn't transfer token");
-                // sent = sent + sending;
             }
         }
     }
@@ -513,9 +486,6 @@ contract PA1D {
             // Rarible V1
             // bytes4(keccak256('getFeeRecipients(uint256)')) == 0xb9c4d9fb
             interfaceId == 0xb9c4d9fb ||
-            // Rarible V2(not being used since it creates a conflict with Manifold royalties)
-            // bytes4(keccak256('getRoyalties(uint256)')) == 0xcad96cca
-            // interfaceId == 0xcad96cca ||
             // Manifold
             // bytes4(keccak256('getRoyalties(uint256)')) == 0xbb3bafd6
             interfaceId == 0xbb3bafd6 ||
@@ -599,16 +569,6 @@ contract PA1D {
         }
         return receivers;
     }
-
-    // Rarible V2(not being used since it creates a conflict with Manifold royalties)
-    // struct Part {
-    //     address payable account;
-    //     uint96 value;
-    // }
-
-    // function getRoyalties(uint256 tokenId) public view returns (Part[] memory) {
-    //     return royalties[id];
-    // }
 
     // Manifold
     function getRoyalties(uint256 tokenId)

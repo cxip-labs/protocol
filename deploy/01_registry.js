@@ -36,7 +36,13 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   console.log(`Config: ${JSON.stringify(config, null, 2)}`);
 
   if (network === 'hardhat') {
+    console.warn(
+      '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
+    );
     console.log('Test network detected. Skipping code injection');
+    console.log(
+      '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
+    );
     return;
   }
 
