@@ -2,13 +2,15 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  // TODO: Do we need to the registry address?
-  const cxipRegistry = await ethers.getContract('CxipRegistry');
-
-  await deploy('CxipAssetProxy', {
+  const cxipAssetProxy = await deploy('CxipAssetProxy', {
     from: deployer,
     args: [],
     log: true,
+  });
+
+  await hre.run('verify:verify', {
+    address: cxipAssetProxy.address,
+    constructorArguments: [],
   });
 
   await deploy('CxipCopyrightProxy', {
@@ -47,6 +49,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     log: true,
   });
 };
+
 module.exports.tags = [
   'CxipAssetProxy',
   'CxipCopyrightProxy',

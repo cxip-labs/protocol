@@ -1,0 +1,239 @@
+{
+  "address": "0x2b1fd17e414a7F411F14dF0376279AD570a33f77",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "contractAddress",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "salt",
+          "type": "uint256"
+        }
+      ],
+      "name": "Deployed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "code",
+          "type": "bytes"
+        },
+        {
+          "internalType": "uint256",
+          "name": "salt",
+          "type": "uint256"
+        }
+      ],
+      "name": "deploy",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x01c82b5859ac4a3682ca5d5e258c495ccd27a048b7e67354b10eb89bcb2da323",
+  "receipt": {
+    "to": null,
+    "from": "0x9E22aA58Bf2F5E60801b90FDD3b51B65d38eA20b",
+    "contractAddress": "0x2b1fd17e414a7F411F14dF0376279AD570a33f77",
+    "transactionIndex": 15,
+    "gasUsed": "281801",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000020000000000000000000000000000000000010000000000000000080000000000001000000000000000000000000000000000000020000000000008000000800000000000000000000000000000000400000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000020000000000000000000002000000000000000000000000000000000000000000000",
+    "blockHash": "0x79a427436852adb971ab1a58faf740eb553cd1f4584090aca4df00f00a8f6158",
+    "transactionHash": "0x01c82b5859ac4a3682ca5d5e258c495ccd27a048b7e67354b10eb89bcb2da323",
+    "logs": [
+      {
+        "transactionIndex": 15,
+        "blockNumber": 10290536,
+        "transactionHash": "0x01c82b5859ac4a3682ca5d5e258c495ccd27a048b7e67354b10eb89bcb2da323",
+        "address": "0x2b1fd17e414a7F411F14dF0376279AD570a33f77",
+        "topics": [
+          "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x0000000000000000000000009e22aa58bf2f5e60801b90fdd3b51b65d38ea20b"
+        ],
+        "data": "0x",
+        "logIndex": 28,
+        "blockHash": "0x79a427436852adb971ab1a58faf740eb553cd1f4584090aca4df00f00a8f6158"
+      }
+    ],
+    "blockNumber": 10290536,
+    "cumulativeGasUsed": "3567756",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "numDeployments": 1,
+  "solcInputHash": "c96beba2fafffe6939ea20bcc99ed885",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.12+commit.f00d7308\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"salt\",\"type\":\"uint256\"}],\"name\":\"Deployed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"code\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"salt\",\"type\":\"uint256\"}],\"name\":\"deploy\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"CXIP-Labs\",\"details\":\"Custom smart contract to achieve target deployment addresses via salt and create2.\",\"events\":{\"Deployed(address,uint256)\":{\"details\":\"Event used for transparent auditing of all smart contracts deployed for CXIP.\",\"params\":{\"contractAddress\":\"Address of the deployed smart contract.\",\"salt\":\"Salt/hash that was used in conjunction with bytecode for create2.\"}},\"OwnershipTransferred(address,address)\":{\"details\":\"Event used for transparent auditing when another address takes ownership of the contract.\",\"params\":{\"newOwner\":\"Address of the new contract owner.\",\"previousOwner\":\"Address of the previous contract owner.\"}}},\"kind\":\"dev\",\"methods\":{\"constructor\":{\"details\":\"No variables are passed in, owner is set to that of transaction creator.\"},\"deploy(bytes,uint256)\":{\"details\":\"You can include constructor arguments at the end of your bytecode.\",\"params\":{\"code\":\"The entire bytecode of the smart contract to create.\",\"salt\":\"A salt/hash to use with create2 to deploy to a specific address.\"}},\"owner()\":{\"returns\":{\"_0\":\"address Returns the address of the current contract owner.\"}},\"renounceOwnership()\":{\"details\":\"Avoid using this function, unless you will never need to use this smart contract again.\"},\"transferOwnership(address)\":{\"details\":\"This is irreversible, so take great care who you transfer ownership to.\",\"params\":{\"newOwner\":\"Address of the new owner for smart contract.\"}}},\"stateVariables\":{\"_owner\":{\"details\":\"Address of contract owner. This address can run all onlyOwner functions.\"}},\"title\":\"CXIP Factory\",\"version\":1},\"userdoc\":{\"events\":{\"Deployed(address,uint256)\":{\"notice\":\"Event emitted when a smart contract is deployed.\"},\"OwnershipTransferred(address,address)\":{\"notice\":\"Event emitted when contract ownership is transfered to another address.\"}},\"kind\":\"user\",\"methods\":{\"constructor\":{\"notice\":\"Constructor is empty and not utilised.\"},\"deploy(bytes,uint256)\":{\"notice\":\"Create a smart contract from the bytecode and salt.\"},\"owner()\":{\"notice\":\"Get current owner of smart contract.\"},\"renounceOwnership()\":{\"notice\":\"Remove owner from smart contract.\"},\"transferOwnership(address)\":{\"notice\":\"Transfer ownership of smart contract to another address.\"}},\"notice\":\"Smart contract for deploying CXIP specific contracts.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/CxipFactory.sol\":\"CxipFactory\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":100},\"remappings\":[]},\"sources\":{\"contracts/CxipFactory.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\n/*______/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\_______/\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\n _____/\\\\\\\\\\\\////////__\\\\///\\\\\\\\\\\\___/\\\\\\\\\\\\/__\\\\/////\\\\\\\\\\\\///__\\\\/\\\\\\\\\\\\/////////\\\\\\\\\\\\_\\n  ___/\\\\\\\\\\\\/_____________\\\\///\\\\\\\\\\\\\\\\\\\\\\\\/________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_\\n   __/\\\\\\\\\\\\_________________\\\\//\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\n    _\\\\/\\\\\\\\\\\\__________________\\\\/\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\/////////____\\n     _\\\\//\\\\\\\\\\\\_________________/\\\\\\\\\\\\\\\\\\\\\\\\_________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n      __\\\\///\\\\\\\\\\\\_____________/\\\\\\\\\\\\////\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n       ____\\\\////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\/___\\\\///\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\\\/\\\\\\\\\\\\_____________\\n        _______\\\\/////////__\\\\///_______\\\\///__\\\\///////////__\\\\///____________*/\\n\\n/**\\n * @title CXIP Factory\\n * @author CXIP-Labs\\n * @notice Smart contract for deploying CXIP specific contracts.\\n * @dev Custom smart contract to achieve target deployment addresses via salt and create2.\\n */\\ncontract CxipFactory {\\n    /**\\n     * @dev Address of contract owner. This address can run all onlyOwner functions.\\n     */\\n    address private _owner;\\n\\n    /**\\n     * @notice Event emitted when a smart contract is deployed.\\n     * @dev Event used for transparent auditing of all smart contracts deployed for CXIP.\\n     * @param contractAddress Address of the deployed smart contract.\\n     * @param salt Salt/hash that was used in conjunction with bytecode for create2.\\n     */\\n    event Deployed(address indexed contractAddress, uint256 indexed salt);\\n    /**\\n     * @notice Event emitted when contract ownership is transfered to another address.\\n     * @dev Event used for transparent auditing when another address takes ownership of the contract.\\n     * @param previousOwner Address of the previous contract owner.\\n     * @param newOwner Address of the new contract owner.\\n     */\\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\\n\\n    /**\\n     * @notice Constructor is empty and not utilised.\\n     * @dev No variables are passed in, owner is set to that of transaction creator.\\n     */\\n    constructor() {\\n        _setOwner(tx.origin);\\n    }\\n\\n    /**\\n     * @notice Get current owner of smart contract.\\n     * @return address Returns the address of the current contract owner.\\n     */\\n    function owner() public view returns (address) {\\n        return _owner;\\n    }\\n\\n    /**\\n     * @dev Special modifier to only allow an owner to run a function.\\n     */\\n    modifier onlyOwner() {\\n        require(owner() == _msgSender(), \\\"Ownable: caller is not the owner\\\");\\n        _;\\n    }\\n\\n    /**\\n     * @notice Create a smart contract from the bytecode and salt.\\n     * @dev You can include constructor arguments at the end of your bytecode.\\n     * @param code The entire bytecode of the smart contract to create.\\n     * @param salt A salt/hash to use with create2 to deploy to a specific address.\\n     */\\n    function deploy(bytes memory code, uint256 salt) public onlyOwner {\\n        address addr;\\n        assembly {\\n            addr := create2(0, add(code, 0x20), mload(code), salt)\\n            if iszero(extcodesize(addr)) {\\n                revert(0, 0)\\n            }\\n        }\\n        emit Deployed(addr, salt);\\n    }\\n\\n    /**\\n     * @notice Remove owner from smart contract.\\n     * @dev Avoid using this function, unless you will never need to use this smart contract again.\\n     */\\n    function renounceOwnership() public onlyOwner {\\n        _setOwner(address(0));\\n    }\\n\\n    /**\\n     * @notice Transfer ownership of smart contract to another address.\\n     * @dev This is irreversible, so take great care who you transfer ownership to.\\n     * @param newOwner Address of the new owner for smart contract.\\n     */\\n    function transferOwnership(address newOwner) public onlyOwner {\\n        require(newOwner != address(0), \\\"Ownable: new owner is the zero address\\\");\\n        _setOwner(newOwner);\\n    }\\n\\n    /**\\n     * @dev Internal short-hand function for getting address of caller.\\n     * @return address Returns the address of contract/wallet that is currently interacting with this smart contract.\\n     */\\n    function _msgSender() internal view returns (address) {\\n        return msg.sender;\\n    }\\n\\n    /**\\n     * @dev Internal function that sets owner of the smart contract. Only used on initialisation.\\n     */\\n    function _setOwner(address newOwner) private {\\n        address oldOwner = _owner;\\n        _owner = newOwner;\\n        emit OwnershipTransferred(oldOwner, newOwner);\\n    }\\n}\\n\",\"keccak256\":\"0xd37eaae8bb1ed22df3f7034da890d5a98494b2f62461abbe715a6e8aee38bcae\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5061001a3261001f565b61006f565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b6103ae8061007e6000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c8063715018a6146100515780638da5cb5b1461005b5780639c4ae2d01461007a578063f2fde38b1461008d575b600080fd5b6100596100a0565b005b600054604080516001600160a01b039092168252519081900360200190f35b61005961008836600461025e565b6100df565b61005961009b366004610313565b61015d565b6000546001600160a01b031633146100d35760405162461bcd60e51b81526004016100ca90610343565b60405180910390fd5b6100dd60006101f8565b565b6000546001600160a01b031633146101095760405162461bcd60e51b81526004016100ca90610343565b6000818351602085016000f59050803b61012257600080fd5b60405182906001600160a01b038316907fb03c53b28e78a88e31607a27e1fa48234dce28d5d9d9ec7b295aeb02e674a1e190600090a3505050565b6000546001600160a01b031633146101875760405162461bcd60e51b81526004016100ca90610343565b6001600160a01b0381166101ec5760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b60648201526084016100ca565b6101f5816101f8565b50565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b634e487b7160e01b600052604160045260246000fd5b6000806040838503121561027157600080fd5b823567ffffffffffffffff8082111561028957600080fd5b818501915085601f83011261029d57600080fd5b8135818111156102af576102af610248565b604051601f8201601f19908116603f011681019083821181831017156102d7576102d7610248565b816040528281528860208487010111156102f057600080fd5b826020860160208301376000602093820184015298969091013596505050505050565b60006020828403121561032557600080fd5b81356001600160a01b038116811461033c57600080fd5b9392505050565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e657260408201526060019056fea2646970667358221220ce3159b1e8846589a670b91f34245d5334c34497e873ea79ede6c7d5fb49b8f464736f6c634300080c0033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061004c5760003560e01c8063715018a6146100515780638da5cb5b1461005b5780639c4ae2d01461007a578063f2fde38b1461008d575b600080fd5b6100596100a0565b005b600054604080516001600160a01b039092168252519081900360200190f35b61005961008836600461025e565b6100df565b61005961009b366004610313565b61015d565b6000546001600160a01b031633146100d35760405162461bcd60e51b81526004016100ca90610343565b60405180910390fd5b6100dd60006101f8565b565b6000546001600160a01b031633146101095760405162461bcd60e51b81526004016100ca90610343565b6000818351602085016000f59050803b61012257600080fd5b60405182906001600160a01b038316907fb03c53b28e78a88e31607a27e1fa48234dce28d5d9d9ec7b295aeb02e674a1e190600090a3505050565b6000546001600160a01b031633146101875760405162461bcd60e51b81526004016100ca90610343565b6001600160a01b0381166101ec5760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b60648201526084016100ca565b6101f5816101f8565b50565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b634e487b7160e01b600052604160045260246000fd5b6000806040838503121561027157600080fd5b823567ffffffffffffffff8082111561028957600080fd5b818501915085601f83011261029d57600080fd5b8135818111156102af576102af610248565b604051601f8201601f19908116603f011681019083821181831017156102d7576102d7610248565b816040528281528860208487010111156102f057600080fd5b826020860160208301376000602093820184015298969091013596505050505050565b60006020828403121561032557600080fd5b81356001600160a01b038116811461033c57600080fd5b9392505050565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e657260408201526060019056fea2646970667358221220ce3159b1e8846589a670b91f34245d5334c34497e873ea79ede6c7d5fb49b8f464736f6c634300080c0033",
+  "devdoc": {
+    "author": "CXIP-Labs",
+    "details": "Custom smart contract to achieve target deployment addresses via salt and create2.",
+    "events": {
+      "Deployed(address,uint256)": {
+        "details": "Event used for transparent auditing of all smart contracts deployed for CXIP.",
+        "params": {
+          "contractAddress": "Address of the deployed smart contract.",
+          "salt": "Salt/hash that was used in conjunction with bytecode for create2."
+        }
+      },
+      "OwnershipTransferred(address,address)": {
+        "details": "Event used for transparent auditing when another address takes ownership of the contract.",
+        "params": {
+          "newOwner": "Address of the new contract owner.",
+          "previousOwner": "Address of the previous contract owner."
+        }
+      }
+    },
+    "kind": "dev",
+    "methods": {
+      "constructor": {
+        "details": "No variables are passed in, owner is set to that of transaction creator."
+      },
+      "deploy(bytes,uint256)": {
+        "details": "You can include constructor arguments at the end of your bytecode.",
+        "params": {
+          "code": "The entire bytecode of the smart contract to create.",
+          "salt": "A salt/hash to use with create2 to deploy to a specific address."
+        }
+      },
+      "owner()": {
+        "returns": {
+          "_0": "address Returns the address of the current contract owner."
+        }
+      },
+      "renounceOwnership()": {
+        "details": "Avoid using this function, unless you will never need to use this smart contract again."
+      },
+      "transferOwnership(address)": {
+        "details": "This is irreversible, so take great care who you transfer ownership to.",
+        "params": {
+          "newOwner": "Address of the new owner for smart contract."
+        }
+      }
+    },
+    "stateVariables": {
+      "_owner": {
+        "details": "Address of contract owner. This address can run all onlyOwner functions."
+      }
+    },
+    "title": "CXIP Factory",
+    "version": 1
+  },
+  "userdoc": {
+    "events": {
+      "Deployed(address,uint256)": {
+        "notice": "Event emitted when a smart contract is deployed."
+      },
+      "OwnershipTransferred(address,address)": {
+        "notice": "Event emitted when contract ownership is transfered to another address."
+      }
+    },
+    "kind": "user",
+    "methods": {
+      "constructor": {
+        "notice": "Constructor is empty and not utilised."
+      },
+      "deploy(bytes,uint256)": {
+        "notice": "Create a smart contract from the bytecode and salt."
+      },
+      "owner()": {
+        "notice": "Get current owner of smart contract."
+      },
+      "renounceOwnership()": {
+        "notice": "Remove owner from smart contract."
+      },
+      "transferOwnership(address)": {
+        "notice": "Transfer ownership of smart contract to another address."
+      }
+    },
+    "notice": "Smart contract for deploying CXIP specific contracts.",
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 5,
+        "contract": "contracts/CxipFactory.sol:CxipFactory",
+        "label": "_owner",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_address"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      }
+    }
+  }
+}

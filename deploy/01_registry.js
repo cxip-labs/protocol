@@ -22,22 +22,32 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     log: true,
   });
 
-  // This is a bit of a hack to inject the correct registry address and bytecode params into the build config.
   const cxipRegistry = await ethers.getContract('CxipRegistry');
+
+  // try {
+  //   await hre.run('verify:verify', {
+  //     address: cxipRegistry.address,
+  //     constructorArguments: [],
+  //   });
+  // } catch (error) {
+  //   console.error(error);
+  // }
+
+  // This is a bit of a hack to inject the correct registry address and bytecode params into the build config.
   config.registry = cxipRegistry.address;
 
-  // const cxipIdentityProxy = await hre.deployments.getArtifact(
-  //   'CxipIdentityProxy'
-  // );
-  // config.identityProxyBytecode = cxipIdentityProxy.bytecode.substring(2); // remove 0x;
+  const cxipIdentityProxy = await hre.deployments.getArtifact(
+    'CxipIdentityProxy'
+  );
+  config.identityProxyBytecode = cxipIdentityProxy.bytecode.substring(2); // remove 0x;
 
-  // const erc721Proxy = await hre.deployments.getArtifact('CxipERC721Proxy');
-  // config.erc721ProxyBytecode = erc721Proxy.bytecode.substring(2); // remove 0x
+  const erc721Proxy = await hre.deployments.getArtifact('CxipERC721Proxy');
+  config.erc721ProxyBytecode = erc721Proxy.bytecode.substring(2); // remove 0x
 
   console.log(`Config: ${JSON.stringify(config, null, 2)}`);
 
   if (network === 'hardhat') {
-    console.warn(
+    console.log(
       '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
     );
     console.log('Test network detected. Skipping code injection');
@@ -45,6 +55,8 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
       '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
     );
     return;
+  } else {
+    console.log('Injecting code into build contracts');
   }
 
   const replaceValues = function (data) {
@@ -92,6 +104,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
       });
     });
   };
+
   fs.mkdir(deployDir, function () {
     recursiveBuild(buildDir, deployDir);
   });

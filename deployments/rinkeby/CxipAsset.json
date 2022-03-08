@@ -1,0 +1,551 @@
+{
+  "address": "0xDBA5E376E2B5670a305cfE54d9a596886B2C8386",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "collectionAddress",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "identityAddress",
+          "type": "address"
+        }
+      ],
+      "name": "CollectionAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "collectionAddress",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "identityAddress",
+          "type": "address"
+        }
+      ],
+      "name": "CollectionCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "collectionAddress",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "identityAddress",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "TokenAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "collectionAddress",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "identityAddress",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "TokenCreated",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "creator",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "collection",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "fresh",
+          "type": "bool"
+        }
+      ],
+      "name": "AddCollection",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "creator",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "collection",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "fresh",
+          "type": "bool"
+        }
+      ],
+      "name": "AddToken",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "defaultUriType",
+      "outputs": [
+        {
+          "internalType": "enum UriType",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "collection",
+          "type": "address"
+        }
+      ],
+      "name": "getCollectionIdentity",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "collection",
+          "type": "address"
+        }
+      ],
+      "name": "getCollectionType",
+      "outputs": [
+        {
+          "internalType": "enum InterfaceType",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "collection",
+          "type": "address"
+        }
+      ],
+      "name": "isCollectionCertified",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "collection",
+          "type": "address"
+        }
+      ],
+      "name": "isCollectionOpen",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "collection",
+          "type": "address"
+        }
+      ],
+      "name": "isCollectionRegistered",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "collection",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "isTokenCertified",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "collection",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "isTokenRegistered",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x3c693fb8251905ee467ffd8f1f4318ed4aa7665a5bd0593191178c5ac33c3a33",
+  "receipt": {
+    "to": null,
+    "from": "0x9E22aA58Bf2F5E60801b90FDD3b51B65d38eA20b",
+    "contractAddress": "0xDBA5E376E2B5670a305cfE54d9a596886B2C8386",
+    "transactionIndex": 19,
+    "gasUsed": "880189",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0xdefac960bd4c4113f78d1cc2c9ddf0814d8096b271092a1e7aceaf867f499104",
+    "transactionHash": "0x3c693fb8251905ee467ffd8f1f4318ed4aa7665a5bd0593191178c5ac33c3a33",
+    "logs": [],
+    "blockNumber": 10290547,
+    "cumulativeGasUsed": "7908006",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "numDeployments": 1,
+  "solcInputHash": "00d0693220a035dee8021b6d43fbf0d9",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.12+commit.f00d7308\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"collectionAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"identityAddress\",\"type\":\"address\"}],\"name\":\"CollectionAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"collectionAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"identityAddress\",\"type\":\"address\"}],\"name\":\"CollectionCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"collectionAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"identityAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"TokenAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"collectionAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"identityAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"TokenCreated\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creator\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"collection\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"fresh\",\"type\":\"bool\"}],\"name\":\"AddCollection\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"creator\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"collection\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"fresh\",\"type\":\"bool\"}],\"name\":\"AddToken\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"defaultUriType\",\"outputs\":[{\"internalType\":\"enum UriType\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"collection\",\"type\":\"address\"}],\"name\":\"getCollectionIdentity\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"collection\",\"type\":\"address\"}],\"name\":\"getCollectionType\",\"outputs\":[{\"internalType\":\"enum InterfaceType\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"collection\",\"type\":\"address\"}],\"name\":\"isCollectionCertified\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"collection\",\"type\":\"address\"}],\"name\":\"isCollectionOpen\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"collection\",\"type\":\"address\"}],\"name\":\"isCollectionRegistered\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"collection\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"isTokenCertified\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"collection\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"isTokenRegistered\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"CXIP-Labs\",\"details\":\"Listen events broadcasted by this smart contract, to get all collections and NFT being minted with CXIP smart contracts.\",\"events\":{\"CollectionAdded(address,address)\":{\"details\":\"Emits event to record when an existing collection was added.\",\"params\":{\"collectionAddress\":\"Address of the collection smart contract.\",\"identityAddress\":\"Address of the identity smart contract.\"}},\"CollectionCreated(address,address)\":{\"details\":\"Emits event to record when a new collection is created.\",\"params\":{\"collectionAddress\":\"Address of the collection smart contract.\",\"identityAddress\":\"Address of the identity smart contract.\"}},\"TokenAdded(address,address,uint256)\":{\"details\":\"Emits event to record when an existing token was added.\",\"params\":{\"collectionAddress\":\"Address of the collection smart contract.\",\"identityAddress\":\"Address of the identity smart contract.\",\"tokenId\":\"Id of the token being added.\"}},\"TokenCreated(address,address,uint256)\":{\"details\":\"Emits event to record when a new token is created.\",\"params\":{\"collectionAddress\":\"Address of the collection smart contract.\",\"identityAddress\":\"Address of the identity smart contract.\",\"tokenId\":\"Id of the token being created.\"}}},\"kind\":\"dev\",\"methods\":{\"AddCollection(address,address,bool)\":{\"details\":\"Contains logic to check if collection is new.\",\"params\":{\"collection\":\"The collection address.\",\"creator\":\"The creator of the collection.\",\"fresh\":\"A flag to certify the collection and will be used to implement copyright.\"}},\"AddToken(address,address,uint256,bool)\":{\"details\":\"Contains logic to check if token is new.\",\"params\":{\"collection\":\"Address of the collection.\",\"creator\":\"Creator of the collection.\",\"fresh\":\"A flag to certify the token and will be used to implement copyright.\",\"tokenId\":\"The token to be added to the collection.\"}},\"constructor\":{\"details\":\"Smart contract is being used as an on-chain ledger. Nothing needs to be configured.\"},\"defaultUriType()\":{\"details\":\"Uses an enum value from 0 - 2 for each type.\",\"returns\":{\"_0\":\"UriType.\"}},\"getCollectionIdentity(address)\":{\"details\":\"Gets the address of the identity contract.\",\"params\":{\"collection\":\"The address of the collection.\"},\"returns\":{\"_0\":\"address of the identity contract.\"}},\"getCollectionType(address)\":{\"details\":\"Collection must be associated with identity.\",\"params\":{\"collection\":\"Contract address of the collection.\"},\"returns\":{\"_0\":\"InterfaceType Returns an enum (uint8) of the collection interface type.\"}},\"isCollectionCertified(address)\":{\"details\":\"Reserved function for later use. Will be used to identify if collection was heavily vetted.\",\"params\":{\"collection\":\"Contract address of the collection.\"},\"returns\":{\"_0\":\"bool Returns true if collection is associated with the identity.\"}},\"isCollectionOpen(address)\":{\"details\":\"For now this always returns false. Left as a placeholder for future development where shared collections might be used.Since it's not being used, the collection variable is commented out to avoid compiler warnings.\",\"returns\":{\"_0\":\"bool Returns true of false, to indicate if a specific collection is open/shared.\"}},\"isCollectionRegistered(address)\":{\"details\":\"For now will only return true for collections created directly from the identity contract.\",\"params\":{\"collection\":\"Contract address of the collection.\"},\"returns\":{\"_0\":\"bool Returns true if collection is associated with the identity.\"}},\"isTokenCertified(address,uint256)\":{\"details\":\"Reserved function for later use. Will be used to identify if token was heavily vetted.\",\"params\":{\"collection\":\"Contract address of the collection.\",\"tokenId\":\"Id of the token.\"},\"returns\":{\"_0\":\"bool Returns true if token is associated with the identity.\"}},\"isTokenRegistered(address,uint256)\":{\"details\":\"For now will only return true for tokens created directly from the identity contract.\",\"params\":{\"collection\":\"Contract address of the collection.\",\"tokenId\":\"Id of the token.\"},\"returns\":{\"_0\":\"bool Returns true if token is associated with the identity.\"}}},\"stateVariables\":{\"_collectionIdentity\":{\"details\":\"Collections mapped to Identity smart contract addresses.\"},\"_defaultUri\":{\"details\":\"Used for setting a default URI type to be returned in a tokenURI / URI calls from the ERC721 and ERC1155 smart contracts.Convenient method for having a quick toggle in case a network (like Arweave) goes offline.\"}},\"title\":\"CXIP Asset\",\"version\":1},\"userdoc\":{\"events\":{\"CollectionAdded(address,address)\":{\"notice\":\"Event emitted when an existing collection is added to an Identity.\"},\"CollectionCreated(address,address)\":{\"notice\":\"Event emitted when a new collection is created and added to an Identity.\"},\"TokenAdded(address,address,uint256)\":{\"notice\":\"Event emitted when an existing token is added to an Identity.\"},\"TokenCreated(address,address,uint256)\":{\"notice\":\"Event emitted when a new token is created and added to an Identity.\"}},\"kind\":\"user\",\"methods\":{\"AddCollection(address,address,bool)\":{\"notice\":\"Associates the collection with an identity.\"},\"AddToken(address,address,uint256,bool)\":{\"notice\":\"Adds a token to a collection.\"},\"constructor\":{\"notice\":\"Constructor is empty and not utilised of anything but setting a default URI type.\"},\"defaultUriType()\":{\"notice\":\"Gets the type of URI (Arweave / IPFS / HTTP).\"},\"getCollectionIdentity(address)\":{\"notice\":\"Gets the identity associated with the collection.\"},\"getCollectionType(address)\":{\"notice\":\"Get the collection's Interface Type: ERC20, ERC721, ERC1155.\"},\"isCollectionOpen(address)\":{\"notice\":\"Check if an identity collection is open to external minting.\"},\"isCollectionRegistered(address)\":{\"notice\":\"Check if a collection is registered with identity.\"},\"isTokenRegistered(address,uint256)\":{\"notice\":\"Check if a token is registered with identity.\"}},\"notice\":\"A smart contract for providing a single entry for checking validity of collections and tokens minted through CXIP.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/CxipAsset.sol\":\"CxipAsset\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":100},\"remappings\":[]},\"sources\":{\"contracts/CxipAsset.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\n/*______/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\_______/\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\n _____/\\\\\\\\\\\\////////__\\\\///\\\\\\\\\\\\___/\\\\\\\\\\\\/__\\\\/////\\\\\\\\\\\\///__\\\\/\\\\\\\\\\\\/////////\\\\\\\\\\\\_\\n  ___/\\\\\\\\\\\\/_____________\\\\///\\\\\\\\\\\\\\\\\\\\\\\\/________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_\\n   __/\\\\\\\\\\\\_________________\\\\//\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\n    _\\\\/\\\\\\\\\\\\__________________\\\\/\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\/////////____\\n     _\\\\//\\\\\\\\\\\\_________________/\\\\\\\\\\\\\\\\\\\\\\\\_________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n      __\\\\///\\\\\\\\\\\\_____________/\\\\\\\\\\\\////\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n       ____\\\\////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\/___\\\\///\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\\\/\\\\\\\\\\\\_____________\\n        _______\\\\/////////__\\\\///_______\\\\///__\\\\///////////__\\\\///____________*/\\n\\nimport \\\"./interface/ICxipERC721.sol\\\";\\nimport \\\"./interface/ICxipIdentity.sol\\\";\\nimport \\\"./interface/ICxipProvenance.sol\\\";\\nimport \\\"./interface/ICxipRegistry.sol\\\";\\nimport \\\"./library/Address.sol\\\";\\nimport \\\"./struct/UriType.sol\\\";\\n\\n/**\\n * @title CXIP Asset\\n * @author CXIP-Labs\\n * @notice A smart contract for providing a single entry for checking validity of collections and tokens minted through CXIP.\\n * @dev Listen events broadcasted by this smart contract, to get all collections and NFT being minted with CXIP smart contracts.\\n */\\ncontract CxipAsset {\\n    /**\\n     * @dev Used for setting a default URI type to be returned in a tokenURI / URI calls from the ERC721 and ERC1155 smart contracts.\\n     * @dev Convenient method for having a quick toggle in case a network (like Arweave) goes offline.\\n     */\\n    UriType private _defaultUri;\\n\\n    /**\\n     * @dev Collections mapped to Identity smart contract addresses.\\n     */\\n    mapping(address => address) private _collectionIdentity;\\n\\n    /**\\n     * @notice Event emitted when an existing collection is added to an Identity.\\n     * @dev Emits event to record when an existing collection was added.\\n     * @param collectionAddress Address of the collection smart contract.\\n     * @param identityAddress Address of the identity smart contract.\\n     */\\n    event CollectionAdded(address indexed collectionAddress, address indexed identityAddress);\\n\\n    /**\\n     * @notice Event emitted when a new collection is created and added to an Identity.\\n     * @dev Emits event to record when a new collection is created.\\n     * @param collectionAddress Address of the collection smart contract.\\n     * @param identityAddress Address of the identity smart contract.\\n     */\\n    event CollectionCreated(address indexed collectionAddress, address indexed identityAddress);\\n\\n    /**\\n     * @notice Event emitted when an existing token is added to an Identity.\\n     * @dev Emits event to record when an existing token was added.\\n     * @param collectionAddress Address of the collection smart contract.\\n     * @param identityAddress Address of the identity smart contract.\\n     * @param tokenId Id of the token being added.\\n     */\\n    event TokenAdded(\\n        address indexed collectionAddress,\\n        address indexed identityAddress,\\n        uint256 indexed tokenId\\n    );\\n\\n    /**\\n     * @notice Event emitted when a new token is created and added to an Identity.\\n     * @dev Emits event to record when a new token is created.\\n     * @param collectionAddress Address of the collection smart contract.\\n     * @param identityAddress Address of the identity smart contract.\\n     * @param tokenId Id of the token being created.\\n     */\\n    event TokenCreated(\\n        address indexed collectionAddress,\\n        address indexed identityAddress,\\n        uint256 indexed tokenId\\n    );\\n\\n    /**\\n     * @notice Constructor is empty and not utilised of anything but setting a default URI type.\\n     * @dev Smart contract is being used as an on-chain ledger. Nothing needs to be configured.\\n     */\\n    constructor() {\\n        _defaultUri = UriType.ARWEAVE;\\n    }\\n\\n    /**\\n     * @notice Associates the collection with an identity.\\n     * @dev Contains logic to check if collection is new.\\n     * @param creator The creator of the collection.\\n     * @param collection The collection address.\\n     * @param fresh A flag to certify the collection and will be used to implement copyright.\\n     */\\n    function AddCollection(\\n        address creator,\\n        address collection,\\n        bool fresh\\n    ) public {\\n        address identityAddress = msg.sender;\\n        require(\\n            ICxipProvenance(getRegistry().getProvenance()).isIdentityValid(identityAddress),\\n            \\\"CXIP: invalid Identity contract\\\"\\n        );\\n        ICxipIdentity identity = ICxipIdentity(identityAddress);\\n        require(identity.isWalletRegistered(creator), \\\"CXIP: creator wallet not owner\\\");\\n        require(identity.isCollectionRegistered(collection), \\\"CXIP: not registered collection\\\");\\n        bool certified = false;\\n        if (fresh) {\\n            require(identity.isNew(), \\\"CXIP: not a new collection\\\");\\n            certified = true;\\n            emit CollectionCreated(collection, creator);\\n        } else {\\n            emit CollectionAdded(collection, creator);\\n        }\\n        _collectionIdentity[collection] = identityAddress;\\n    }\\n\\n    /**\\n     * @notice Adds a token to a collection.\\n     * @dev Contains logic to check if token is new.\\n     * @param creator Creator of the collection.\\n     * @param collection Address of the collection.\\n     * @param tokenId The token to be added to the collection.\\n     * @param fresh A flag to certify the token and will be used to implement copyright.\\n     */\\n    function AddToken(\\n        address creator,\\n        address collection,\\n        uint256 tokenId,\\n        bool fresh\\n    ) public {\\n        address identityAddress = msg.sender;\\n        require(\\n            ICxipProvenance(getRegistry().getProvenance()).isIdentityValid(identityAddress),\\n            \\\"CXIP: invalid Identity contract\\\"\\n        );\\n        ICxipIdentity identity = ICxipIdentity(identityAddress);\\n        require(identity.isWalletRegistered(creator), \\\"CXIP: creator wallet not owner\\\");\\n        require(identity.isCollectionRegistered(collection), \\\"CXIP: not registered collection\\\");\\n        require(identity.isTokenRegistered(collection, tokenId), \\\"CXIP: not registered token\\\");\\n        bool certified = false;\\n        if (fresh) {\\n            require(identity.isNew(), \\\"CXIP: not a new collection token\\\");\\n            certified = true;\\n            emit TokenCreated(collection, creator, tokenId);\\n        } else {\\n            emit TokenAdded(collection, creator, tokenId);\\n        }\\n    }\\n\\n    /**\\n     * @notice Gets the type of URI (Arweave / IPFS / HTTP).\\n     * @dev Uses an enum value from 0 - 2 for each type.\\n     * @return UriType.\\n     */\\n    function defaultUriType() public view returns (UriType) {\\n        return _defaultUri;\\n    }\\n\\n    /**\\n     * @notice Gets the identity associated with the collection.\\n     * @dev Gets the address of the identity contract.\\n     * @param collection The address of the collection.\\n     * @return address of the identity contract.\\n     */\\n    function getCollectionIdentity(address collection) public view returns (address) {\\n        ICxipIdentity identity = _getIdentity(collection);\\n        return address(identity);\\n    }\\n\\n    /**\\n     * @notice Get the collection's Interface Type: ERC20, ERC721, ERC1155.\\n     * @dev Collection must be associated with identity.\\n     * @param collection Contract address of the collection.\\n     * @return InterfaceType Returns an enum (uint8) of the collection interface type.\\n     */\\n    function getCollectionType(address collection) public view returns (InterfaceType) {\\n        ICxipIdentity identity = _getIdentity(collection);\\n        require(!Address.isZero(address(identity)), \\\"CXIP: not registered collection\\\");\\n        return identity.getCollectionType(collection);\\n    }\\n\\n    /**\\n     * @dev Reserved function for later use. Will be used to identify if collection was heavily vetted.\\n     * @param collection Contract address of the collection.\\n     * @return bool Returns true if collection is associated with the identity.\\n     */\\n    function isCollectionCertified(address collection) public view returns (bool) {\\n        ICxipIdentity identity = _getIdentity(collection);\\n        if (Address.isZero(address(identity))) {\\n            return false;\\n        }\\n        return identity.isCollectionCertified(collection);\\n    }\\n\\n    /**\\n     * @notice Check if an identity collection is open to external minting.\\n     * @dev For now this always returns false. Left as a placeholder for future development where shared collections might be used.\\n     * @dev Since it's not being used, the collection variable is commented out to avoid compiler warnings.\\n     * @return bool Returns true of false, to indicate if a specific collection is open/shared.\\n     */\\n    function isCollectionOpen(address collection) public view returns (bool) {\\n        ICxipIdentity identity = _getIdentity(collection);\\n        if (Address.isZero(address(identity))) {\\n            return false;\\n        }\\n        return identity.isCollectionOpen(collection);\\n    }\\n\\n    /**\\n     * @notice Check if a collection is registered with identity.\\n     * @dev For now will only return true for collections created directly from the identity contract.\\n     * @param collection Contract address of the collection.\\n     * @return bool Returns true if collection is associated with the identity.\\n     */\\n    function isCollectionRegistered(address collection) public view returns (bool) {\\n        ICxipIdentity identity = _getIdentity(collection);\\n        if (Address.isZero(address(identity))) {\\n            return false;\\n        }\\n        return identity.isCollectionRegistered(collection);\\n    }\\n\\n    /**\\n     * @dev Reserved function for later use. Will be used to identify if token was heavily vetted.\\n     * @param collection Contract address of the collection.\\n     * @param tokenId Id of the token.\\n     * @return bool Returns true if token is associated with the identity.\\n     */\\n    function isTokenCertified(address collection, uint256 tokenId) public view returns (bool) {\\n        ICxipIdentity identity = _getIdentity(collection);\\n        if (Address.isZero(address(identity))) {\\n            return false;\\n        }\\n        return identity.isTokenCertified(collection, tokenId);\\n    }\\n\\n    /**\\n     * @notice Check if a token is registered with identity.\\n     * @dev For now will only return true for tokens created directly from the identity contract.\\n     * @param collection Contract address of the collection.\\n     * @param tokenId Id of the token.\\n     * @return bool Returns true if token is associated with the identity.\\n     */\\n    function isTokenRegistered(address collection, uint256 tokenId) public view returns (bool) {\\n        ICxipIdentity identity = _getIdentity(collection);\\n        if (Address.isZero(address(identity))) {\\n            return false;\\n        }\\n        return identity.isTokenRegistered(collection, tokenId);\\n    }\\n\\n    /**\\n     * @notice Gets the identity associated with the collection.\\n     * @dev Returns zero address if identity doesn't exist.\\n     * @param collection Collection associated with the identitiy.\\n     * @return ICxipIdentity The identity interface.\\n     */\\n    function _getIdentity(address collection) internal view returns (ICxipIdentity) {\\n        address identityAddress = _collectionIdentity[collection];\\n        return ICxipIdentity(identityAddress);\\n    }\\n\\n    /**\\n     * @dev Get the top-level CXIP Registry smart contract. Function must always be internal to prevent miss-use/abuse through bad programming practices.\\n     * @return ICxipRegistry The address of the top-level CXIP Registry smart contract.\\n     */\\n    function getRegistry() internal pure returns (ICxipRegistry) {\\n        return ICxipRegistry(0x3E4fD941610Db54434130433F4339Dc9cD1dEF30);\\n    }\\n}\\n\",\"keccak256\":\"0x50d523692c4d64fb0fc79945fef409535ebb0a3d805f988290513783810364af\",\"license\":\"MIT\"},\"contracts/interface/ICxipERC721.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\n/*______/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\_______/\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\n _____/\\\\\\\\\\\\////////__\\\\///\\\\\\\\\\\\___/\\\\\\\\\\\\/__\\\\/////\\\\\\\\\\\\///__\\\\/\\\\\\\\\\\\/////////\\\\\\\\\\\\_\\n  ___/\\\\\\\\\\\\/_____________\\\\///\\\\\\\\\\\\\\\\\\\\\\\\/________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_\\n   __/\\\\\\\\\\\\_________________\\\\//\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\n    _\\\\/\\\\\\\\\\\\__________________\\\\/\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\/////////____\\n     _\\\\//\\\\\\\\\\\\_________________/\\\\\\\\\\\\\\\\\\\\\\\\_________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n      __\\\\///\\\\\\\\\\\\_____________/\\\\\\\\\\\\////\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n       ____\\\\////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\/___\\\\///\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\\\/\\\\\\\\\\\\_____________\\n        _______\\\\/////////__\\\\///_______\\\\///__\\\\///////////__\\\\///____________*/\\n\\nimport \\\"../struct/CollectionData.sol\\\";\\nimport \\\"../struct/TokenData.sol\\\";\\nimport \\\"../struct/Verification.sol\\\";\\n\\ninterface ICxipERC721 {\\n    function arweaveURI(uint256 tokenId) external view returns (string memory);\\n\\n    function contractURI() external view returns (string memory);\\n\\n    function creator(uint256 tokenId) external view returns (address);\\n\\n    function httpURI(uint256 tokenId) external view returns (string memory);\\n\\n    function ipfsURI(uint256 tokenId) external view returns (string memory);\\n\\n    function name() external view returns (string memory);\\n\\n    function payloadHash(uint256 tokenId) external view returns (bytes32);\\n\\n    function payloadSignature(uint256 tokenId) external view returns (Verification memory);\\n\\n    function payloadSigner(uint256 tokenId) external view returns (address);\\n\\n    function supportsInterface(bytes4 interfaceId) external view returns (bool);\\n\\n    function symbol() external view returns (string memory);\\n\\n    function tokenURI(uint256 tokenId) external view returns (string memory);\\n\\n    function tokensOfOwner(address wallet) external view returns (uint256[] memory);\\n\\n    function verifySHA256(bytes32 hash, bytes calldata payload) external pure returns (bool);\\n\\n    function approve(address to, uint256 tokenId) external;\\n\\n    function burn(uint256 tokenId) external;\\n\\n    function init(address newOwner, CollectionData calldata collectionData) external;\\n\\n    function safeTransferFrom(\\n        address from,\\n        address to,\\n        uint256 tokenId\\n    ) external payable;\\n\\n    function safeTransferFrom(\\n        address from,\\n        address to,\\n        uint256 tokenId,\\n        bytes memory data\\n    ) external payable;\\n\\n    function setApprovalForAll(address to, bool approved) external;\\n\\n    function transferFrom(\\n        address from,\\n        address to,\\n        uint256 tokenId\\n    ) external payable;\\n\\n    function transferFrom(\\n        address from,\\n        address to,\\n        uint256 tokenId,\\n        bytes memory data\\n    ) external payable;\\n\\n    function cxipMint(uint256 id, TokenData calldata tokenData) external returns (uint256);\\n\\n    function setApprovalForAll(\\n        address from,\\n        address to,\\n        bool approved\\n    ) external;\\n\\n    function setName(bytes32 newName, bytes32 newName2) external;\\n\\n    function setSymbol(bytes32 newSymbol) external;\\n\\n    function transferOwnership(address newOwner) external;\\n\\n    function balanceOf(address wallet) external view returns (uint256);\\n\\n    function baseURI() external view returns (string memory);\\n\\n    function getApproved(uint256 tokenId) external view returns (address);\\n\\n    function getIdentity() external view returns (address);\\n\\n    function isApprovedForAll(address wallet, address operator) external view returns (bool);\\n\\n    function isOwner() external view returns (bool);\\n\\n    function owner() external view returns (address);\\n\\n    function ownerOf(uint256 tokenId) external view returns (address);\\n\\n    function tokenByIndex(uint256 index) external view returns (uint256);\\n\\n    function tokenOfOwnerByIndex(address wallet, uint256 index) external view returns (uint256);\\n\\n    function totalSupply() external view returns (uint256);\\n\\n    function onERC721Received(\\n        address operator,\\n        address from,\\n        uint256 tokenId,\\n        bytes calldata data\\n    ) external pure returns (bytes4);\\n}\\n\",\"keccak256\":\"0x9663198e9f69416d7325429a056da75c98d64444fa0c542685e080388ee65b37\",\"license\":\"MIT\"},\"contracts/interface/ICxipIdentity.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\n/*______/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\_______/\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\n _____/\\\\\\\\\\\\////////__\\\\///\\\\\\\\\\\\___/\\\\\\\\\\\\/__\\\\/////\\\\\\\\\\\\///__\\\\/\\\\\\\\\\\\/////////\\\\\\\\\\\\_\\n  ___/\\\\\\\\\\\\/_____________\\\\///\\\\\\\\\\\\\\\\\\\\\\\\/________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_\\n   __/\\\\\\\\\\\\_________________\\\\//\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\n    _\\\\/\\\\\\\\\\\\__________________\\\\/\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\/////////____\\n     _\\\\//\\\\\\\\\\\\_________________/\\\\\\\\\\\\\\\\\\\\\\\\_________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n      __\\\\///\\\\\\\\\\\\_____________/\\\\\\\\\\\\////\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n       ____\\\\////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\/___\\\\///\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\\\/\\\\\\\\\\\\_____________\\n        _______\\\\/////////__\\\\///_______\\\\///__\\\\///////////__\\\\///____________*/\\n\\nimport \\\"../struct/CollectionData.sol\\\";\\nimport \\\"../struct/InterfaceType.sol\\\";\\nimport \\\"../struct/Token.sol\\\";\\nimport \\\"../struct/TokenData.sol\\\";\\n\\ninterface ICxipIdentity {\\n    function addSignedWallet(\\n        address newWallet,\\n        uint8 v,\\n        bytes32 r,\\n        bytes32 s\\n    ) external;\\n\\n    function addWallet(address newWallet) external;\\n\\n    function connectWallet() external;\\n\\n    function createERC721Token(\\n        address collection,\\n        uint256 id,\\n        TokenData calldata tokenData,\\n        Verification calldata verification\\n    ) external returns (uint256);\\n\\n    function createERC721Collection(\\n        bytes32 saltHash,\\n        address collectionCreator,\\n        Verification calldata verification,\\n        CollectionData calldata collectionData\\n    ) external returns (address);\\n\\n    function createCustomERC721Collection(\\n        bytes32 saltHash,\\n        address collectionCreator,\\n        Verification calldata verification,\\n        CollectionData calldata collectionData,\\n        bytes32 slot,\\n        bytes memory bytecode\\n    ) external returns (address);\\n\\n    function init(address wallet, address secondaryWallet) external;\\n\\n    function getAuthorizer(address wallet) external view returns (address);\\n\\n    function getCollectionById(uint256 index) external view returns (address);\\n\\n    function getCollectionType(address collection) external view returns (InterfaceType);\\n\\n    function getWallets() external view returns (address[] memory);\\n\\n    function isCollectionCertified(address collection) external view returns (bool);\\n\\n    function isCollectionRegistered(address collection) external view returns (bool);\\n\\n    function isNew() external view returns (bool);\\n\\n    function isOwner() external view returns (bool);\\n\\n    function isTokenCertified(address collection, uint256 tokenId) external view returns (bool);\\n\\n    function isTokenRegistered(address collection, uint256 tokenId) external view returns (bool);\\n\\n    function isWalletRegistered(address wallet) external view returns (bool);\\n\\n    function listCollections(uint256 offset, uint256 length)\\n        external\\n        view\\n        returns (address[] memory);\\n\\n    function nextNonce(address wallet) external view returns (uint256);\\n\\n    function totalCollections() external view returns (uint256);\\n\\n    function isCollectionOpen(address collection) external pure returns (bool);\\n}\\n\",\"keccak256\":\"0x04e91a9e35ef22a807346515245afc515a5f1b0358fa2cb8272cce5bae35f325\",\"license\":\"MIT\"},\"contracts/interface/ICxipProvenance.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\n/*______/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\_______/\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\n _____/\\\\\\\\\\\\////////__\\\\///\\\\\\\\\\\\___/\\\\\\\\\\\\/__\\\\/////\\\\\\\\\\\\///__\\\\/\\\\\\\\\\\\/////////\\\\\\\\\\\\_\\n  ___/\\\\\\\\\\\\/_____________\\\\///\\\\\\\\\\\\\\\\\\\\\\\\/________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_\\n   __/\\\\\\\\\\\\_________________\\\\//\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\n    _\\\\/\\\\\\\\\\\\__________________\\\\/\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\/////////____\\n     _\\\\//\\\\\\\\\\\\_________________/\\\\\\\\\\\\\\\\\\\\\\\\_________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n      __\\\\///\\\\\\\\\\\\_____________/\\\\\\\\\\\\////\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n       ____\\\\////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\/___\\\\///\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\\\/\\\\\\\\\\\\_____________\\n        _______\\\\/////////__\\\\///_______\\\\///__\\\\///////////__\\\\///____________*/\\n\\ninterface ICxipProvenance {\\n    function createIdentity(\\n        bytes32 saltHash,\\n        address wallet,\\n        uint8 v,\\n        bytes32 r,\\n        bytes32 s\\n    ) external returns (uint256, address);\\n\\n    function createIdentityBatch(\\n        bytes32 saltHash,\\n        address[] memory wallets,\\n        uint8[] memory V,\\n        bytes32[] memory RS\\n    ) external returns (uint256, address);\\n\\n    function getIdentity() external view returns (address);\\n\\n    function getWalletIdentity(address wallet) external view returns (address);\\n\\n    function informAboutNewWallet(address newWallet) external;\\n\\n    function isIdentityValid(address identity) external view returns (bool);\\n\\n    function nextNonce(address wallet) external view returns (uint256);\\n}\\n\",\"keccak256\":\"0xdea801440658a3db585723764647f20a5232da262891914a8f97f70f1d538508\",\"license\":\"MIT\"},\"contracts/interface/ICxipRegistry.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\n/*______/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\_______/\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\n _____/\\\\\\\\\\\\////////__\\\\///\\\\\\\\\\\\___/\\\\\\\\\\\\/__\\\\/////\\\\\\\\\\\\///__\\\\/\\\\\\\\\\\\/////////\\\\\\\\\\\\_\\n  ___/\\\\\\\\\\\\/_____________\\\\///\\\\\\\\\\\\\\\\\\\\\\\\/________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_\\n   __/\\\\\\\\\\\\_________________\\\\//\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\n    _\\\\/\\\\\\\\\\\\__________________\\\\/\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\/////////____\\n     _\\\\//\\\\\\\\\\\\_________________/\\\\\\\\\\\\\\\\\\\\\\\\_________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n      __\\\\///\\\\\\\\\\\\_____________/\\\\\\\\\\\\////\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n       ____\\\\////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\/___\\\\///\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\\\/\\\\\\\\\\\\_____________\\n        _______\\\\/////////__\\\\///_______\\\\///__\\\\///////////__\\\\///____________*/\\n\\ninterface ICxipRegistry {\\n    function getAsset() external view returns (address);\\n\\n    function getAssetSigner() external view returns (address);\\n\\n    function getAssetSource() external view returns (address);\\n\\n    function getCopyright() external view returns (address);\\n\\n    function getCopyrightSource() external view returns (address);\\n\\n    function getCustomSource(bytes32 name) external view returns (address);\\n\\n    function getCustomSourceFromString(string memory name) external view returns (address);\\n\\n    function getERC1155CollectionSource() external view returns (address);\\n\\n    function getERC721CollectionSource() external view returns (address);\\n\\n    function getIdentitySource() external view returns (address);\\n\\n    function getPA1D() external view returns (address);\\n\\n    function getPA1DSource() external view returns (address);\\n\\n    function getProvenance() external view returns (address);\\n\\n    function getProvenanceSource() external view returns (address);\\n\\n    function owner() external view returns (address);\\n\\n    function setAsset(address proxy) external;\\n\\n    function setAssetSigner(address source) external;\\n\\n    function setAssetSource(address source) external;\\n\\n    function setCopyright(address proxy) external;\\n\\n    function setCopyrightSource(address source) external;\\n\\n    function setCustomSource(string memory name, address source) external;\\n\\n    function setERC1155CollectionSource(address source) external;\\n\\n    function setERC721CollectionSource(address source) external;\\n\\n    function setIdentitySource(address source) external;\\n\\n    function setPA1D(address proxy) external;\\n\\n    function setPA1DSource(address source) external;\\n\\n    function setProvenance(address proxy) external;\\n\\n    function setProvenanceSource(address source) external;\\n}\\n\",\"keccak256\":\"0x955bdf21dd441b5f52524655fec5b24a580ab498cf746e736f6a1b92ff36a959\",\"license\":\"MIT\"},\"contracts/library/Address.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\n/*______/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\_______/\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\n _____/\\\\\\\\\\\\////////__\\\\///\\\\\\\\\\\\___/\\\\\\\\\\\\/__\\\\/////\\\\\\\\\\\\///__\\\\/\\\\\\\\\\\\/////////\\\\\\\\\\\\_\\n  ___/\\\\\\\\\\\\/_____________\\\\///\\\\\\\\\\\\\\\\\\\\\\\\/________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_\\n   __/\\\\\\\\\\\\_________________\\\\//\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\n    _\\\\/\\\\\\\\\\\\__________________\\\\/\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\/////////____\\n     _\\\\//\\\\\\\\\\\\_________________/\\\\\\\\\\\\\\\\\\\\\\\\_________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n      __\\\\///\\\\\\\\\\\\_____________/\\\\\\\\\\\\////\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n       ____\\\\////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\/___\\\\///\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\\\/\\\\\\\\\\\\_____________\\n        _______\\\\/////////__\\\\///_______\\\\///__\\\\///////////__\\\\///____________*/\\n\\nlibrary Address {\\n    function isContract(address account) internal view returns (bool) {\\n        bytes32 codehash;\\n        assembly {\\n            codehash := extcodehash(account)\\n        }\\n        return (codehash != 0x0 &&\\n            codehash != 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470);\\n    }\\n\\n    function isZero(address account) internal pure returns (bool) {\\n        return (account == address(0));\\n    }\\n}\\n\",\"keccak256\":\"0x53828b644743921c47d7b36278f23203cd56d18c1f57a6833cc316558befffef\",\"license\":\"MIT\"},\"contracts/struct/CollectionData.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\n/*______/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\_______/\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\n _____/\\\\\\\\\\\\////////__\\\\///\\\\\\\\\\\\___/\\\\\\\\\\\\/__\\\\/////\\\\\\\\\\\\///__\\\\/\\\\\\\\\\\\/////////\\\\\\\\\\\\_\\n  ___/\\\\\\\\\\\\/_____________\\\\///\\\\\\\\\\\\\\\\\\\\\\\\/________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_\\n   __/\\\\\\\\\\\\_________________\\\\//\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\n    _\\\\/\\\\\\\\\\\\__________________\\\\/\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\/////////____\\n     _\\\\//\\\\\\\\\\\\_________________/\\\\\\\\\\\\\\\\\\\\\\\\_________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n      __\\\\///\\\\\\\\\\\\_____________/\\\\\\\\\\\\////\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n       ____\\\\////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\/___\\\\///\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\\\/\\\\\\\\\\\\_____________\\n        _______\\\\/////////__\\\\///_______\\\\///__\\\\///////////__\\\\///____________*/\\n\\nimport \\\"./UriType.sol\\\";\\n\\nstruct CollectionData {\\n    bytes32 name;\\n    bytes32 name2;\\n    bytes32 symbol;\\n    address royalties;\\n    uint96 bps;\\n}\\n\",\"keccak256\":\"0x328167148d845d1945ef8b77f710750d10cd38d2c8510e22ca52ec67781e3b8f\",\"license\":\"MIT\"},\"contracts/struct/InterfaceType.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\n/*______/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\_______/\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\n _____/\\\\\\\\\\\\////////__\\\\///\\\\\\\\\\\\___/\\\\\\\\\\\\/__\\\\/////\\\\\\\\\\\\///__\\\\/\\\\\\\\\\\\/////////\\\\\\\\\\\\_\\n  ___/\\\\\\\\\\\\/_____________\\\\///\\\\\\\\\\\\\\\\\\\\\\\\/________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_\\n   __/\\\\\\\\\\\\_________________\\\\//\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\n    _\\\\/\\\\\\\\\\\\__________________\\\\/\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\/////////____\\n     _\\\\//\\\\\\\\\\\\_________________/\\\\\\\\\\\\\\\\\\\\\\\\_________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n      __\\\\///\\\\\\\\\\\\_____________/\\\\\\\\\\\\////\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n       ____\\\\////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\/___\\\\///\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\\\/\\\\\\\\\\\\_____________\\n        _______\\\\/////////__\\\\///_______\\\\///__\\\\///////////__\\\\///____________*/\\n\\n// This is a 256 value limit (uint8)\\nenum InterfaceType {\\n    NULL, // 0\\n    ERC20, // 1\\n    ERC721, // 2\\n    ERC1155 // 3\\n}\\n\",\"keccak256\":\"0xed4f93a0fc084fa9d0a55d5e7c11f53e34b4c0d45d93de6ff03f345ae9a52885\",\"license\":\"MIT\"},\"contracts/struct/Token.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\n/*______/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\_______/\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\n _____/\\\\\\\\\\\\////////__\\\\///\\\\\\\\\\\\___/\\\\\\\\\\\\/__\\\\/////\\\\\\\\\\\\///__\\\\/\\\\\\\\\\\\/////////\\\\\\\\\\\\_\\n  ___/\\\\\\\\\\\\/_____________\\\\///\\\\\\\\\\\\\\\\\\\\\\\\/________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_\\n   __/\\\\\\\\\\\\_________________\\\\//\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\n    _\\\\/\\\\\\\\\\\\__________________\\\\/\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\/////////____\\n     _\\\\//\\\\\\\\\\\\_________________/\\\\\\\\\\\\\\\\\\\\\\\\_________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n      __\\\\///\\\\\\\\\\\\_____________/\\\\\\\\\\\\////\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n       ____\\\\////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\/___\\\\///\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\\\/\\\\\\\\\\\\_____________\\n        _______\\\\/////////__\\\\///_______\\\\///__\\\\///////////__\\\\///____________*/\\n\\nimport \\\"./InterfaceType.sol\\\";\\n\\nstruct Token {\\n    address collection;\\n    uint256 tokenId;\\n    InterfaceType tokenType;\\n    address creator;\\n}\\n\",\"keccak256\":\"0xa9c13c64d8f611f96d8b4c39eb42dab1a05d70119f351047ee939e63d3a29e6f\",\"license\":\"MIT\"},\"contracts/struct/TokenData.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\n/*______/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\_______/\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\n _____/\\\\\\\\\\\\////////__\\\\///\\\\\\\\\\\\___/\\\\\\\\\\\\/__\\\\/////\\\\\\\\\\\\///__\\\\/\\\\\\\\\\\\/////////\\\\\\\\\\\\_\\n  ___/\\\\\\\\\\\\/_____________\\\\///\\\\\\\\\\\\\\\\\\\\\\\\/________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_\\n   __/\\\\\\\\\\\\_________________\\\\//\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\n    _\\\\/\\\\\\\\\\\\__________________\\\\/\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\/////////____\\n     _\\\\//\\\\\\\\\\\\_________________/\\\\\\\\\\\\\\\\\\\\\\\\_________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n      __\\\\///\\\\\\\\\\\\_____________/\\\\\\\\\\\\////\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n       ____\\\\////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\/___\\\\///\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\\\/\\\\\\\\\\\\_____________\\n        _______\\\\/////////__\\\\///_______\\\\///__\\\\///////////__\\\\///____________*/\\n\\nimport \\\"./Verification.sol\\\";\\n\\nstruct TokenData {\\n    bytes32 payloadHash;\\n    Verification payloadSignature;\\n    address creator;\\n    bytes32 arweave;\\n    bytes11 arweave2;\\n    bytes32 ipfs;\\n    bytes14 ipfs2;\\n}\\n\",\"keccak256\":\"0xd7288c705f3247427487e4491a7cddb84a42af2a32720a16f75c8950380a717d\",\"license\":\"MIT\"},\"contracts/struct/UriType.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\n/*______/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\_______/\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\n _____/\\\\\\\\\\\\////////__\\\\///\\\\\\\\\\\\___/\\\\\\\\\\\\/__\\\\/////\\\\\\\\\\\\///__\\\\/\\\\\\\\\\\\/////////\\\\\\\\\\\\_\\n  ___/\\\\\\\\\\\\/_____________\\\\///\\\\\\\\\\\\\\\\\\\\\\\\/________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_\\n   __/\\\\\\\\\\\\_________________\\\\//\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\n    _\\\\/\\\\\\\\\\\\__________________\\\\/\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\/////////____\\n     _\\\\//\\\\\\\\\\\\_________________/\\\\\\\\\\\\\\\\\\\\\\\\_________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n      __\\\\///\\\\\\\\\\\\_____________/\\\\\\\\\\\\////\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n       ____\\\\////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\/___\\\\///\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\\\/\\\\\\\\\\\\_____________\\n        _______\\\\/////////__\\\\///_______\\\\///__\\\\///////////__\\\\///____________*/\\n\\n// This is a 256 value limit (uint8)\\nenum UriType {\\n    ARWEAVE, // 0\\n    IPFS, // 1\\n    HTTP // 2\\n}\\n\",\"keccak256\":\"0xe64f56b37ab2043dd80ae3b06abb928151837a546653ea0bd350d9078ccb29a6\",\"license\":\"MIT\"},\"contracts/struct/Verification.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\n/*______/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\_______/\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\n _____/\\\\\\\\\\\\////////__\\\\///\\\\\\\\\\\\___/\\\\\\\\\\\\/__\\\\/////\\\\\\\\\\\\///__\\\\/\\\\\\\\\\\\/////////\\\\\\\\\\\\_\\n  ___/\\\\\\\\\\\\/_____________\\\\///\\\\\\\\\\\\\\\\\\\\\\\\/________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_\\n   __/\\\\\\\\\\\\_________________\\\\//\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\n    _\\\\/\\\\\\\\\\\\__________________\\\\/\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\/////////____\\n     _\\\\//\\\\\\\\\\\\_________________/\\\\\\\\\\\\\\\\\\\\\\\\_________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n      __\\\\///\\\\\\\\\\\\_____________/\\\\\\\\\\\\////\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n       ____\\\\////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\/___\\\\///\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\\\/\\\\\\\\\\\\_____________\\n        _______\\\\/////////__\\\\///_______\\\\///__\\\\///////////__\\\\///____________*/\\n\\nstruct Verification {\\n    bytes32 r;\\n    bytes32 s;\\n    uint8 v;\\n}\\n\",\"keccak256\":\"0x56a68601446e86e6a5d8bc4dc66df60fb6fb1518c4cc4fd0e9a87d50386a8652\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b506000805460ff19169055610eeb8061002a6000396000f3fe608060405234801561001057600080fd5b506004361061009e5760003560e01c8063699ec11311610066578063699ec1131461012a57806388e7e7661461013d578063c3386c8114610150578063dbdd85a314610170578063eb6538e91461018357600080fd5b806310cd8d34146100a35780631555d26f146100cc57806327f63b05146100e15780632b09f45614610104578063455114a314610117575b600080fd5b6100b66100b1366004610c4f565b610196565b6040516100c39190610c6c565b60405180910390f35b6100df6100da366004610c8e565b6101a9565b005b6100f46100ef366004610c4f565b610538565b60405190151581526020016100c3565b6100f4610112366004610c4f565b6105ca565b60005460ff166040516100c39190610cef565b6100df610138366004610d09565b61061b565b6100f461014b366004610c4f565b610a34565b61016361015e366004610c4f565b610a85565b6040516100c39190610d5c565b6100f461017e366004610d70565b610b26565b6100f4610191366004610d70565b610bc5565b6000806101a283610c19565b9392505050565b33733e4fd941610db54434130433f4339dc9cd1def306001600160a01b031663b9da967d6040518163ffffffff1660e01b8152600401602060405180830381865afa1580156101fc573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906102209190610d9c565b6001600160a01b0316630172e60e826040518263ffffffff1660e01b815260040161024b9190610c6c565b602060405180830381865afa158015610268573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061028c9190610db9565b6102b15760405162461bcd60e51b81526004016102a890610dd6565b60405180910390fd5b604051637f247e4960e01b815281906001600160a01b03821690637f247e49906102df908890600401610c6c565b602060405180830381865afa1580156102fc573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906103209190610db9565b61033c5760405162461bcd60e51b81526004016102a890610e0d565b6040516327f63b0560e01b81526001600160a01b038216906327f63b0590610368908790600401610c6c565b602060405180830381865afa158015610385573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906103a99190610db9565b6103c55760405162461bcd60e51b81526004016102a890610e44565b600083156104c457816001600160a01b031663fe75154b6040518163ffffffff1660e01b8152600401602060405180830381865afa15801561040b573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061042f9190610db9565b61047b5760405162461bcd60e51b815260206004820152601a60248201527f435849503a206e6f742061206e657720636f6c6c656374696f6e00000000000060448201526064016102a8565b60019050856001600160a01b0316856001600160a01b03167f5d0de243db1669e3a7056744cd715c625f0c1c348736c2c2d53d0ddebff1a6c760405160405180910390a3610505565b856001600160a01b0316856001600160a01b03167fde026c5319b7c35f108a6ccfc922edc8008522079b610aee3c676bb7b7b7fb3560405160405180910390a35b50506001600160a01b03928316600090815260016020526040902080546001600160a01b03191691909316179091555050565b60008061054483610c19565b90506001600160a01b03811661055d5750600092915050565b6040516327f63b0560e01b81526001600160a01b038216906327f63b0590610589908690600401610c6c565b602060405180830381865afa1580156105a6573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906101a29190610db9565b6000806105d683610c19565b90506001600160a01b0381166105ef5750600092915050565b604051631584fa2b60e11b81526001600160a01b03821690632b09f45690610589908690600401610c6c565b33733e4fd941610db54434130433f4339dc9cd1def306001600160a01b031663b9da967d6040518163ffffffff1660e01b8152600401602060405180830381865afa15801561066e573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906106929190610d9c565b6001600160a01b0316630172e60e826040518263ffffffff1660e01b81526004016106bd9190610c6c565b602060405180830381865afa1580156106da573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906106fe9190610db9565b61071a5760405162461bcd60e51b81526004016102a890610dd6565b604051637f247e4960e01b815281906001600160a01b03821690637f247e4990610748908990600401610c6c565b602060405180830381865afa158015610765573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906107899190610db9565b6107a55760405162461bcd60e51b81526004016102a890610e0d565b6040516327f63b0560e01b81526001600160a01b038216906327f63b05906107d1908890600401610c6c565b602060405180830381865afa1580156107ee573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906108129190610db9565b61082e5760405162461bcd60e51b81526004016102a890610e44565b60405163eb6538e960e01b81526001600160a01b0382169063eb6538e99061085c9088908890600401610e7b565b602060405180830381865afa158015610879573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061089d9190610db9565b6108e95760405162461bcd60e51b815260206004820152601a60248201527f435849503a206e6f74207265676973746572656420746f6b656e00000000000060448201526064016102a8565b600083156109e957816001600160a01b031663fe75154b6040518163ffffffff1660e01b8152600401602060405180830381865afa15801561092f573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906109539190610db9565b61099f5760405162461bcd60e51b815260206004820181905260248201527f435849503a206e6f742061206e657720636f6c6c656374696f6e20746f6b656e60448201526064016102a8565b6001905084876001600160a01b0316876001600160a01b03167ffde888083b38fe6deac8498d5daebda0d38d0d3e6167e434b633f955152766fa60405160405180910390a4610a2b565b84876001600160a01b0316876001600160a01b03167f7156d0b8d9ed8d1117b97d76a15a304bad2749fc23251c2c7ed65a069895285060405160405180910390a45b50505050505050565b600080610a4083610c19565b90506001600160a01b038116610a595750600092915050565b604051634473f3b360e11b81526001600160a01b038216906388e7e76690610589908690600401610c6c565b600080610a9183610c19565b90506001600160a01b038116610ab95760405162461bcd60e51b81526004016102a890610e44565b60405163c3386c8160e01b81526001600160a01b0382169063c3386c8190610ae5908690600401610c6c565b602060405180830381865afa158015610b02573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906101a29190610e94565b600080610b3284610c19565b90506001600160a01b038116610b4c576000915050610bbf565b60405163dbdd85a360e01b81526001600160a01b0382169063dbdd85a390610b7a9087908790600401610e7b565b602060405180830381865afa158015610b97573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190610bbb9190610db9565b9150505b92915050565b600080610bd184610c19565b90506001600160a01b038116610beb576000915050610bbf565b60405163eb6538e960e01b81526001600160a01b0382169063eb6538e990610b7a9087908790600401610e7b565b6001600160a01b039081166000908152600160205260409020541690565b6001600160a01b0381168114610c4c57600080fd5b50565b600060208284031215610c6157600080fd5b81356101a281610c37565b6001600160a01b0391909116815260200190565b8015158114610c4c57600080fd5b600080600060608486031215610ca357600080fd5b8335610cae81610c37565b92506020840135610cbe81610c37565b91506040840135610cce81610c80565b809150509250925092565b634e487b7160e01b600052602160045260246000fd5b6020810160038310610d0357610d03610cd9565b91905290565b60008060008060808587031215610d1f57600080fd5b8435610d2a81610c37565b93506020850135610d3a81610c37565b9250604085013591506060850135610d5181610c80565b939692955090935050565b6020810160048310610d0357610d03610cd9565b60008060408385031215610d8357600080fd5b8235610d8e81610c37565b946020939093013593505050565b600060208284031215610dae57600080fd5b81516101a281610c37565b600060208284031215610dcb57600080fd5b81516101a281610c80565b6020808252601f908201527f435849503a20696e76616c6964204964656e7469747920636f6e747261637400604082015260600190565b6020808252601e908201527f435849503a2063726561746f722077616c6c6574206e6f74206f776e65720000604082015260600190565b6020808252601f908201527f435849503a206e6f74207265676973746572656420636f6c6c656374696f6e00604082015260600190565b6001600160a01b03929092168252602082015260400190565b600060208284031215610ea657600080fd5b8151600481106101a257600080fdfea2646970667358221220c21399ab67192d72f27598d2a5c09d190c5eebe568a793dbbf21abe28ab87e9c64736f6c634300080c0033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061009e5760003560e01c8063699ec11311610066578063699ec1131461012a57806388e7e7661461013d578063c3386c8114610150578063dbdd85a314610170578063eb6538e91461018357600080fd5b806310cd8d34146100a35780631555d26f146100cc57806327f63b05146100e15780632b09f45614610104578063455114a314610117575b600080fd5b6100b66100b1366004610c4f565b610196565b6040516100c39190610c6c565b60405180910390f35b6100df6100da366004610c8e565b6101a9565b005b6100f46100ef366004610c4f565b610538565b60405190151581526020016100c3565b6100f4610112366004610c4f565b6105ca565b60005460ff166040516100c39190610cef565b6100df610138366004610d09565b61061b565b6100f461014b366004610c4f565b610a34565b61016361015e366004610c4f565b610a85565b6040516100c39190610d5c565b6100f461017e366004610d70565b610b26565b6100f4610191366004610d70565b610bc5565b6000806101a283610c19565b9392505050565b33733e4fd941610db54434130433f4339dc9cd1def306001600160a01b031663b9da967d6040518163ffffffff1660e01b8152600401602060405180830381865afa1580156101fc573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906102209190610d9c565b6001600160a01b0316630172e60e826040518263ffffffff1660e01b815260040161024b9190610c6c565b602060405180830381865afa158015610268573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061028c9190610db9565b6102b15760405162461bcd60e51b81526004016102a890610dd6565b60405180910390fd5b604051637f247e4960e01b815281906001600160a01b03821690637f247e49906102df908890600401610c6c565b602060405180830381865afa1580156102fc573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906103209190610db9565b61033c5760405162461bcd60e51b81526004016102a890610e0d565b6040516327f63b0560e01b81526001600160a01b038216906327f63b0590610368908790600401610c6c565b602060405180830381865afa158015610385573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906103a99190610db9565b6103c55760405162461bcd60e51b81526004016102a890610e44565b600083156104c457816001600160a01b031663fe75154b6040518163ffffffff1660e01b8152600401602060405180830381865afa15801561040b573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061042f9190610db9565b61047b5760405162461bcd60e51b815260206004820152601a60248201527f435849503a206e6f742061206e657720636f6c6c656374696f6e00000000000060448201526064016102a8565b60019050856001600160a01b0316856001600160a01b03167f5d0de243db1669e3a7056744cd715c625f0c1c348736c2c2d53d0ddebff1a6c760405160405180910390a3610505565b856001600160a01b0316856001600160a01b03167fde026c5319b7c35f108a6ccfc922edc8008522079b610aee3c676bb7b7b7fb3560405160405180910390a35b50506001600160a01b03928316600090815260016020526040902080546001600160a01b03191691909316179091555050565b60008061054483610c19565b90506001600160a01b03811661055d5750600092915050565b6040516327f63b0560e01b81526001600160a01b038216906327f63b0590610589908690600401610c6c565b602060405180830381865afa1580156105a6573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906101a29190610db9565b6000806105d683610c19565b90506001600160a01b0381166105ef5750600092915050565b604051631584fa2b60e11b81526001600160a01b03821690632b09f45690610589908690600401610c6c565b33733e4fd941610db54434130433f4339dc9cd1def306001600160a01b031663b9da967d6040518163ffffffff1660e01b8152600401602060405180830381865afa15801561066e573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906106929190610d9c565b6001600160a01b0316630172e60e826040518263ffffffff1660e01b81526004016106bd9190610c6c565b602060405180830381865afa1580156106da573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906106fe9190610db9565b61071a5760405162461bcd60e51b81526004016102a890610dd6565b604051637f247e4960e01b815281906001600160a01b03821690637f247e4990610748908990600401610c6c565b602060405180830381865afa158015610765573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906107899190610db9565b6107a55760405162461bcd60e51b81526004016102a890610e0d565b6040516327f63b0560e01b81526001600160a01b038216906327f63b05906107d1908890600401610c6c565b602060405180830381865afa1580156107ee573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906108129190610db9565b61082e5760405162461bcd60e51b81526004016102a890610e44565b60405163eb6538e960e01b81526001600160a01b0382169063eb6538e99061085c9088908890600401610e7b565b602060405180830381865afa158015610879573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061089d9190610db9565b6108e95760405162461bcd60e51b815260206004820152601a60248201527f435849503a206e6f74207265676973746572656420746f6b656e00000000000060448201526064016102a8565b600083156109e957816001600160a01b031663fe75154b6040518163ffffffff1660e01b8152600401602060405180830381865afa15801561092f573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906109539190610db9565b61099f5760405162461bcd60e51b815260206004820181905260248201527f435849503a206e6f742061206e657720636f6c6c656374696f6e20746f6b656e60448201526064016102a8565b6001905084876001600160a01b0316876001600160a01b03167ffde888083b38fe6deac8498d5daebda0d38d0d3e6167e434b633f955152766fa60405160405180910390a4610a2b565b84876001600160a01b0316876001600160a01b03167f7156d0b8d9ed8d1117b97d76a15a304bad2749fc23251c2c7ed65a069895285060405160405180910390a45b50505050505050565b600080610a4083610c19565b90506001600160a01b038116610a595750600092915050565b604051634473f3b360e11b81526001600160a01b038216906388e7e76690610589908690600401610c6c565b600080610a9183610c19565b90506001600160a01b038116610ab95760405162461bcd60e51b81526004016102a890610e44565b60405163c3386c8160e01b81526001600160a01b0382169063c3386c8190610ae5908690600401610c6c565b602060405180830381865afa158015610b02573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906101a29190610e94565b600080610b3284610c19565b90506001600160a01b038116610b4c576000915050610bbf565b60405163dbdd85a360e01b81526001600160a01b0382169063dbdd85a390610b7a9087908790600401610e7b565b602060405180830381865afa158015610b97573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190610bbb9190610db9565b9150505b92915050565b600080610bd184610c19565b90506001600160a01b038116610beb576000915050610bbf565b60405163eb6538e960e01b81526001600160a01b0382169063eb6538e990610b7a9087908790600401610e7b565b6001600160a01b039081166000908152600160205260409020541690565b6001600160a01b0381168114610c4c57600080fd5b50565b600060208284031215610c6157600080fd5b81356101a281610c37565b6001600160a01b0391909116815260200190565b8015158114610c4c57600080fd5b600080600060608486031215610ca357600080fd5b8335610cae81610c37565b92506020840135610cbe81610c37565b91506040840135610cce81610c80565b809150509250925092565b634e487b7160e01b600052602160045260246000fd5b6020810160038310610d0357610d03610cd9565b91905290565b60008060008060808587031215610d1f57600080fd5b8435610d2a81610c37565b93506020850135610d3a81610c37565b9250604085013591506060850135610d5181610c80565b939692955090935050565b6020810160048310610d0357610d03610cd9565b60008060408385031215610d8357600080fd5b8235610d8e81610c37565b946020939093013593505050565b600060208284031215610dae57600080fd5b81516101a281610c37565b600060208284031215610dcb57600080fd5b81516101a281610c80565b6020808252601f908201527f435849503a20696e76616c6964204964656e7469747920636f6e747261637400604082015260600190565b6020808252601e908201527f435849503a2063726561746f722077616c6c6574206e6f74206f776e65720000604082015260600190565b6020808252601f908201527f435849503a206e6f74207265676973746572656420636f6c6c656374696f6e00604082015260600190565b6001600160a01b03929092168252602082015260400190565b600060208284031215610ea657600080fd5b8151600481106101a257600080fdfea2646970667358221220c21399ab67192d72f27598d2a5c09d190c5eebe568a793dbbf21abe28ab87e9c64736f6c634300080c0033",
+  "devdoc": {
+    "author": "CXIP-Labs",
+    "details": "Listen events broadcasted by this smart contract, to get all collections and NFT being minted with CXIP smart contracts.",
+    "events": {
+      "CollectionAdded(address,address)": {
+        "details": "Emits event to record when an existing collection was added.",
+        "params": {
+          "collectionAddress": "Address of the collection smart contract.",
+          "identityAddress": "Address of the identity smart contract."
+        }
+      },
+      "CollectionCreated(address,address)": {
+        "details": "Emits event to record when a new collection is created.",
+        "params": {
+          "collectionAddress": "Address of the collection smart contract.",
+          "identityAddress": "Address of the identity smart contract."
+        }
+      },
+      "TokenAdded(address,address,uint256)": {
+        "details": "Emits event to record when an existing token was added.",
+        "params": {
+          "collectionAddress": "Address of the collection smart contract.",
+          "identityAddress": "Address of the identity smart contract.",
+          "tokenId": "Id of the token being added."
+        }
+      },
+      "TokenCreated(address,address,uint256)": {
+        "details": "Emits event to record when a new token is created.",
+        "params": {
+          "collectionAddress": "Address of the collection smart contract.",
+          "identityAddress": "Address of the identity smart contract.",
+          "tokenId": "Id of the token being created."
+        }
+      }
+    },
+    "kind": "dev",
+    "methods": {
+      "AddCollection(address,address,bool)": {
+        "details": "Contains logic to check if collection is new.",
+        "params": {
+          "collection": "The collection address.",
+          "creator": "The creator of the collection.",
+          "fresh": "A flag to certify the collection and will be used to implement copyright."
+        }
+      },
+      "AddToken(address,address,uint256,bool)": {
+        "details": "Contains logic to check if token is new.",
+        "params": {
+          "collection": "Address of the collection.",
+          "creator": "Creator of the collection.",
+          "fresh": "A flag to certify the token and will be used to implement copyright.",
+          "tokenId": "The token to be added to the collection."
+        }
+      },
+      "constructor": {
+        "details": "Smart contract is being used as an on-chain ledger. Nothing needs to be configured."
+      },
+      "defaultUriType()": {
+        "details": "Uses an enum value from 0 - 2 for each type.",
+        "returns": {
+          "_0": "UriType."
+        }
+      },
+      "getCollectionIdentity(address)": {
+        "details": "Gets the address of the identity contract.",
+        "params": {
+          "collection": "The address of the collection."
+        },
+        "returns": {
+          "_0": "address of the identity contract."
+        }
+      },
+      "getCollectionType(address)": {
+        "details": "Collection must be associated with identity.",
+        "params": {
+          "collection": "Contract address of the collection."
+        },
+        "returns": {
+          "_0": "InterfaceType Returns an enum (uint8) of the collection interface type."
+        }
+      },
+      "isCollectionCertified(address)": {
+        "details": "Reserved function for later use. Will be used to identify if collection was heavily vetted.",
+        "params": {
+          "collection": "Contract address of the collection."
+        },
+        "returns": {
+          "_0": "bool Returns true if collection is associated with the identity."
+        }
+      },
+      "isCollectionOpen(address)": {
+        "details": "For now this always returns false. Left as a placeholder for future development where shared collections might be used.Since it's not being used, the collection variable is commented out to avoid compiler warnings.",
+        "returns": {
+          "_0": "bool Returns true of false, to indicate if a specific collection is open/shared."
+        }
+      },
+      "isCollectionRegistered(address)": {
+        "details": "For now will only return true for collections created directly from the identity contract.",
+        "params": {
+          "collection": "Contract address of the collection."
+        },
+        "returns": {
+          "_0": "bool Returns true if collection is associated with the identity."
+        }
+      },
+      "isTokenCertified(address,uint256)": {
+        "details": "Reserved function for later use. Will be used to identify if token was heavily vetted.",
+        "params": {
+          "collection": "Contract address of the collection.",
+          "tokenId": "Id of the token."
+        },
+        "returns": {
+          "_0": "bool Returns true if token is associated with the identity."
+        }
+      },
+      "isTokenRegistered(address,uint256)": {
+        "details": "For now will only return true for tokens created directly from the identity contract.",
+        "params": {
+          "collection": "Contract address of the collection.",
+          "tokenId": "Id of the token."
+        },
+        "returns": {
+          "_0": "bool Returns true if token is associated with the identity."
+        }
+      }
+    },
+    "stateVariables": {
+      "_collectionIdentity": {
+        "details": "Collections mapped to Identity smart contract addresses."
+      },
+      "_defaultUri": {
+        "details": "Used for setting a default URI type to be returned in a tokenURI / URI calls from the ERC721 and ERC1155 smart contracts.Convenient method for having a quick toggle in case a network (like Arweave) goes offline."
+      }
+    },
+    "title": "CXIP Asset",
+    "version": 1
+  },
+  "userdoc": {
+    "events": {
+      "CollectionAdded(address,address)": {
+        "notice": "Event emitted when an existing collection is added to an Identity."
+      },
+      "CollectionCreated(address,address)": {
+        "notice": "Event emitted when a new collection is created and added to an Identity."
+      },
+      "TokenAdded(address,address,uint256)": {
+        "notice": "Event emitted when an existing token is added to an Identity."
+      },
+      "TokenCreated(address,address,uint256)": {
+        "notice": "Event emitted when a new token is created and added to an Identity."
+      }
+    },
+    "kind": "user",
+    "methods": {
+      "AddCollection(address,address,bool)": {
+        "notice": "Associates the collection with an identity."
+      },
+      "AddToken(address,address,uint256,bool)": {
+        "notice": "Adds a token to a collection."
+      },
+      "constructor": {
+        "notice": "Constructor is empty and not utilised of anything but setting a default URI type."
+      },
+      "defaultUriType()": {
+        "notice": "Gets the type of URI (Arweave / IPFS / HTTP)."
+      },
+      "getCollectionIdentity(address)": {
+        "notice": "Gets the identity associated with the collection."
+      },
+      "getCollectionType(address)": {
+        "notice": "Get the collection's Interface Type: ERC20, ERC721, ERC1155."
+      },
+      "isCollectionOpen(address)": {
+        "notice": "Check if an identity collection is open to external minting."
+      },
+      "isCollectionRegistered(address)": {
+        "notice": "Check if a collection is registered with identity."
+      },
+      "isTokenRegistered(address,uint256)": {
+        "notice": "Check if a token is registered with identity."
+      }
+    },
+    "notice": "A smart contract for providing a single entry for checking validity of collections and tokens minted through CXIP.",
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 12,
+        "contract": "contracts/CxipAsset.sol:CxipAsset",
+        "label": "_defaultUri",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_enum(UriType)6710"
+      },
+      {
+        "astId": 17,
+        "contract": "contracts/CxipAsset.sol:CxipAsset",
+        "label": "_collectionIdentity",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_address,t_address)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_enum(UriType)6710": {
+        "encoding": "inplace",
+        "label": "enum UriType",
+        "numberOfBytes": "1"
+      },
+      "t_mapping(t_address,t_address)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => address)",
+        "numberOfBytes": "32",
+        "value": "t_address"
+      }
+    }
+  }
+}
