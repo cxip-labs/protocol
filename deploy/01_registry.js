@@ -28,10 +28,10 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const cxipIdentityProxy = await hre.deployments.getArtifact(
     'CxipIdentityProxy'
   );
-  config.identityProxyBytecode = cxipIdentityProxy.bytecode;
+  config.identityProxyBytecode = cxipIdentityProxy.bytecode.substring(2); // remove 0x;
 
   const erc721Proxy = await hre.deployments.getArtifact('CxipERC721Proxy');
-  config.erc721ProxyBytecode = erc721Proxy.bytecode;
+  config.erc721ProxyBytecode = erc721Proxy.bytecode.substring(2); // remove 0x
 
   console.log(`Config: ${JSON.stringify(config, null, 2)}`);
 

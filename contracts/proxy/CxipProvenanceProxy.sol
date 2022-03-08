@@ -16,7 +16,7 @@ import "../interface/ICxipRegistry.sol";
 
 contract CxipProvenanceProxy {
     fallback() external payable {
-        address _target = ICxipRegistry(0xdFbb74177C45C82aC06327C204bB5Ef2dAeC57B8)
+        address _target = ICxipRegistry(0x715816880EF60bB17A81dBe0E547637cb9e9fD3a)
             .getProvenanceSource();
         assembly {
             calldatacopy(0, 0, calldatasize())
