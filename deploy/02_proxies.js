@@ -26,17 +26,20 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     log: true,
   });
 
-  await deploy('CxipIdentityProxy', {
-    from: deployer,
-    args: [],
-    log: true,
-  });
+  // NOTE: These are disabled here because they need to be deployed in the registry script so their bytecode can be injected
+  // with the correct registry address
 
-  await deploy('CxipProvenanceProxy', {
-    from: deployer,
-    args: [],
-    log: true,
-  });
+  // await deploy('CxipIdentityProxy', {
+  //   from: deployer,
+  //   args: [],
+  //   log: true,
+  // });
+
+  // await deploy('CxipProvenanceProxy', {
+  //   from: deployer,
+  //   args: [],
+  //   log: true,
+  // });
 
   await deploy('PA1DProxy', {
     from: deployer,
