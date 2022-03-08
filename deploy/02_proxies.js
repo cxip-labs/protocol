@@ -8,11 +8,6 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     log: true,
   });
 
-  await hre.run('verify:verify', {
-    address: cxipAssetProxy.address,
-    constructorArguments: [],
-  });
-
   await deploy('CxipCopyrightProxy', {
     from: deployer,
     args: [],

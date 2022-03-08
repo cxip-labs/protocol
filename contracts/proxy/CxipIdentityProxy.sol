@@ -16,7 +16,7 @@ import "../interface/ICxipRegistry.sol";
 
 contract CxipIdentityProxy {
     fallback() external payable {
-        address _target = ICxipRegistry(0x3E4fD941610Db54434130433F4339Dc9cD1dEF30)
+        address _target = ICxipRegistry(0xeD51D2028F51DFF94a6036E502caAB0d6717Ab03)
             .getIdentitySource();
         assembly {
             calldatacopy(0, 0, calldatasize())

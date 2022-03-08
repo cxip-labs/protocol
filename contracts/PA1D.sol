@@ -68,7 +68,7 @@ contract PA1D {
      * @return The address of the top-level CXIP Registry smart contract.
      */
     function getRegistry() internal pure returns (ICxipRegistry) {
-        return ICxipRegistry(0x3E4fD941610Db54434130433F4339Dc9cD1dEF30);
+        return ICxipRegistry(0xeD51D2028F51DFF94a6036E502caAB0d6717Ab03);
     }
 
     /**
