@@ -1,6 +1,6 @@
 const hre = require('hardhat');
 
-module.exports = async ({ getNamedAccounts, deployments }) => {
+async function main() {
   const cxipRegistry = await ethers.getContract('CxipRegistry');
   const cxipAssetProxy = await ethers.getContract('CxipAssetProxy');
   const cxipCopyrightProxy = await ethers.getContract('CxipCopyrightProxy');
@@ -11,12 +11,23 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const pA1DProxy = await ethers.getContract('PA1DProxy');
 
   const cxipProvenance = await hre.deployments.getArtifact('CxipProvenance');
-  const cxipIdentity = await hre.deployments.getArtifact('CxipIdentity');
+  const cxipIdentity = await hre.deployments.getExtendedArtifact(
+    'CxipIdentity'
+  );
   const cxipERC721 = await hre.deployments.getArtifact('CxipERC721');
   const cxipERC1155 = await hre.deployments.getArtifact('CxipERC1155');
   const cxipCopyright = await hre.deployments.getArtifact('CxipCopyright');
   const cxipAsset = await hre.deployments.getArtifact('CxipAsset');
   const pA1D = await hre.deployments.getArtifact('PA1D');
+
+  console.log(pA1DProxy);
+  console.log(cxipProvenance);
+  console.log(cxipIdentity.address);
+  console.log(cxipERC721.address);
+  console.log(cxipERC1155.address);
+  console.log(cxipCopyright.address);
+  console.log(cxipAsset.address);
+  console.log(pA1D.address);
 
   // Registry
   try {
@@ -152,7 +163,11 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   } catch (error) {
     console.error(`Failed to verify PA1D ${error}`);
   }
-};
+}
 
-module.exports.tags = ['Verify'];
-module.exports.dependencies = [];
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });

@@ -22,6 +22,16 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     log: true,
   });
 
+  // Verify Registry
+  try {
+    await hre.run('verify:verify', {
+      address: cxipRegistry.address,
+      constructorArguments: [],
+    });
+  } catch (error) {
+    console.error(`Failed to verify Registry ${error}`);
+  }
+
   /**
    * These next few lines are a hack to inject the correct registry address and bytecode params into the build config
    */
@@ -43,6 +53,25 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   /**
    * End hack
    */
+
+  // Verify Identity Proxy and ERC721 Proxy
+  try {
+    await hre.run('verify:verify', {
+      address: cxipIdentityProxy.address,
+      constructorArguments: [],
+    });
+  } catch (error) {
+    console.error(`Failed to verify IdentityProxy ${error}`);
+  }
+
+  try {
+    await hre.run('verify:verify', {
+      address: erc721Proxy.address,
+      constructorArguments: [],
+    });
+  } catch (error) {
+    console.error(`Failed to verify ERC721Proxy ${error}`);
+  }
 
   console.log(`Config: ${JSON.stringify(config, null, 2)}`);
 
