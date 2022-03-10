@@ -7,14 +7,14 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     args: [],
     log: true,
   });
-  // try {
-  //   await hre.run('verify:verify', {
-  //     address: provenance.address,
-  //     constructorArguments: [],
-  //   });
-  // } catch (error) {
-  //   console.error(`Failed to verify Provenance ${error}`);
-  // }
+  try {
+    await hre.run('verify:verify', {
+      address: provenance.address,
+      constructorArguments: [],
+    });
+  } catch (error) {
+    console.error(`Failed to verify Provenance ${error}`);
+  }
 };
 module.exports.tags = ['CxipProvenance'];
 module.exports.dependencies = ['CxipFactory', 'CxipRegistry'];

@@ -28,9 +28,7 @@ describe('CXIP', () => {
   let royalties;
   let factory;
 
-  before(async () => {});
-
-  beforeEach(async () => {
+  before(async () => {
     deployer = (await ethers.getSigners())[0];
     const {
       CxipRegistry,
@@ -73,7 +71,7 @@ describe('CXIP', () => {
     erc1155Proxy = await ethers.getContract('CxipERC1155Proxy');
     identityProxy = await ethers.getContract('CxipIdentityProxy');
     provenanceProxy = await ethers.getContract('CxipProvenanceProxy');
-    pA1DProxy = await ethers.getContract('PA1DProxy');
+    royaltiesProxy = await ethers.getContract('PA1DProxy');
 
     provenance = await ethers.getContract('CxipProvenance');
     identity = await ethers.getContract('CxipIdentity');
@@ -84,68 +82,6 @@ describe('CXIP', () => {
     // TODO: Not sure why this is needed yet
     // signerAddress = await signer.getAddress();
 
-    // Asset
-    const assetTx = await registry.setAssetSource(asset.address).catch(error);
-    console.log('Transaction hash:', assetTx.hash);
-    await assetTx.wait();
-    console.log(`Registered asset to: ${await registry.getAssetSource()}`);
-
-    // Asset Proxy
-    const assetProxyTx = await registry
-      .setAsset(assetProxy.address)
-      .catch(error);
-    console.log('Transaction hash:', assetProxyTx.hash);
-    await assetProxyTx.wait();
-    console.log(
-      `Registered asset proxy to: ${await registry.getAssetSource()}`
-    );
-
-    // ERC721
-    const erc721Tx = await registry
-      .setERC721CollectionSource(erc721.address)
-      .catch(error);
-    console.log('Transaction hash:', erc721Tx.hash);
-    await erc721Tx.wait();
-    console.log(
-      `Registered erc721 to: ${await registry.getERC721CollectionSource()}`
-    );
-
-    // Identity
-    const identityTx = await registry
-      .setIdentitySource(identity.address)
-      .catch(error);
-    console.log('Transaction hash:', identityTx.hash);
-    await identityTx.wait();
-    console.log(
-      `Registered identity to: ${await registry.getIdentitySource()}`
-    );
-
-    // Provenance
-    const provenanceTx = await registry
-      .setProvenanceSource(provenance.address)
-      .catch(error);
-    console.log('Transaction hash:', provenanceTx.hash);
-    await provenanceTx.wait();
-    console.log(
-      `Registered provenance to: ${await registry.getProvenanceSource()}`
-    );
-
-    // Provenance Proxy
-    const provenanceProxyTx = await registry
-      .setProvenance(provenanceProxy.address)
-      .catch(error);
-    console.log('Transaction hash:', provenanceProxyTx.hash);
-    await provenanceProxyTx.wait();
-    console.log(
-      `Registered provenance proxy to: ${await registry.getProvenance()}`
-    );
-
-    // PA1D (Royalties)
-    const royaltiesTx = await registry.setPA1D(royalties.address).catch(error);
-    console.log('Transaction hash:', royaltiesTx.hash);
-    await royaltiesTx.wait();
-    console.log(`Registered PA1D to: ${await registry.getPA1D()}`);
-
     // Asset Signer
     // const signerTx = await registry.setAssetSigner(deployer);
     // console.log('Transaction hash:', signerTx.hash);
@@ -155,49 +91,93 @@ describe('CXIP', () => {
     // );
   });
 
+  beforeEach(async () => {});
+
   afterEach(async () => {});
 
-  it('run a test', async () => {
-    console.log('test');
+  it('should set and get asset source', async () => {
+    const assetTx = await registry.setAssetSource(asset.address).catch(error);
+    // console.log('Transaction hash:', assetTx.hash);
+    await assetTx.wait();
+    const assetSourceAddress = await registry.getAssetSource();
+    // console.log(`Registered asset to: ${assetSourceAddress}`);
+
+    expect(assetSourceAddress).to.equal(asset.address);
   });
 
-  it('should check the registry', async () => {
-    // TODO: Convert to ethersjs
-    // const asset = await contract.methods
-    //   .getAssetSource()
-    //   .call(from)
-    //   .catch(error);
-    // const assetProxy = await contract.methods;
-    //   .getAsset()
-    //   .call(from)
-    //   .catch(error);
-    // const assetSigner = await contract.methods
-    //   .getAssetSigner()
-    //   .call(from)
-    //   .catch(error);
-    // const erc721 = await contract.methods
-    //   .getERC721CollectionSource()
-    //   .call(from)
-    //   .catch(error);
-    // const identity = await contract.methods
-    //   .getIdentitySource()
-    //   .call(from)
-    //   .catch(error);
-    // const provenance = await contract.methods
-    //   .getProvenanceSource()
-    //   .call(from)
-    //   .catch(error);
-    // const provenanceProxy = await contract.methods
-    //   .getProvenance()
-    //   .call(from)
-    //   .catch(error);
-    // const royalties = await contract.methods
-    //   .getPA1DSource()
-    //   .call(from)
-    //   .catch(error);
-    // const royaltiesProxy = await contract.methods
-    //   .getPA1D()
-    //   .call(from)
-    //   .catch(error);
+  it('should set and get asset proxy', async () => {
+    const assetProxyTx = await registry
+      .setAsset(assetProxy.address)
+      .catch(error);
+    // console.log('Transaction hash:', assetProxyTx.hash);
+    await assetProxyTx.wait();
+    const assetProxyAddress = await registry.getAsset();
+    expect(assetProxyAddress).to.equal(assetProxy.address);
+  });
+
+  it('should set and get ERC721', async () => {
+    const erc721Tx = await registry
+      .setERC721CollectionSource(erc721.address)
+      .catch(error);
+    // console.log('Transaction hash:', erc721Tx.hash);
+    await erc721Tx.wait();
+    const erc721Address = await registry.getERC721CollectionSource();
+    // console.log(`Registered ERC721 to: ${erc721Address}`);
+    expect(erc721Address).to.equal(erc721.address);
+  });
+
+  it('should set and get identity', async () => {
+    const identityTx = await registry
+      .setIdentitySource(identity.address)
+      .catch(error);
+    // console.log('Transaction hash:', identityTx.hash);
+    await identityTx.wait();
+    const identitySourceAddress = await registry.getIdentitySource();
+    // console.log(`Registered identity to: ${identitySourceAddress}`);
+    expect(identitySourceAddress).to.equal(identity.address);
+  });
+
+  it('should set and get provenance', async () => {
+    const provenanceTx = await registry
+      .setProvenanceSource(provenance.address)
+      .catch(error);
+    // console.log('Transaction hash:', provenanceTx.hash);
+    await provenanceTx.wait();
+    const provenanceAddress = await registry.getProvenanceSource();
+    // console.log(`Registered provenance to: ${provenanceAddress}`);
+    expect(provenanceAddress).to.equal(provenance.address);
+  });
+
+  it('should set and get provenance proxy', async () => {
+    const provenanceProxyTx = await registry
+      .setProvenance(provenanceProxy.address)
+      .catch(error);
+    // console.log('Transaction hash:', provenanceProxyTx.hash);
+    await provenanceProxyTx.wait();
+    const provenanceProxyAddress = await registry.getProvenance();
+    // console.log(`Registered provenance proxy to: ${provenanceProxyAddress}`);
+    expect(provenanceProxyAddress).to.equal(provenanceProxy.address);
+  });
+
+  it('should set and get royalties', async () => {
+    const royaltiesTx = await registry
+      .setPA1DSource(royalties.address)
+      .catch(error);
+    // console.log('Transaction hash:', royaltiesTx.hash);
+    await royaltiesTx.wait();
+    const royaltiesAddress = await registry.getPA1DSource();
+    // console.log(`Registered royalties to: ${royaltiesAddress}`);
+    expect(royaltiesAddress).to.equal(royalties.address);
+  });
+
+  it('should set and get royalties proxy', async () => {
+    const royaltiesProxyTx = await registry
+      .setPA1D(royaltiesProxy.address)
+      .catch(error);
+    // console.log('Transaction hash:', royaltiesProxyTx.hash);
+    await royaltiesProxyTx.wait();
+    const royaltiesProxyAddress = await registry.getPA1D();
+    // console.log(`Registered royalties proxy to: ${royaltiesProxyAddress}`);
+    expect(royaltiesProxyAddress).to.equal(royaltiesProxy.address);
   });
 });

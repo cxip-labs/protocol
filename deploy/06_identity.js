@@ -7,14 +7,14 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     args: [],
     log: true,
   });
-  // try {
-  //   await hre.run('verify:verify', {
-  //     address: identity.address,
-  //     constructorArguments: [],
-  //   });
-  // } catch (error) {
-  //   console.error(`Failed to verify Identity ${error}`);
-  // }
+  try {
+    await hre.run('verify:verify', {
+      address: identity.address,
+      constructorArguments: [],
+    });
+  } catch (error) {
+    console.error(`Failed to verify Identity ${error}`);
+  }
 };
 module.exports.tags = ['CxipIdentity'];
 module.exports.dependencies = ['CxipFactory', 'CxipRegistry'];
