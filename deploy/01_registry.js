@@ -55,23 +55,23 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
    */
 
   // Verify Identity Proxy and ERC721 Proxy
-  try {
-    await hre.run('verify:verify', {
-      address: cxipIdentityProxy.address,
-      constructorArguments: [],
-    });
-  } catch (error) {
-    console.error(`Failed to verify IdentityProxy ${error}`);
-  }
+  // try {
+  //   await hre.run('verify:verify', {
+  //     address: cxipIdentityProxy.address,
+  //     constructorArguments: [],
+  //   });
+  // } catch (error) {
+  //   console.error(`Failed to verify IdentityProxy ${error}`);
+  // }
 
-  try {
-    await hre.run('verify:verify', {
-      address: erc721Proxy.address,
-      constructorArguments: [],
-    });
-  } catch (error) {
-    console.error(`Failed to verify ERC721Proxy ${error}`);
-  }
+  // try {
+  //   await hre.run('verify:verify', {
+  //     address: erc721Proxy.address,
+  //     constructorArguments: [],
+  //   });
+  // } catch (error) {
+  //   console.error(`Failed to verify ERC721Proxy ${error}`);
+  // }
 
   console.log(`Config: ${JSON.stringify(config, null, 2)}`);
 

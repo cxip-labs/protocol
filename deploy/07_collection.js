@@ -2,7 +2,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  await deploy('CxipERC721', {
+  const identity = await deploy('CxipERC721', {
     from: deployer,
     args: [],
     log: true,
