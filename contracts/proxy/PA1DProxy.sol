@@ -16,7 +16,7 @@ import "../interface/ICxipRegistry.sol";
 
 contract PA1DProxy {
     fallback() external payable {
-        address _target = ICxipRegistry(0xeD51D2028F51DFF94a6036E502caAB0d6717Ab03).getPA1DSource();
+        address _target = ICxipRegistry(0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512).getPA1DSource();
         assembly {
             calldatacopy(0, 0, calldatasize())
             let result := delegatecall(gas(), _target, 0, calldatasize(), 0, 0)

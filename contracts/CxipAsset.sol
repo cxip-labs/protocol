@@ -269,6 +269,6 @@ contract CxipAsset {
      * @return ICxipRegistry The address of the top-level CXIP Registry smart contract.
      */
     function getRegistry() internal pure returns (ICxipRegistry) {
-        return ICxipRegistry(0xeD51D2028F51DFF94a6036E502caAB0d6717Ab03);
+        return ICxipRegistry(0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512);
     }
 }
