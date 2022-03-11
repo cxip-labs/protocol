@@ -75,14 +75,14 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
   console.log(`Config: ${JSON.stringify(config, null, 2)}`);
 
-  if (network === 'hardhat') {
-    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
-    console.log('Test network detected. Skipping code injection');
-    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
-    return;
-  } else {
-    console.log('Injecting code into build contracts');
-  }
+  // if (network === 'hardhat') {
+  //   console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
+  //   console.log('Test network detected. Skipping code injection');
+  //   console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
+  //   return;
+  // } else {
+  //   console.log('Injecting code into build contracts');
+  // }
 
   const replaceValues = function (data) {
     Object.keys(buildConfig).forEach(function (key, index) {
