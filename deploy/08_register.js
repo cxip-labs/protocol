@@ -13,7 +13,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const asset = await ethers.getContract('CxipAsset');
   const assetTx = await registry.setAssetSource(asset.address).catch(error);
 
-  console.log('Transaction hash :', assetTx.hash);
+  console.log('Transaction hash:', assetTx.hash);
   await assetTx.wait();
   console.log(`Registered asset to: ${await registry.getAssetSource()}`);
 
@@ -23,7 +23,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     .setAssetSource(assetProxy.address)
     .catch(error);
 
-  console.log('Transaction hash :', assetProxyTx.hash);
+  console.log('Transaction hash:', assetProxyTx.hash);
   await assetProxyTx.wait();
   console.log(`Registered asset proxy to: ${await registry.getAsset()}`);
 
@@ -33,7 +33,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     .setERC721CollectionSource(erc721.address)
     .catch(error);
 
-  console.log('Transaction hash :', erc721Tx.hash);
+  console.log('Transaction hash:', erc721Tx.hash);
   await erc721Tx.wait();
   console.log(
     `Registered erc721 to: ${await registry.getERC721CollectionSource()}`
@@ -45,7 +45,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     .setIdentitySource(identity.address)
     .catch(error);
 
-  console.log('Transaction hash :', identityTx.hash);
+  console.log('Transaction hash:', identityTx.hash);
   await identityTx.wait();
   console.log(`Registered identity to: ${await registry.getIdentitySource()}`);
 
@@ -55,7 +55,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     .setProvenanceSource(provenance.address)
     .catch(error);
 
-  console.log('Transaction hash :', provenanceTx.hash);
+  console.log('Transaction hash:', provenanceTx.hash);
   await provenanceTx.wait();
   console.log(
     `Registered provenance to: ${await registry.getProvenanceSource()}`
@@ -67,7 +67,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     .setProvenance(provenanceProxy.address)
     .catch(error);
 
-  console.log('Transaction hash :', provenanceProxyTx.hash);
+  console.log('Transaction hash:', provenanceProxyTx.hash);
   await provenanceProxyTx.wait();
   console.log(
     `Registered provenance proxy to: ${await registry.getProvenance()}`
@@ -77,14 +77,14 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const royalties = await ethers.getContract('PA1D');
   const royaltiesTx = await registry.setPA1D(royalties.address).catch(error);
 
-  console.log('Transaction hash :', royaltiesTx.hash);
+  console.log('Transaction hash:', royaltiesTx.hash);
   await royaltiesTx.wait();
   console.log(`Registered PA1D to: ${await registry.getPA1D()}`);
 
   // Asset Signer
   const signerTx = await registry.setAssetSigner(deployer);
 
-  console.log('Transaction hash :', signerTx.hash);
+  console.log('Transaction hash:', signerTx.hash);
   await signerTx.wait();
   console.log(`Registered asset signer to: ${await registry.getAssetSigner()}`);
 };

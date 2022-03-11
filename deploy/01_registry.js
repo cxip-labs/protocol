@@ -16,29 +16,73 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     fs.readFileSync('./config/' + network + '.config.json', 'utf8')
   );
 
-  await deploy('CxipRegistry', {
+  const cxipRegistry = await deploy('CxipRegistry', {
     from: deployer,
     args: [],
     log: true,
   });
 
-  // This is a bit of a hack to inject the correct registry address and bytecode params into the build config.
-  const cxipRegistry = await ethers.getContract('CxipRegistry');
-  config.registry = cxipRegistry.address;
-  const cxipIdentityProxy = await hre.deployments.getArtifact(
-    'CxipIdentityProxy'
-  );
-  config.identityProxyBytecode = cxipIdentityProxy.bytecode;
+  // Verify Registry
+  try {
+    await hre.run('verify:verify', {
+      address: cxipRegistry.address,
+      constructorArguments: [],
+    });
+  } catch (error) {
+    console.error(`Failed to verify Registry ${error}`);
+  }
 
-  const erc721Proxy = await hre.deployments.getArtifact('CxipERC721Proxy');
-  config.erc721ProxyBytecode = erc721Proxy.bytecode;
+  /**
+   * These next few lines are a hack to inject the correct registry address and bytecode params into the build config
+   */
+  config.registry = cxipRegistry.address;
+
+  const cxipIdentityProxy = await deploy('CxipIdentityProxy', {
+    from: deployer,
+    args: [],
+    log: true,
+  });
+  config.identityProxyBytecode = cxipIdentityProxy.bytecode.substring(2); // remove 0x;
+
+  const erc721Proxy = await deploy('CxipERC721Proxy', {
+    from: deployer,
+    args: [],
+    log: true,
+  });
+  config.erc721ProxyBytecode = erc721Proxy.bytecode.substring(2); // remove 0x
+  /**
+   * End hack
+   */
+
+  // Verify Identity Proxy and ERC721 Proxy
+  try {
+    await hre.run('verify:verify', {
+      address: cxipIdentityProxy.address,
+      constructorArguments: [],
+    });
+  } catch (error) {
+    console.error(`Failed to verify IdentityProxy ${error}`);
+  }
+
+  try {
+    await hre.run('verify:verify', {
+      address: erc721Proxy.address,
+      constructorArguments: [],
+    });
+  } catch (error) {
+    console.error(`Failed to verify ERC721Proxy ${error}`);
+  }
 
   console.log(`Config: ${JSON.stringify(config, null, 2)}`);
 
-  if (network === 'hardhat') {
-    console.log('Test network detected. Skipping code injection');
-    return;
-  }
+  // if (network === 'hardhat') {
+  //   console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
+  //   console.log('Test network detected. Skipping code injection');
+  //   console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
+  //   return;
+  // } else {
+  //   console.log('Injecting code into build contracts');
+  // }
 
   const replaceValues = function (data) {
     Object.keys(buildConfig).forEach(function (key, index) {
@@ -85,6 +129,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
       });
     });
   };
+
   fs.mkdir(deployDir, function () {
     recursiveBuild(buildDir, deployDir);
   });

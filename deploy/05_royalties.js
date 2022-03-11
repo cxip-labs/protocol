@@ -1,12 +1,12 @@
-module.exports = async ({ getNamedAccounts, deployments }: any) => {
+module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  await deploy('CxipProvenance', {
+  const pA1D = await deploy('PA1D', {
     from: deployer,
     args: [],
     log: true,
   });
 };
-module.exports.tags = ['CxipProvenance'];
+module.exports.tags = ['PA1D'];
 module.exports.dependencies = ['CxipFactory', 'CxipRegistry'];
