@@ -1,7 +1,10 @@
 const { expect } = require('chai');
 const { ethers } = require('hardhat');
 const hre = require('hardhat');
+const Web3 = require('web3');
 const { deployments, getNamedAccounts } = require('hardhat');
+
+const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 const error = function (err) {
@@ -60,6 +63,7 @@ describe('CXIP', () => {
       CxipCopyright,
       CxipAsset,
       PA1D,
+      Register,
     } = await deployments.fixture([
       'CxipRegistry',
       'CxipAssetProxy',
@@ -69,7 +73,6 @@ describe('CXIP', () => {
       'CxipIdentityProxy',
       'CxipProvenanceProxy',
       'PA1DProxy',
-
       'CxipProvenance',
       'CxipIdentity',
       'CxipERC721',
@@ -77,6 +80,8 @@ describe('CXIP', () => {
       'CxipCopyright',
       'CxipAsset',
       'PA1D',
+
+      'Register',
     ]);
     registry = await ethers.getContract('CxipRegistry');
     assetProxy = await ethers.getContract('CxipAssetProxy');
@@ -266,24 +271,44 @@ describe('CXIP', () => {
 
   describe('Collection', () => {
     it('should create a collection', async () => {
-      // Create collection for identity user3
-      const salt = user.address + '0x000000000000000000000000'.substring(2);
-      const result = await identity.connect(user).createERC721Collection(
+      // Create collection for identity user
+      const salt = user3.address + '0x000000000000000000000000'.substring(2);
+
+      // Attach the provenance implementation ABI to provenance proxy
+      p = await provenance.attach(provenanceProxy.address);
+      const tx = await p.connect(user3).createIdentity(
         salt,
-        user.address,
+        '0x' + '00'.repeat(20), // zero address
         [
-          `0x000000000000000000000000${user.address.substring(2)}`,
-          `0x000000000000000000000000${user.address.substring(2)}`,
+          `0x000000000000000000000000${user3.address.substring(2)}`,
+          `0x000000000000000000000000${user3.address.substring(2)}`,
+          '0x0',
+        ]
+      );
+
+      const receipt = await tx.wait();
+      const identityAddress = await p.connect(user3).getIdentity();
+
+      // Attach the identity implementation ABI to the newly created identity proxy
+      const i = await identity.attach(identityAddress);
+
+      const result = await i.connect(user3).createERC721Collection(
+        salt,
+        user3.address,
+        [
+          `0x0000000000000000000000000000000000000000000000000000000000000000`,
+          `0x0000000000000000000000000000000000000000000000000000000000000000`,
           '0x0',
         ],
         [
           // NOTE: ethers.utils.formatBytes32String('Collection name') is not working
           // because it outputs 0x436f6c6c656374696f6e206e616d650000000000000000000000000000000000
           // which is right padded instead of left padded
+          // TODO: Look into other ethers.js utils to handle this properly
           '0x0000000000000000000000000000000000436f6c6c656374696f6e206e616d65', // Collection name
           '0x0000000000000000000000000000000000000000000000000000000000000000', // Collection name 2
           '0x000000000000000000000000000000436f6c6c656374696f6e2073796d626f6c', // Collection symbol
-          user.address, // royalties (address)
+          user3.address, // royalties (address)
           '0x0000000000000000000003e8', // 1000 bps (uint96)
         ]
       );
