@@ -1,7 +1,11 @@
 const { expect } = require('chai');
 const { ethers } = require('hardhat');
 const hre = require('hardhat');
+const Web3 = require('web3');
 const { deployments, getNamedAccounts } = require('hardhat');
+const { sign } = require('crypto');
+
+const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 const error = function (err) {
@@ -44,6 +48,7 @@ describe('CXIP', () => {
     user = accounts[1];
     user2 = accounts[2];
     user3 = accounts[3];
+    user4 = accounts[4];
     const {
       CxipRegistry,
       CxipAssetProxy,
@@ -60,6 +65,7 @@ describe('CXIP', () => {
       CxipCopyright,
       CxipAsset,
       PA1D,
+      Register,
     } = await deployments.fixture([
       'CxipRegistry',
       'CxipAssetProxy',
@@ -69,7 +75,6 @@ describe('CXIP', () => {
       'CxipIdentityProxy',
       'CxipProvenanceProxy',
       'PA1DProxy',
-
       'CxipProvenance',
       'CxipIdentity',
       'CxipERC721',
@@ -77,6 +82,8 @@ describe('CXIP', () => {
       'CxipCopyright',
       'CxipAsset',
       'PA1D',
+
+      'Register',
     ]);
     registry = await ethers.getContract('CxipRegistry');
     assetProxy = await ethers.getContract('CxipAssetProxy');
@@ -221,7 +228,8 @@ describe('CXIP', () => {
       ).to.be.revertedWith('CXIP: wallet already used');
     });
 
-    it('should create an identity with a secondary wallet', async () => {});
+    // TODO
+    it.skip('should create an identity with a secondary wallet', async () => {});
 
     it('should be a valid identity', async () => {
       const salt = user.address + '0x000000000000000000000000'.substring(2);
@@ -266,31 +274,161 @@ describe('CXIP', () => {
 
   describe('Collection', () => {
     it('should create a collection', async () => {
-      // Create collection for identity user3
-      const salt = user.address + '0x000000000000000000000000'.substring(2);
-      const result = await identity.connect(user).createERC721Collection(
+      const salt = user3.address + '0x000000000000000000000000'.substring(2);
+
+      // Attach the provenance implementation ABI to provenance proxy
+      p = await provenance.attach(provenanceProxy.address);
+      const tx = await p.connect(user3).createIdentity(
         salt,
-        user.address,
+        '0x' + '00'.repeat(20), // zero address
         [
-          `0x000000000000000000000000${user.address.substring(2)}`,
-          `0x000000000000000000000000${user.address.substring(2)}`,
+          `0x000000000000000000000000${user3.address.substring(2)}`,
+          `0x000000000000000000000000${user3.address.substring(2)}`,
+          '0x0',
+        ]
+      );
+
+      const receipt = await tx.wait();
+      const identityAddress = await p.connect(user3).getIdentity();
+
+      // Attach the identity implementation ABI to the newly created identity proxy
+      const i = await identity.attach(identityAddress);
+
+      const result = await i.connect(user3).createERC721Collection(
+        salt,
+        user3.address,
+        [
+          `0x0000000000000000000000000000000000000000000000000000000000000000`,
+          `0x0000000000000000000000000000000000000000000000000000000000000000`,
           '0x0',
         ],
         [
           // NOTE: ethers.utils.formatBytes32String('Collection name') is not working
           // because it outputs 0x436f6c6c656374696f6e206e616d650000000000000000000000000000000000
           // which is right padded instead of left padded
+          // TODO: Look into other ethers.js utils to handle this properly
           '0x0000000000000000000000000000000000436f6c6c656374696f6e206e616d65', // Collection name
           '0x0000000000000000000000000000000000000000000000000000000000000000', // Collection name 2
           '0x000000000000000000000000000000436f6c6c656374696f6e2073796d626f6c', // Collection symbol
-          user.address, // royalties (address)
+          user3.address, // royalties (address)
           '0x0000000000000000000003e8', // 1000 bps (uint96)
         ]
       );
+
+      result.wait();
+
+      const collectionAddress = await i.getCollectionById(0);
+      const collectionType = await i.getCollectionType(collectionAddress);
+      expect(collectionAddress).not.to.equal(ZERO_ADDRESS);
+      expect(collectionType).not.to.equal(ZERO_ADDRESS);
     });
 
-    it('should create a collection using a different wallet in the identity', async () => {
+    // TODO
+    it.skip('should create a collection using a different wallet in the identity', async () => {
       // TODO: Come back to this and use signatures for second address
+    });
+  });
+
+  describe('ERC721', () => {
+    it.skip('should create a ERC721 NFT in a collection', async () => {
+      const salt = user4.address + '0x000000000000000000000000'.substring(2);
+
+      // Attach the provenance implementation ABI to provenance proxy
+      p = await provenance.attach(provenanceProxy.address);
+      const tx = await p.connect(user4).createIdentity(
+        salt,
+        '0x' + '00'.repeat(20), // zero address
+        [
+          `0x000000000000000000000000${user4.address.substring(2)}`,
+          `0x000000000000000000000000${user4.address.substring(2)}`,
+          '0x0',
+        ]
+      );
+
+      const receipt = await tx.wait();
+      const identityAddress = await p.connect(user4).getIdentity();
+
+      // Attach the identity implementation ABI to the newly created identity proxy
+      const i = await identity.attach(identityAddress);
+
+      const result = await i.connect(user4).createERC721Collection(
+        salt,
+        user4.address,
+        [
+          `0x0000000000000000000000000000000000000000000000000000000000000000`,
+          `0x0000000000000000000000000000000000000000000000000000000000000000`,
+          '0x0',
+        ],
+        [
+          // NOTE: ethers.utils.formatBytes32String('Collection name') is not working
+          // because it outputs 0x436f6c6c656374696f6e206e616d650000000000000000000000000000000000
+          // which is right padded instead of left padded
+          // TODO: Look into other ethers.js utils to handle this properly
+          '0x0000000000000000000000000000000000436f6c6c656374696f6e206e616d65', // Collection name
+          '0x0000000000000000000000000000000000000000000000000000000000000000', // Collection name 2
+          '0x000000000000000000000000000000436f6c6c656374696f6e2073796d626f6c', // Collection symbol
+          user4.address, // royalties (address)
+          '0x0000000000000000000003e8', // 1000 bps (uint96)
+        ]
+      );
+
+      result.wait();
+
+      const collectionAddress = await i.getCollectionById(0);
+      const collectionType = await i.getCollectionType(collectionAddress);
+      expect(collectionAddress).not.to.equal(ZERO_ADDRESS);
+      expect(collectionType).not.to.equal(ZERO_ADDRESS);
+
+      //////////////////////////////////////////////////////////////////////////////
+      // Create an NFT
+      //////////////////////////////////////////////////////////////////////////////
+      /**
+       * This signature composition is required to send in the payload to create ERC721
+       */
+      const payload =
+        '0x398d6a45a2c3d1145dfc3a229313e4c3b65165eb0b8b04c0fe787d0e32924775';
+      const tokenId =
+        '0x0000000000000000000000000000000000000000000000000000000000000001';
+      const wallet = user4.address;
+
+      const sig = await user4.signMessage(payload);
+      const signature = {
+        r: '0x' + sig.substring(2, 66),
+        s: '0x' + sig.substring(66, 130),
+        v: '0x' + (parseInt('0x' + sig.substring(130, 132)) + 27).toString(16),
+      };
+
+      console.log(signature);
+
+      const arHash = 'd3dStWPKvAsticf1YqNT3FQCzT2nYlAw' + 'RVNFVlKmonc';
+      const ipfsHash = 'QmX3UFC6GeqnmBbthWQhxRW6WgTmWWVd' + 'ist3TL59UbTZYx';
+
+      // const assetSig = await assetWeb3.eth.personal.sign(
+      //   web3.utils.keccak256(
+      //     '0x' +
+      //       removeX(IDENTITY_CONTRACT) +
+      //       removeX(wallet) +
+      //       removeX(ERC721_CONTRACT) +
+      //       removeX(
+      //         web3.eth.abi.encodeParameter('uint256', web3.utils.toBN(tokenId))
+      //       ) +
+      //       removeX(payload) +
+      //       removeX(signature.r) +
+      //       removeX(signature.s) +
+      //       removeX(signature.v) +
+      //       removeX(web3.utils.asciiToHex(arHash)) +
+      //       removeX(web3.utils.asciiToHex(ipfsHash))
+      //   ),
+      //   assetProvider.addresses[0]
+      // );
+
+      // const assetSigner = {
+      //   r: '0x' + assetSig.substring(2, 66),
+      //   s: '0x' + assetSig.substring(66, 130),
+      //   v:
+      //     '0x' +
+      //     (parseInt('0x' + assetSig.substring(130, 132)) + 27).toString(16),
+      // };
     });
   });
 });
