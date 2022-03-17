@@ -1,4 +1,8 @@
-module.exports = async ({ getNamedAccounts, deployments }) => {
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import { DeployFunction } from 'hardhat-deploy/types';
+
+const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+  const { deployments, getNamedAccounts } = hre;
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
@@ -116,7 +120,8 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   }
 };
 
-module.exports.tags = [
+export default func;
+func.tags = [
   'CxipAssetProxy',
   'CxipCopyrightProxy',
   // 'CxipERC721Proxy',
@@ -125,4 +130,4 @@ module.exports.tags = [
   'CxipProvenanceProxy',
   'PA1DProxy',
 ];
-module.exports.dependencies = ['CxipRegistry'];
+func.dependencies = ['CxipRegistry'];

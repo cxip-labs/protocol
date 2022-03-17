@@ -1,6 +1,8 @@
-const hre = require('hardhat');
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import { DeployFunction } from 'hardhat-deploy/types';
 
-module.exports = async ({ getNamedAccounts, deployments }) => {
+const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+  const { deployments, getNamedAccounts } = hre;
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
@@ -22,16 +24,6 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     log: true,
   });
 
-  // Verify Registry
-  try {
-    await hre.run('verify:verify', {
-      address: cxipRegistry.address,
-      constructorArguments: [],
-    });
-  } catch (error) {
-    console.error(`Failed to verify Registry ${error}`);
-  }
-
   /**
    * These next few lines are a hack to inject the correct registry address and bytecode params into the build config
    */
@@ -42,39 +34,23 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     args: [],
     log: true,
   });
-  config.identityProxyBytecode = cxipIdentityProxy.bytecode.substring(2); // remove 0x;
+  config.identityProxyBytecode = cxipIdentityProxy?.bytecode?.substring(2); // remove 0x;
 
   const erc721Proxy = await deploy('CxipERC721Proxy', {
     from: deployer,
     args: [],
     log: true,
   });
-  config.erc721ProxyBytecode = erc721Proxy.bytecode.substring(2); // remove 0x
+  config.erc721ProxyBytecode = erc721Proxy?.bytecode?.substring(2); // remove 0x
   /**
    * End hack
    */
 
-  // Verify Identity Proxy and ERC721 Proxy
-  try {
-    await hre.run('verify:verify', {
-      address: cxipIdentityProxy.address,
-      constructorArguments: [],
-    });
-  } catch (error) {
-    console.error(`Failed to verify IdentityProxy ${error}`);
-  }
-
-  try {
-    await hre.run('verify:verify', {
-      address: erc721Proxy.address,
-      constructorArguments: [],
-    });
-  } catch (error) {
-    console.error(`Failed to verify ERC721Proxy ${error}`);
-  }
-
   console.log(`Config: ${JSON.stringify(config, null, 2)}`);
 
+  // TODO: It turns out we also need to inject the proper registry and bytecode to run tests locally
+  // Need to figure out best way to manage to keep dev address and bytecode in sync when on live networks
+  // For now we allow variable / changing of the registry and bytecode on develop branch, but not on live networks
   // if (network === 'hardhat') {
   //   console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
   //   console.log('Test network detected. Skipping code injection');
@@ -84,20 +60,20 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   //   console.log('Injecting code into build contracts');
   // }
 
-  const replaceValues = function (data) {
+  const replaceValues = function (data: any) {
     Object.keys(buildConfig).forEach(function (key, index) {
       data = data.replace(new RegExp(buildConfig[key], 'gi'), config[key]);
     });
     return data;
   };
 
-  const recursiveBuild = function (buildDir, deployDir) {
-    fs.readdir(buildDir, function (err, files) {
+  const recursiveBuild = function (buildDir: any, deployDir: any) {
+    fs.readdir(buildDir, function (err: any, files: any) {
       if (err) {
         throw err;
       }
-      files.forEach(function (file) {
-        fs.stat(buildDir + '/' + file, function (err, stats) {
+      files.forEach(function (file: any) {
+        fs.stat(buildDir + '/' + file, function (err: any, stats: any) {
           if (err) {
             throw err;
           }
@@ -108,21 +84,25 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
             });
           } else {
             if (file.endsWith('.sol')) {
-              console.log(file);
-              fs.readFile(buildDir + '/' + file, 'utf8', function (err, data) {
-                if (err) {
-                  throw err;
-                }
-                fs.writeFile(
-                  deployDir + '/' + file,
-                  replaceValues(data),
-                  function (err) {
-                    if (err) {
-                      throw err;
-                    }
+              // console.log(file);
+              fs.readFile(
+                buildDir + '/' + file,
+                'utf8',
+                function (err: any, data: any) {
+                  if (err) {
+                    throw err;
                   }
-                );
-              });
+                  fs.writeFile(
+                    deployDir + '/' + file,
+                    replaceValues(data),
+                    function (err: any) {
+                      if (err) {
+                        throw err;
+                      }
+                    }
+                  );
+                }
+              );
             }
           }
         });
@@ -135,5 +115,6 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   });
 };
 
-module.exports.tags = ['CxipRegistry'];
-module.exports.dependencies = ['CxipFactory'];
+export default func;
+func.tags = ['CxipRegistry'];
+func.dependencies = ['CxipFactory'];

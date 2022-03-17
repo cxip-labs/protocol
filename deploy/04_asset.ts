@@ -1,7 +1,10 @@
-module.exports = async ({ getNamedAccounts, deployments }) => {
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import { DeployFunction } from 'hardhat-deploy/types';
+
+const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+  const { deployments, getNamedAccounts } = hre;
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
-
   const asset = await deploy('CxipAsset', {
     from: deployer,
     args: [],
@@ -16,5 +19,6 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     console.error(`Failed to verify Asset ${error}`);
   }
 };
-module.exports.tags = ['CxipAsset'];
-module.exports.dependencies = ['CxipFactory', 'CxipRegistry'];
+export default func;
+func.tags = ['CxipAsset'];
+func.dependencies = ['CxipFactory', 'CxipRegistry'];

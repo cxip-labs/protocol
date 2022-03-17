@@ -1,6 +1,10 @@
-const hre = require('hardhat');
+import hre from 'hardhat';
+import { run, ethers } from 'hardhat';
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
-async function main() {
+async function main(hre: HardhatRuntimeEnvironment) {
+  const { deployments, getNamedAccounts } = hre;
+
   const cxipRegistry = await ethers.getContract('CxipRegistry');
   const cxipAssetProxy = await ethers.getContract('CxipAssetProxy');
   const cxipCopyrightProxy = await ethers.getContract('CxipCopyrightProxy');
@@ -10,15 +14,13 @@ async function main() {
   const cxipProvenanceProxy = await ethers.getContract('CxipProvenanceProxy');
   const pA1DProxy = await ethers.getContract('PA1DProxy');
 
-  const cxipProvenance = await hre.deployments.getArtifact('CxipProvenance');
-  const cxipIdentity = await hre.deployments.getExtendedArtifact(
-    'CxipIdentity'
-  );
-  const cxipERC721 = await hre.deployments.getArtifact('CxipERC721');
-  const cxipERC1155 = await hre.deployments.getArtifact('CxipERC1155');
-  const cxipCopyright = await hre.deployments.getArtifact('CxipCopyright');
-  const cxipAsset = await hre.deployments.getArtifact('CxipAsset');
-  const pA1D = await hre.deployments.getArtifact('PA1D');
+  const cxipProvenance = await ethers.getContract('CxipProvenance');
+  const cxipIdentity = await ethers.getContract('CxipIdentity');
+  const cxipERC721 = await ethers.getContract('CxipERC721');
+  const cxipERC1155 = await ethers.getContract('CxipERC1155');
+  const cxipCopyright = await ethers.getContract('CxipCopyright');
+  const cxipAsset = await ethers.getContract('CxipAsset');
+  const pA1D = await ethers.getContract('PA1D');
 
   console.log(pA1DProxy);
   console.log(cxipProvenance);
@@ -165,7 +167,7 @@ async function main() {
   }
 }
 
-main()
+main(hre)
   .then(() => process.exit(0))
   .catch((error) => {
     console.error(error);
