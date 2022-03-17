@@ -1,9 +1,7 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import hre from 'hardhat';
 import Web3 from 'web3';
 import { deployments, getNamedAccounts } from 'hardhat';
-import { sign } from 'crypto';
 
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
@@ -22,7 +20,6 @@ import {
   PA1D,
   CxipFactory,
 } from '../typechain';
-import { error } from './utils';
 
 const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
 
@@ -99,7 +96,7 @@ describe('CXIP', () => {
 
   describe('Registry', () => {
     it('should set and get asset source', async () => {
-      const assetTx = await registry.setAssetSource(asset.address).catch(error);
+      const assetTx = await registry.setAssetSource(asset.address);
       await assetTx.wait();
       const assetSourceAddress = await registry.getAssetSource();
 
@@ -107,63 +104,54 @@ describe('CXIP', () => {
     });
 
     it('should set and get asset proxy', async () => {
-      const assetProxyTx = await registry
-        .setAsset(assetProxy.address)
-        .catch(error);
+      const assetProxyTx = await registry.setAsset(assetProxy.address);
+
       await assetProxyTx.wait();
       const assetProxyAddress = await registry.getAsset();
       expect(assetProxyAddress).to.equal(assetProxy.address);
     });
 
     it('should set and get ERC721', async () => {
-      const erc721Tx = await registry
-        .setERC721CollectionSource(erc721.address)
-        .catch(error);
+      const erc721Tx = await registry.setERC721CollectionSource(erc721.address);
       await erc721Tx.wait();
       const erc721Address = await registry.getERC721CollectionSource();
       expect(erc721Address).to.equal(erc721.address);
     });
 
     it('should set and get identity', async () => {
-      const identityTx = await registry
-        .setIdentitySource(identity.address)
-        .catch(error);
+      const identityTx = await registry.setIdentitySource(identity.address);
       await identityTx.wait();
       const identitySourceAddress = await registry.getIdentitySource();
       expect(identitySourceAddress).to.equal(identity.address);
     });
 
     it('should set and get provenance', async () => {
-      const provenanceTx = await registry
-        .setProvenanceSource(provenance.address)
-        .catch(error);
+      const provenanceTx = await registry.setProvenanceSource(
+        provenance.address
+      );
       await provenanceTx.wait();
       const provenanceAddress = await registry.getProvenanceSource();
       expect(provenanceAddress).to.equal(provenance.address);
     });
 
     it('should set and get provenance proxy', async () => {
-      const provenanceProxyTx = await registry
-        .setProvenance(provenanceProxy.address)
-        .catch(error);
+      const provenanceProxyTx = await registry.setProvenance(
+        provenanceProxy.address
+      );
       await provenanceProxyTx.wait();
       const provenanceProxyAddress = await registry.getProvenance();
       expect(provenanceProxyAddress).to.equal(provenanceProxy.address);
     });
 
     it('should set and get royalties', async () => {
-      const royaltiesTx = await registry
-        .setPA1DSource(royalties.address)
-        .catch(error);
+      const royaltiesTx = await registry.setPA1DSource(royalties.address);
       await royaltiesTx.wait();
       const royaltiesAddress = await registry.getPA1DSource();
       expect(royaltiesAddress).to.equal(royalties.address);
     });
 
     it('should set and get royalties proxy', async () => {
-      const royaltiesProxyTx = await registry
-        .setPA1D(royaltiesProxy.address)
-        .catch(error);
+      const royaltiesProxyTx = await registry.setPA1D(royaltiesProxy.address);
       await royaltiesProxyTx.wait();
       const royaltiesProxyAddress = await registry.getPA1D();
       expect(royaltiesProxyAddress).to.equal(royaltiesProxy.address);

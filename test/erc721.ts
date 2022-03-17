@@ -164,11 +164,7 @@ describe('CXIP', () => {
           ipfs2: BytesLike;
         });
 
-      try {
-        await nftTx.wait();
-      } catch (error: any) {
-        throw new Error(error);
-      }
+      await nftTx.wait();
 
       const c = erc721.attach(collectionAddress);
       expect(await c.connect(user).payloadHash(tokenId)).to.equal(payload);

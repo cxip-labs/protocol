@@ -19,11 +19,6 @@ export function utf8ToBytes32(str: string) {
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
-export const error = function (err: string) {
-  console.log(err);
-  process.exit();
-};
-
 export const remove0x = function (input: string) {
   if (input.startsWith('0x')) {
     return input.substring(2);

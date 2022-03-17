@@ -69,8 +69,8 @@ describe('CXIP', () => {
 
       const identityAddress = await provenance.getIdentity();
       expect(identityAddress).not.to.equal(ZERO_ADDRESS);
-      // expect(identityAddress).to.equal(events?[0].args[0]);
-      // expect(identityAddress).to.equal(events?[0].args.identityAddress);
+      expect(identityAddress).to.equal(events?.[0].args?.[0]);
+      expect(identityAddress).to.equal(events?.[0].args?.identityAddress);
     });
 
     it('should not allow duplicate identities', async () => {
