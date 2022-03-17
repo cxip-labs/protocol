@@ -11,14 +11,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     args: [],
     log: true,
   });
-  try {
-    await hre.run('verify:verify', {
-      address: provenance.address,
-      constructorArguments: [],
-    });
-  } catch (error) {
-    console.error(`Failed to verify Provenance ${error}`);
-  }
 };
 export default func;
 func.tags = ['CxipProvenance'];
