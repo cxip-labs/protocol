@@ -14,10 +14,11 @@ import {
   PA1D,
 } from '../typechain';
 import { utf8ToBytes32, ZERO_ADDRESS } from './utils';
+import { BigNumber, BigNumberish, BytesLike } from 'ethers';
 
 const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
 
-describe('CXIP', () => {
+describe.only('CXIP', () => {
   let deployer: SignerWithAddress;
   let user: SignerWithAddress;
 
@@ -141,19 +142,67 @@ describe('CXIP', () => {
         .connect(user)
         .createERC721Token(collectionAddress, tokenId, [
           payload,
-          [signature.r, signature.s, signature.v] as any,
+          [signature.r, signature.s, signature.v],
           wallet,
           web3.utils.asciiToHex(arHash.substring(0, 32)),
           web3.utils.asciiToHex(arHash.substring(32, 43)),
           web3.utils.asciiToHex(ipfsHash.substring(0, 32)),
           web3.utils.asciiToHex(ipfsHash.substring(32, 46)),
-        ] as any);
+        ] as unknown as {
+          payloadHash: BytesLike;
+          payloadSignature: { r: BytesLike; s: BytesLike; v: BigNumberish };
+          creator: string;
+          arweave: BytesLike;
+          arweave2: BytesLike;
+          ipfs: BytesLike;
+          ipfs2: BytesLike;
+        });
 
       try {
         await nftTx.wait();
       } catch (error: any) {
         throw new Error(error);
       }
+
+      const c = erc721.attach(collectionAddress);
+      expect(await c.connect(user).payloadHash(tokenId)).to.equal(payload);
+      expect(await c.connect(user).payloadSigner(tokenId)).to.equal(
+        user.address
+      );
+      expect(await c.connect(user).arweaveURI(tokenId)).to.equal(
+        `https://arweave.cxip.dev/${arHash}`
+      );
+      expect(await c.connect(user).tokenURI(tokenId)).to.equal(
+        `https://arweave.cxip.dev/${arHash}`
+      );
+      expect(await c.connect(user).ipfsURI(tokenId)).to.equal(
+        `https://ipfs.cxip.dev/${ipfsHash}`
+      );
+      expect(await c.connect(user).httpURI(tokenId)).to.equal(
+        `https://cxip.dev/nft/${collectionAddress.toLowerCase()}/0x${tokenId.slice(
+          -2
+        )}`
+      );
+
+      const r = royalties.attach(collectionAddress);
+
+      // Check unset royalties (only one benificiary is set in the royalties array)
+      let royaltiesData = await r.connect(user).getRoyalties(tokenId);
+
+      expect(royaltiesData[0][0]).to.equal(ZERO_ADDRESS);
+      expect(ethers.utils.formatUnits(royaltiesData[0][0], 18)).to.equal('0.0');
+
+      // Set royalties to 10000 bps (100%)
+      await r.connect(user).setRoyalties(tokenId, user.address, 10000);
+
+      // Check again after setting
+      royaltiesData = await r.connect(user).getRoyalties(tokenId);
+      expect(royaltiesData[0][0]).to.equal(user.address);
+
+      // TODO: Need to figure out how to properly convert the units proper format
+      // Currently getting set to a very large floating point number with this utility function
+      // console.log(ethers.utils.formatUnits(royaltiesData[0][0], 18));
+      // expect(ethers.utils.formatUnits(royaltiesData[0][0], 18)).to.equal('0.0');
     });
   });
 });
