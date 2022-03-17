@@ -6,6 +6,7 @@ import { deployments } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { CxipProvenance, CxipProvenanceProxy } from '../typechain';
 import { ZERO_ADDRESS } from './utils';
+import { BigNumberish, BytesLike } from 'ethers';
 
 const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
 
@@ -58,7 +59,7 @@ describe('CXIP', () => {
           '0x0000000000000000000000000000000000000000000000000000000000000000',
           '0x0000000000000000000000000000000000000000000000000000000000000000',
           '0x0',
-        ] as any
+        ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish }
       );
 
       const receipt = await tx.wait();
@@ -83,7 +84,7 @@ describe('CXIP', () => {
             '0x0000000000000000000000000000000000000000000000000000000000000000',
             '0x0000000000000000000000000000000000000000000000000000000000000000',
             '0x0',
-          ] as any
+          ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish }
         )
       ).to.be.revertedWith('CXIP: wallet already used');
     });
@@ -94,14 +95,14 @@ describe('CXIP', () => {
 
     it('should be a valid identity', async () => {
       const salt = user.address + '0x000000000000000000000000'.substring(2);
-      const tx = await await provenance.connect(user).createIdentity(
+      const tx = await provenance.connect(user).createIdentity(
         salt,
         '0x' + '00'.repeat(20), // zero address
         [
           `0x000000000000000000000000${user.address.substring(2)}`,
           `0x000000000000000000000000${user.address.substring(2)}`,
           '0x0',
-        ] as any
+        ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish }
       );
 
       const receipt = await tx.wait();
@@ -114,14 +115,14 @@ describe('CXIP', () => {
 
     it('should not be a blacklisted identity', async () => {
       const salt = user2.address + '0x000000000000000000000000'.substring(2);
-      const tx = await await provenance.connect(user2).createIdentity(
+      const tx = await provenance.connect(user2).createIdentity(
         salt,
         '0x' + '00'.repeat(20), // zero address
         [
           `0x000000000000000000000000${user2.address.substring(2)}`,
           `0x000000000000000000000000${user2.address.substring(2)}`,
           '0x0',
-        ] as any
+        ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish }
       );
 
       const receipt = await tx.wait();

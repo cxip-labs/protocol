@@ -14,11 +14,11 @@ import {
   PA1D,
 } from '../typechain';
 import { utf8ToBytes32, ZERO_ADDRESS } from './utils';
-import { BigNumber, BigNumberish, BytesLike } from 'ethers';
+import { BigNumberish, BytesLike } from 'ethers';
 
 const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
 
-describe.only('CXIP', () => {
+describe('CXIP', () => {
   let deployer: SignerWithAddress;
   let user: SignerWithAddress;
 
@@ -86,7 +86,7 @@ describe.only('CXIP', () => {
           `0x000000000000000000000000${user.address.substring(2)}`,
           `0x000000000000000000000000${user.address.substring(2)}`,
           '0x0',
-        ] as any
+        ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish }
       );
 
       const receipt = await tx.wait();
@@ -103,14 +103,20 @@ describe.only('CXIP', () => {
           `0x0000000000000000000000000000000000000000000000000000000000000000`,
           `0x0000000000000000000000000000000000000000000000000000000000000000`,
           '0x0',
-        ] as any,
+        ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish },
         [
           `${utf8ToBytes32('Collection name')}`, // Collection name
           '0x0000000000000000000000000000000000000000000000000000000000000000', // Collection name 2
           `${utf8ToBytes32('Collection symbol')}`, // Collection symbol
           user.address, // royalties (address)
           '0x0000000000000000000003e8', // 1000 bps (uint96)
-        ] as any
+        ] as unknown as {
+          name: BytesLike;
+          name2: BytesLike;
+          symbol: BytesLike;
+          royalties: string;
+          bps: BigNumberish;
+        }
       );
 
       result.wait();

@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import Web3 from 'web3';
 import { deployments } from 'hardhat';
 
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
@@ -18,8 +17,7 @@ import {
   CxipERC721,
 } from '../typechain';
 import { utf8ToBytes32, ZERO_ADDRESS } from './utils';
-
-const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
+import { BigNumberish, BytesLike } from 'ethers';
 
 describe('CXIP', () => {
   let deployer: SignerWithAddress;
@@ -94,7 +92,7 @@ describe('CXIP', () => {
           `0x000000000000000000000000${user.address.substring(2)}`,
           `0x000000000000000000000000${user.address.substring(2)}`,
           '0x0',
-        ] as any
+        ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish }
       );
 
       const receipt = await tx.wait();
@@ -117,7 +115,13 @@ describe('CXIP', () => {
           `${utf8ToBytes32('Collection symbol')}`, // Collection symbol
           user.address, // royalties (address)
           '0x0000000000000000000003e8', // 1000 bps (uint96)
-        ] as any
+        ] as unknown as {
+          name: BytesLike;
+          name2: BytesLike;
+          symbol: BytesLike;
+          royalties: string;
+          bps: BigNumberish;
+        }
       );
 
       result.wait();

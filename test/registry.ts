@@ -57,24 +57,8 @@ describe('CXIP', () => {
     user2 = accounts[2];
     user3 = accounts[3];
     user4 = accounts[4];
-    const {
-      CxipRegistry,
-      CxipAssetProxy,
-      CxipCopyrightProxy,
-      CxipERC721Proxy,
-      CxipERC1155Proxy,
-      CxipIdentityProxy,
-      CxipProvenanceProxy,
-      PA1DProxy,
-      CxipProvenance,
-      CxipIdentity,
-      CxipERC721,
-      CxipERC1155,
-      CxipCopyright,
-      CxipAsset,
-      PA1D,
-      Register,
-    } = await deployments.fixture([
+
+    await deployments.fixture([
       'CxipRegistry',
       'CxipAssetProxy',
       'CxipCopyrightProxy',
