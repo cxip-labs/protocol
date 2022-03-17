@@ -16,9 +16,6 @@ import {
   CxipProvenance,
   CxipIdentity,
   CxipERC721,
-  CxipAsset,
-  PA1D,
-  CxipFactory,
 } from '../typechain';
 import { utf8ToBytes32, ZERO_ADDRESS } from './utils';
 
@@ -40,6 +37,7 @@ describe('CXIP', () => {
 
   let identity: CxipIdentity;
   let provenance: CxipProvenance;
+  let erc721: CxipERC721;
 
   before(async () => {
     const accounts = await ethers.getSigners();
@@ -76,6 +74,7 @@ describe('CXIP', () => {
 
     provenance = await ethers.getContract('CxipProvenance');
     identity = await ethers.getContract('CxipIdentity');
+    erc721 = await ethers.getContract('CxipERC721');
   });
 
   beforeEach(async () => {});
@@ -125,8 +124,20 @@ describe('CXIP', () => {
 
       const collectionAddress = await i.getCollectionById(0);
       const collectionType = await i.getCollectionType(collectionAddress);
+      const c = erc721.attach(collectionAddress);
+
       expect(collectionAddress).not.to.equal(ZERO_ADDRESS);
       expect(collectionType).not.to.equal(ZERO_ADDRESS);
+      expect(await c.connect(user).isOwner()).to.equal(true);
+      expect(await c.connect(user).owner()).to.equal(user.address);
+      expect(await c.connect(user).name()).to.equal('Collection name');
+      expect(await c.connect(user).symbol()).to.equal('Collection symbol');
+      expect(await c.connect(user).baseURI()).to.equal(
+        `https://cxip.dev/nft/${collectionAddress.toLowerCase()}`
+      );
+      expect(await c.connect(user).contractURI()).to.equal(
+        `https://nft.cxip.dev/${collectionAddress.toLowerCase()}/`
+      );
     });
 
     it.skip('should create a collection using a different wallet in the identity', async () => {});

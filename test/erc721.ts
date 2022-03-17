@@ -1,16 +1,10 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import Web3 from 'web3';
-import { deployments, getNamedAccounts } from 'hardhat';
+import { deployments } from 'hardhat';
 
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
-  CxipRegistry,
-  CxipAssetProxy,
-  CxipCopyrightProxy,
-  CxipERC721Proxy,
-  CxipERC1155Proxy,
-  CxipIdentityProxy,
   CxipProvenanceProxy,
   PA1DProxy,
   CxipProvenance,
@@ -18,7 +12,6 @@ import {
   CxipERC721,
   CxipAsset,
   PA1D,
-  CxipFactory,
 } from '../typechain';
 import { utf8ToBytes32, ZERO_ADDRESS } from './utils';
 
@@ -28,13 +21,6 @@ describe('CXIP', () => {
   let deployer: SignerWithAddress;
   let user: SignerWithAddress;
 
-  let registry: CxipRegistry;
-
-  let assetProxy: CxipAssetProxy;
-  let copyrightProxy: CxipCopyrightProxy;
-  let erc721Proxy: CxipERC721Proxy;
-  let erc1155Proxy: CxipERC1155Proxy;
-  let identityProxy: CxipIdentityProxy;
   let provenanceProxy: CxipProvenanceProxy;
   let royaltiesProxy: PA1DProxy;
 
@@ -43,7 +29,6 @@ describe('CXIP', () => {
   let identity: CxipIdentity;
   let provenance: CxipProvenance;
   let royalties: PA1D;
-  let factory: CxipFactory;
 
   before(async () => {
     const accounts = await ethers.getSigners();
@@ -69,20 +54,17 @@ describe('CXIP', () => {
 
       'Register',
     ]);
-    registry = await ethers.getContract('CxipRegistry');
-    assetProxy = await ethers.getContract('CxipAssetProxy');
-    copyrightProxy = await ethers.getContract('CxipCopyrightProxy');
-    erc721Proxy = await ethers.getContract('CxipERC721Proxy');
-    erc1155Proxy = await ethers.getContract('CxipERC1155Proxy');
-    identityProxy = await ethers.getContract('CxipIdentityProxy');
-    provenanceProxy = await ethers.getContract('CxipProvenanceProxy');
-    royaltiesProxy = await ethers.getContract('PA1DProxy');
 
-    provenance = await ethers.getContract('CxipProvenance');
-    identity = await ethers.getContract('CxipIdentity');
-    erc721 = await ethers.getContract('CxipERC721');
-    asset = await ethers.getContract('CxipAsset');
-    royalties = await ethers.getContract('PA1D');
+    provenanceProxy = (await ethers.getContract(
+      'CxipProvenanceProxy'
+    )) as CxipProvenanceProxy;
+    royaltiesProxy = (await ethers.getContract('PA1DProxy')) as PA1DProxy;
+
+    provenance = (await ethers.getContract('CxipProvenance')) as CxipProvenance;
+    identity = (await ethers.getContract('CxipIdentity')) as CxipIdentity;
+    erc721 = (await ethers.getContract('CxipERC721')) as CxipERC721;
+    asset = (await ethers.getContract('CxipAsset')) as CxipAsset;
+    royalties = (await ethers.getContract('PA1D')) as PA1D;
   });
 
   beforeEach(async () => {});
@@ -91,6 +73,7 @@ describe('CXIP', () => {
 
   describe('ERC721', () => {
     it('should create a ERC721 NFT in a collection', async () => {
+      // First create a new identity
       const salt = user.address + '0x000000000000000000000000'.substring(2);
 
       // Attach the provenance implementation ABI to provenance proxy
@@ -110,6 +93,8 @@ describe('CXIP', () => {
 
       // Attach the identity implementation ABI to the newly created identity proxy
       const i = await identity.attach(identityAddress);
+
+      // Then create the collection
       const result = await i.connect(user).createERC721Collection(
         salt,
         user.address,
@@ -134,17 +119,14 @@ describe('CXIP', () => {
       expect(collectionAddress).not.to.equal(ZERO_ADDRESS);
       expect(collectionType).not.to.equal(ZERO_ADDRESS);
 
-      //////////////////////////////////////////////////////////////////////////////
-      // Create an NFT
-      //////////////////////////////////////////////////////////////////////////////
-      /**
-       * This signature composition is required to send in the payload to create ERC721
-       */
+      // Finally create a new ERC721 NFT inot the collection
       const payload =
         '0x398d6a45a2c3d1145dfc3a229313e4c3b65165eb0b8b04c0fe787d0e32924775';
       const tokenId =
         '0x0000000000000000000000000000000000000000000000000000000000000001';
       const wallet = user.address;
+
+      // This signature composition is required to send in the payload to create ERC721
       const sig = await user.signMessage(payload);
       const signature = {
         r: '0x' + sig.substring(2, 66),
@@ -152,6 +134,7 @@ describe('CXIP', () => {
         v: '0x' + (parseInt('0x' + sig.substring(130, 132)) + 27).toString(16),
       };
 
+      // The arweave and ipfs hashes are split into two variables to pack into slots
       const arHash = 'd3dStWPKvAsticf1YqNT3FQCzT2nYlAw' + 'RVNFVlKmonc';
       const ipfsHash = 'QmX3UFC6GeqnmBbthWQhxRW6WgTmWWVd' + 'ist3TL59UbTZYx';
       const nftTx = await i

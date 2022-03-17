@@ -22,7 +22,7 @@ import {
   PA1D,
   CxipFactory,
 } from '../typechain';
-import { error, utf8ToBytes32, ZERO_ADDRESS } from './utils';
+import { error } from './utils';
 
 const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
 
