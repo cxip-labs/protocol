@@ -321,14 +321,14 @@ contract CxipERC721 {
             );
     }
 
-    /** Disabled due to tokenEnumeration not enabled.
+    /**
      * @notice Get list of tokens owned by wallet.
      * @param wallet The wallet address to get tokens for.
      * @return uint256[] Returns an array of token ids owned by wallet.
+     */
     function tokensOfOwner(address wallet) external view returns (uint256[] memory) {
         return _ownedTokens[wallet];
     }
-    */
 
     /**
      * @notice Checks if a given hash matches a payload hash.
@@ -368,14 +368,14 @@ contract CxipERC721 {
             _clearApproval(tokenId);
             _tokenOwner[tokenId] = address(0);
             emit Transfer(wallet, address(0), tokenId);
-            // _removeTokenFromOwnerEnumeration(wallet, tokenId);
-            // uint256 index = _allTokens.length;
-            // index--;
-            // if (index == 0) {
-            //     delete _allTokens;
-            // } else {
-            //     delete _allTokens[index];
-            // }
+            _removeTokenFromOwnerEnumeration(wallet, tokenId);
+            uint256 index = _allTokens.length;
+            index--;
+            if (index == 0) {
+                delete _allTokens;
+            } else {
+                delete _allTokens[index];
+            }
             _totalTokens -= 1;
             delete _tokenData[tokenId];
         }
@@ -397,31 +397,6 @@ contract CxipERC721 {
         // set to actual owner
         _owner = newOwner;
     }
-
-    /** Disabled since this flow has not been agreed on.
-     * @notice Transfer received NFTs to contract owner.
-     * @dev Automatically transfer NFTs out of this smart contract to contract owner. This uses gas from sender.
-     * @param _operator The smart contract where NFT is minted/operated.
-     * @param _from The address from where NFT is being transfered from.
-     * @param _tokenId NFT token id.
-     * @param _data Arbitrary data that could be used for special function calls.
-     * @return bytes4 Returns the onERC721Received interfaceId, to confirm successful receipt of NFT transfer.
-     *
-    function onERC721Received(
-        address _operator,
-        address /*_from*\/,
-        uint256 _tokenId,
-        bytes calldata _data
-    ) public returns (bytes4) {
-        ICxipERC721(_operator).safeTransferFrom(
-            payable(address(this)),
-            _owner,
-            _tokenId,
-            _data
-        );
-        return 0x150b7a02;
-    }
-    */
 
     /**
      * @dev Safely transfers `tokenId` token from `from` to `to`, checking first that contract recipients
@@ -558,16 +533,15 @@ contract CxipERC721 {
         }
     }
 
-    /** Disabled due to tokenEnumeration not enabled.
+    /**
      * @notice Get total number of tokens owned by wallet.
      * @dev Used to see total amount of tokens owned by a specific wallet.
      * @param wallet Address for which to get token balance.
      * @return uint256 Returns an integer, representing total amount of tokens held by address.
-     *
+     */
     function balanceOf(address wallet) public view returns (uint256) {
         return _ownedTokensCount[wallet];
     }
-    */
 
     /**
      * @notice Get a base URI for the token.
@@ -645,42 +619,28 @@ contract CxipERC721 {
         return tokenOwner;
     }
 
-    /** Disabled due to tokenEnumeration not enabled.
+    /**
      * @notice Get token by index instead of token id.
      * @dev Helpful for token enumeration where token id info is not yet available.
      * @param index Index of token in array.
      * @return uint256 Returns the token id of token located at that index.
+     */
     function tokenByIndex(uint256 index) public view returns (uint256) {
         require(index < totalSupply());
         return _allTokens[index];
     }
-    */
 
-    /** Disabled due to tokenEnumeration not enabled.
+    /**
      * @notice Get token from wallet by index instead of token id.
      * @dev Helpful for wallet token enumeration where token id info is not yet available. Use in conjunction with balanceOf function.
      * @param wallet Specific address for which to get token for.
      * @param index Index of token in array.
      * @return uint256 Returns the token id of token located at that index in specified wallet.
-     *
-    function tokenOfOwnerByIndex(
-        address wallet,
-        uint256 index
-    ) public view returns (uint256) {
+     */
+    function tokenOfOwnerByIndex(address wallet, uint256 index) public view returns (uint256) {
         require(index < balanceOf(wallet));
         return _ownedTokens[wallet][index];
     }
-    */
-
-    /** Disabled due to tokenEnumeration not enabled.
-     * @notice Total amount of tokens in the collection.
-     * @dev Ignores burned tokens.
-     * @return uint256 Returns the total number of active (not burned) tokens.
-     *
-    function totalSupply() public view returns (uint256) {
-        return _allTokens.length;
-    }
-    */
 
     /**
      * @notice Total amount of tokens in the collection.
@@ -751,16 +711,16 @@ contract CxipERC721 {
         return ICxipRegistry(0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512);
     }
 
-    /** Disabled due to tokenEnumeration not enabled.
+    /**
      * @dev Add a newly minted token into managed list of tokens.
      * @param to Address of token owner for which to add the token.
      * @param tokenId Id of token to add.
+     */
     function _addTokenToOwnerEnumeration(address to, uint256 tokenId) private {
         _ownedTokensIndex[tokenId] = _ownedTokensCount[to];
         _ownedTokensCount[to]++;
         _ownedTokens[to].push(tokenId);
     }
-    */
 
     /**
      * @notice Deletes a token from the approval list.
@@ -783,34 +743,31 @@ contract CxipERC721 {
         }
         _tokenOwner[tokenId] = to;
         emit Transfer(address(0), to, tokenId);
-        // _addTokenToOwnerEnumeration(to, tokenId);
+        _addTokenToOwnerEnumeration(to, tokenId);
         _totalTokens += 1;
-        // _allTokens.push(tokenId);
+        _allTokens.push(tokenId);
     }
 
-    /** Disabled due to tokenEnumeration not enabled.
+    /**
      * @dev Remove a token from managed list of tokens.
      * @param from Address of token owner for which to remove the token.
      * @param tokenId Id of token to remove.
-    function _removeTokenFromOwnerEnumeration(
-        address from,
-        uint256 tokenId
-    ) private {
+     */
+    function _removeTokenFromOwnerEnumeration(address from, uint256 tokenId) private {
         _ownedTokensCount[from]--;
         uint256 lastTokenIndex = _ownedTokensCount[from];
         uint256 tokenIndex = _ownedTokensIndex[tokenId];
-        if(tokenIndex != lastTokenIndex) {
+        if (tokenIndex != lastTokenIndex) {
             uint256 lastTokenId = _ownedTokens[from][lastTokenIndex];
             _ownedTokens[from][tokenIndex] = lastTokenId;
             _ownedTokensIndex[lastTokenId] = tokenIndex;
         }
-        if(lastTokenIndex == 0) {
+        if (lastTokenIndex == 0) {
             delete _ownedTokens[from];
         } else {
             delete _ownedTokens[from][lastTokenIndex];
         }
     }
-    */
 
     /**
      * @dev Primary internal function that handles the transfer/mint/burn functionality.
@@ -827,8 +784,8 @@ contract CxipERC721 {
             _clearApproval(tokenId);
             _tokenOwner[tokenId] = to;
             emit Transfer(from, to, tokenId);
-            // _removeTokenFromOwnerEnumeration(from, tokenId);
-            // _addTokenToOwnerEnumeration(to, tokenId);
+            _removeTokenFromOwnerEnumeration(from, tokenId);
+            _addTokenToOwnerEnumeration(to, tokenId);
         } else {
             assert(false);
         }
