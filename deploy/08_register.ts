@@ -1,7 +1,12 @@
-module.exports = async ({ getNamedAccounts, deployments }) => {
+import { run, ethers } from 'hardhat';
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import { DeployFunction } from 'hardhat-deploy/types';
+
+const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+  const { deployments, getNamedAccounts } = hre;
   const { deployer } = await getNamedAccounts();
 
-  const error = function (err) {
+  const error = function (err: string) {
     console.log(err);
     process.exit();
   };
@@ -89,5 +94,6 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   console.log(`Registered asset signer to: ${await registry.getAssetSigner()}`);
 };
 
-module.exports.tags = ['Register'];
-module.exports.dependencies = ['CxipRegistry'];
+export default func;
+func.tags = ['Register'];
+func.dependencies = ['CxipRegistry'];
