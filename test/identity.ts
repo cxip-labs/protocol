@@ -4,7 +4,7 @@ import Web3 from 'web3';
 import { deployments } from 'hardhat';
 
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { CxipProvenance, CxipProvenanceProxy } from '../typechain';
+import { CxipProvenance, CxipProvenanceProxy } from '../typechain-types';
 import { ZERO_ADDRESS } from './utils';
 import { BigNumberish, BytesLike } from 'ethers';
 

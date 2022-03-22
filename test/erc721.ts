@@ -12,7 +12,7 @@ import {
   CxipERC721,
   CxipAsset,
   PA1D,
-} from '../typechain';
+} from '../typechain-types';
 import { utf8ToBytes32, ZERO_ADDRESS } from './utils';
 import { BigNumberish, BytesLike } from 'ethers';
 
@@ -73,7 +73,7 @@ describe('CXIP', () => {
   afterEach(async () => {});
 
   describe('ERC721', () => {
-    it('should create a ERC721 NFT in a collection', async () => {
+    it.only('should create a ERC721 NFT in a collection', async () => {
       // First create a new identity
       const salt = user.address + '0x000000000000000000000000'.substring(2);
 
@@ -195,7 +195,8 @@ describe('CXIP', () => {
       expect(ethers.utils.formatUnits(royaltiesData[0][0], 18)).to.equal('0.0');
 
       // Set royalties to 10000 bps (100%)
-      await r.connect(user).setRoyalties(tokenId, user.address, 10000);
+      const royaltyBPS = 10000
+      await r.connect(user).setRoyalties(tokenId, user.address, royaltyBPS);
 
       // Check again after setting
       royaltiesData = await r.connect(user).getRoyalties(tokenId);
@@ -203,8 +204,7 @@ describe('CXIP', () => {
 
       // TODO: Need to figure out how to properly convert the units proper format
       // Currently getting set to a very large floating point number with this utility function
-      // console.log(ethers.utils.formatUnits(royaltiesData[0][0], 18));
-      // expect(ethers.utils.formatUnits(royaltiesData[0][0], 18)).to.equal('0.0');
+      expect(royaltiesData[1][0].toNumber()).to.equal(royaltyBPS);
     });
   });
 });

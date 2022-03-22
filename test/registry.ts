@@ -19,7 +19,7 @@ import {
   CxipAsset,
   PA1D,
   CxipFactory,
-} from '../typechain';
+} from '../typechain-types';
 
 const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
 

@@ -15,7 +15,7 @@ import {
   CxipProvenance,
   CxipIdentity,
   CxipERC721,
-} from '../typechain';
+} from '../typechain-types';
 import { utf8ToBytes32, ZERO_ADDRESS } from './utils';
 import { BigNumberish, BytesLike } from 'ethers';
 
