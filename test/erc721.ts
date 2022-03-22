@@ -73,7 +73,7 @@ describe('CXIP', () => {
   afterEach(async () => {});
 
   describe('ERC721', () => {
-    it.only('should create a ERC721 NFT in a collection', async () => {
+    it('should create a ERC721 NFT in a collection', async () => {
       // First create a new identity
       const salt = user.address + '0x000000000000000000000000'.substring(2);
 
@@ -195,15 +195,12 @@ describe('CXIP', () => {
       expect(ethers.utils.formatUnits(royaltiesData[0][0], 18)).to.equal('0.0');
 
       // Set royalties to 10000 bps (100%)
-      const royaltyBPS = 10000
+      const royaltyBPS = 10000;
       await r.connect(user).setRoyalties(tokenId, user.address, royaltyBPS);
 
       // Check again after setting
       royaltiesData = await r.connect(user).getRoyalties(tokenId);
       expect(royaltiesData[0][0]).to.equal(user.address);
-
-      // TODO: Need to figure out how to properly convert the units proper format
-      // Currently getting set to a very large floating point number with this utility function
       expect(royaltiesData[1][0].toNumber()).to.equal(royaltyBPS);
     });
   });
