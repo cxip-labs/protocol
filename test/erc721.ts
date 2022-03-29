@@ -202,6 +202,21 @@ describe('CXIP', () => {
       royaltiesData = await r.connect(user).getRoyalties(tokenId);
       expect(royaltiesData[0][0]).to.equal(user.address);
       expect(royaltiesData[1][0].toNumber()).to.equal(royaltyBPS);
+
+      // Configure the royalty payout amounts and beneficiaries
+      // 3000 bps (30%) to the deployer and 7000 (70%) to the user
+      await r
+        .connect(user)
+        .configurePayouts([deployer.address, user.address], [3000, 7000]);
+
+      // Check that the payout info matches what was set in configuration
+      let payoutInfo = await r.connect(user).getPayoutInfo();
+      const payoutAccounts = payoutInfo[0];
+      const payoutAmounts = payoutInfo[1];
+      expect(payoutAmounts[0].toNumber()).to.equal(3000);
+      expect(payoutAmounts[1].toNumber()).to.equal(7000);
+      expect(payoutAccounts[0]).to.equal(deployer.address);
+      expect(payoutAccounts[1]).to.equal(user.address);
     });
   });
 });

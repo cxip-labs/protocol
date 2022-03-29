@@ -226,46 +226,74 @@ contract PA1D {
     function _getPayoutAddresses() internal view returns (address payable[] memory addresses) {
         // The slot hash has been precomputed for gas optimizaion
         // bytes32 slot = bytes32(uint256(keccak256('eip1967.PA1D.payout.addresses')) - 1);
+        bytes32 slot = 0xda9d0b1bc91e594968e30b896be60318d483303fc3ba08af8ac989d483bdd7ca;
+        uint256 length;
         assembly {
-            addresses := sload(
-                /* slot */
-                0xda9d0b1bc91e594968e30b896be60318d483303fc3ba08af8ac989d483bdd7ca
-            )
+            length := sload(slot)
+        }
+        addresses = new address payable[](length);
+        address payable value;
+        for (uint256 i = 0; i < length; i++) {
+            slot = keccak256(abi.encodePacked(i, slot));
+            assembly {
+                value := sload(slot)
+            }
+            addresses[i] = value;
         }
     }
 
     function _setPayoutAddresses(address payable[] memory addresses) internal {
         // The slot hash has been precomputed for gas optimizaion
         // bytes32 slot = bytes32(uint256(keccak256('eip1967.PA1D.payout.addresses')) - 1);
+        bytes32 slot = 0xda9d0b1bc91e594968e30b896be60318d483303fc3ba08af8ac989d483bdd7ca;
+        uint256 length = addresses.length;
         assembly {
-            sstore(
-                /* slot */
-                0xda9d0b1bc91e594968e30b896be60318d483303fc3ba08af8ac989d483bdd7ca,
-                addresses
-            )
+            sstore(slot, length)
+        }
+        address payable value;
+        for (uint256 i = 0; i < length; i++) {
+            slot = keccak256(abi.encodePacked(i, slot));
+            value = addresses[i];
+            assembly {
+                sstore(slot, value)
+            }
         }
     }
 
     function _getPayoutBps() internal view returns (uint256[] memory bps) {
         // The slot hash has been precomputed for gas optimizaion
         // bytes32 slot = bytes32(uint256(keccak256('eip1967.PA1D.payout.bps')) - 1);
+        bytes32 slot = 0x7862b872ab9e3483d8176282b22f4ac86ad99c9035b3f794a541d84a66004fa2;
+        uint256 length;
         assembly {
-            bps := sload(
-                /* slot */
-                0x7862b872ab9e3483d8176282b22f4ac86ad99c9035b3f794a541d84a66004fa2
-            )
+            length := sload(slot)
+        }
+        bps = new uint256[](length);
+        uint256 value;
+        for (uint256 i = 0; i < length; i++) {
+            slot = keccak256(abi.encodePacked(i, slot));
+            assembly {
+                value := sload(slot)
+            }
+            bps[i] = value;
         }
     }
 
     function _setPayoutBps(uint256[] memory bps) internal {
         // The slot hash has been precomputed for gas optimizaion
         // bytes32 slot = bytes32(uint256(keccak256('eip1967.PA1D.payout.bps')) - 1);
+        bytes32 slot = 0x7862b872ab9e3483d8176282b22f4ac86ad99c9035b3f794a541d84a66004fa2;
+        uint256 length = bps.length;
         assembly {
-            sstore(
-                /* slot */
-                0x7862b872ab9e3483d8176282b22f4ac86ad99c9035b3f794a541d84a66004fa2,
-                bps
-            )
+            sstore(slot, length)
+        }
+        uint256 value;
+        for (uint256 i = 0; i < length; i++) {
+            slot = keccak256(abi.encodePacked(i, slot));
+            value = bps[i];
+            assembly {
+                sstore(slot, value)
+            }
         }
     }
 
