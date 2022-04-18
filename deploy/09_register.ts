@@ -24,9 +24,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   // Asset Proxy
   const assetProxy = await ethers.getContract('CxipAssetProxy');
-  const assetProxyTx = await registry
-    .setAssetSource(assetProxy.address)
-    .catch(error);
+  const assetProxyTx = await registry.setAsset(assetProxy.address).catch(error);
 
   console.log('Transaction hash:', assetProxyTx.hash);
   await assetProxyTx.wait();
