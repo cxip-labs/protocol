@@ -46,7 +46,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
    * End hack
    */
 
-  console.log(`Config: ${JSON.stringify(config, null, 2)}`);
+  // console.log(`Config: ${JSON.stringify(config, null, 2)}`);
 
   // TODO: It turns out we also need to inject the proper registry and bytecode to run tests locally
   // Need to figure out best way to manage to keep dev address and bytecode in sync when on live networks

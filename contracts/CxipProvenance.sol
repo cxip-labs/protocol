@@ -278,6 +278,6 @@ contract CxipProvenance {
      * @return ICxipRegistry The address of the top-level CXIP Registry smart contract.
      */
     function getRegistry() internal pure returns (ICxipRegistry) {
-        return ICxipRegistry(0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512);
+        return ICxipRegistry(0x2bdCC0de6bE1f7D2ee689a0342D76F52E8EFABa3);
     }
 }

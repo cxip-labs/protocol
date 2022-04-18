@@ -12,13 +12,15 @@ import {
   CxipERC721,
   CxipAsset,
   PA1D,
+  DanielArshamErosionsProxy,
+  DanielArshamErosions,
 } from '../typechain-types';
 import { utf8ToBytes32, ZERO_ADDRESS } from './utils';
 import { BigNumberish, BytesLike } from 'ethers';
 
 const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
 
-describe('CXIP', () => {
+describe('CXIP - ERC721', () => {
   let deployer: SignerWithAddress;
   let user: SignerWithAddress;
 
@@ -30,6 +32,9 @@ describe('CXIP', () => {
   let identity: CxipIdentity;
   let provenance: CxipProvenance;
   let royalties: PA1D;
+
+  let danielArshamErosionsProxy: DanielArshamErosionsProxy;
+  let danielArshamErosions: DanielArshamErosions;
 
   before(async () => {
     const accounts = await ethers.getSigners();
@@ -52,6 +57,8 @@ describe('CXIP', () => {
       'CxipCopyright',
       'CxipAsset',
       'PA1D',
+      'DanielArshamErosions',
+      'DanielArshamErosionsProxy',
 
       'Register',
     ]);
@@ -66,6 +73,10 @@ describe('CXIP', () => {
     erc721 = (await ethers.getContract('CxipERC721')) as CxipERC721;
     asset = (await ethers.getContract('CxipAsset')) as CxipAsset;
     royalties = (await ethers.getContract('PA1D')) as PA1D;
+    danielArshamErosionsProxy = await ethers.getContract(
+      'DanielArshamErosionsProxy'
+    );
+    danielArshamErosions = await ethers.getContract('DanielArshamErosions');
   });
 
   beforeEach(async () => {});

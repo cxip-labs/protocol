@@ -20,12 +20,12 @@ import {
   CxipAsset,
   PA1D,
   DanielArshamErosions,
-  CxipFactory
+  CxipFactory,
 } from '../typechain-types';
 
 const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
 
-describe('CXIP', () => {
+describe('CXIP - Registry', () => {
   let deployer: SignerWithAddress;
   let user: SignerWithAddress;
   let user2: SignerWithAddress;
@@ -80,7 +80,7 @@ describe('CXIP', () => {
       'PA1D',
       'DanielArshamErosions',
 
-      'Register'
+      'Register',
     ]);
     registry = await ethers.getContract('CxipRegistry');
     assetProxy = await ethers.getContract('CxipAssetProxy');
@@ -90,7 +90,9 @@ describe('CXIP', () => {
     identityProxy = await ethers.getContract('CxipIdentityProxy');
     provenanceProxy = await ethers.getContract('CxipProvenanceProxy');
     royaltiesProxy = await ethers.getContract('PA1DProxy');
-    danielArshamErosionsProxy = await ethers.getContract('DanielArshamErosionsProxy');
+    danielArshamErosionsProxy = await ethers.getContract(
+      'DanielArshamErosionsProxy'
+    );
 
     provenance = await ethers.getContract('CxipProvenance');
     identity = await ethers.getContract('CxipIdentity');
@@ -105,7 +107,6 @@ describe('CXIP', () => {
   afterEach(async () => {});
 
   describe('Registry', () => {
-
     it('should set and get asset source', async () => {
       const assetTx = await registry.setAssetSource(asset.address);
       await assetTx.wait();
@@ -169,17 +170,31 @@ describe('CXIP', () => {
     });
 
     it('should set and get Daniel Arsham Erosions', async () => {
-      const danielArshamErosionsTx = await registry.setCustomSource('0x748042799f1a8ea5aa2ae183edddb216f96c3c6ada37066aa2ce51a56438ede7', danielArshamErosions.address);
+      const danielArshamErosionsTx = await registry.setCustomSource(
+        '0x748042799f1a8ea5aa2ae183edddb216f96c3c6ada37066aa2ce51a56438ede7',
+        danielArshamErosions.address
+      );
       await danielArshamErosionsTx.wait();
-      const danielArshamErosionsAddress = await registry.getCustomSource('0x748042799f1a8ea5aa2ae183edddb216f96c3c6ada37066aa2ce51a56438ede7');
-      expect(danielArshamErosionsAddress).to.equal(danielArshamErosions.address);
+      const danielArshamErosionsAddress = await registry.getCustomSource(
+        '0x748042799f1a8ea5aa2ae183edddb216f96c3c6ada37066aa2ce51a56438ede7'
+      );
+      expect(danielArshamErosionsAddress).to.equal(
+        danielArshamErosions.address
+      );
     });
 
     it('should set and get Daniel Arsham Erosions proxy', async () => {
-      const danielArshamErosionsProxyTx = await registry.setCustomSource('0x34614b2160c4ad0a9004a062b1210e491f551c3b3eb86397949dc0279cf60c0d', danielArshamErosionsProxy.address);
+      const danielArshamErosionsProxyTx = await registry.setCustomSource(
+        '0x34614b2160c4ad0a9004a062b1210e491f551c3b3eb86397949dc0279cf60c0d',
+        danielArshamErosionsProxy.address
+      );
       await danielArshamErosionsProxyTx.wait();
-      const danielArshamErosionsProxyAddress = await registry.getCustomSource('0x34614b2160c4ad0a9004a062b1210e491f551c3b3eb86397949dc0279cf60c0d');
-      expect(danielArshamErosionsProxyAddress).to.equal(danielArshamErosionsProxy.address);
+      const danielArshamErosionsProxyAddress = await registry.getCustomSource(
+        '0x34614b2160c4ad0a9004a062b1210e491f551c3b3eb86397949dc0279cf60c0d'
+      );
+      expect(danielArshamErosionsProxyAddress).to.equal(
+        danielArshamErosionsProxy.address
+      );
     });
   });
 });

@@ -15,11 +15,13 @@ import {
   CxipProvenance,
   CxipIdentity,
   CxipERC721,
+  DanielArshamErosionsProxy,
+  DanielArshamErosions,
 } from '../typechain-types';
 import { utf8ToBytes32, ZERO_ADDRESS } from './utils';
 import { BigNumberish, BytesLike } from 'ethers';
 
-describe('CXIP', () => {
+describe('CXIP - Collection', () => {
   let deployer: SignerWithAddress;
   let user: SignerWithAddress;
 
@@ -36,6 +38,9 @@ describe('CXIP', () => {
   let identity: CxipIdentity;
   let provenance: CxipProvenance;
   let erc721: CxipERC721;
+
+  let danielArshamErosionsProxy: DanielArshamErosionsProxy;
+  let danielArshamErosions: DanielArshamErosions;
 
   before(async () => {
     const accounts = await ethers.getSigners();
@@ -58,6 +63,8 @@ describe('CXIP', () => {
       'CxipCopyright',
       'CxipAsset',
       'PA1D',
+      'DanielArshamErosionsProxy',
+      'DanielArshamErosions',
 
       'Register',
     ]);
@@ -69,10 +76,14 @@ describe('CXIP', () => {
     identityProxy = await ethers.getContract('CxipIdentityProxy');
     provenanceProxy = await ethers.getContract('CxipProvenanceProxy');
     royaltiesProxy = await ethers.getContract('PA1DProxy');
+    danielArshamErosionsProxy = await ethers.getContract(
+      'DanielArshamErosionsProxy'
+    );
 
     provenance = await ethers.getContract('CxipProvenance');
     identity = await ethers.getContract('CxipIdentity');
     erc721 = await ethers.getContract('CxipERC721');
+    danielArshamErosions = await ethers.getContract('DanielArshamErosions');
   });
 
   beforeEach(async () => {});
@@ -98,7 +109,7 @@ describe('CXIP', () => {
       const receipt = await tx.wait();
       const identityAddress = await p.connect(user).getIdentity();
 
-      // Attach the identity implementation ABI to the newly created identity proxy
+      // // Attach the identity implementation ABI to the newly created identity proxy
       const i = await identity.attach(identityAddress);
 
       const result = await i.connect(user).createERC721Collection(

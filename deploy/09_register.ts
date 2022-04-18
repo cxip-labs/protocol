@@ -78,7 +78,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   // PA1D (Royalties)
   const royalties = await ethers.getContract('PA1D');
-  const royaltiesTx = await registry.setPA1DSource(royalties.address).catch(error);
+  const royaltiesTx = await registry
+    .setPA1DSource(royalties.address)
+    .catch(error);
 
   console.log('Transaction hash:', royaltiesTx.hash);
   await royaltiesTx.wait();
@@ -86,7 +88,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   // PA1D Proxy (Royalties)
   const royaltiesProxy = await ethers.getContract('PA1DProxy');
-  const royaltiesProxyTx = await registry.setPA1D(royaltiesProxy.address).catch(error);
+  const royaltiesProxyTx = await registry
+    .setPA1D(royaltiesProxy.address)
+    .catch(error);
 
   console.log('Transaction hash:', royaltiesProxyTx.hash);
   await royaltiesProxyTx.wait();
@@ -94,19 +98,39 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   // DanielArshamErosions (Royalties)
   const danielArshamErosions = await ethers.getContract('DanielArshamErosions');
-  const danielArshamErosionsTx = await registry.setCustomSource('eip1967.CxipRegistry.DanielArshamErosions', danielArshamErosions.address).catch(error);
+  const danielArshamErosionsTx = await registry
+    .setCustomSource(
+      'eip1967.CxipRegistry.DanielArshamErosions',
+      danielArshamErosions.address
+    )
+    .catch(error);
 
   console.log('Transaction hash:', danielArshamErosionsTx.hash);
   await danielArshamErosionsTx.wait();
-  console.log(`Registered DanielArshamErosions to: ${await registry.getCustomSourceFromString('eip1967.CxipRegistry.DanielArshamErosions')}`);
+  console.log(
+    `Registered DanielArshamErosions to: ${await registry.getCustomSourceFromString(
+      'eip1967.CxipRegistry.DanielArshamErosions'
+    )}`
+  );
 
   // DanielArshamErosions Proxy (Royalties)
-  const danielArshamErosionsProxy = await ethers.getContract('DanielArshamErosionsProxy');
-  const danielArshamErosionsProxyTx = await registry.setCustomSource('eip1967.CxipRegistry.DanielArshamErosionsProxy', danielArshamErosionsProxy.address).catch(error);
+  const danielArshamErosionsProxy = await ethers.getContract(
+    'DanielArshamErosionsProxy'
+  );
+  const danielArshamErosionsProxyTx = await registry
+    .setCustomSource(
+      'eip1967.CxipRegistry.DanielArshamErosionsProxy',
+      danielArshamErosionsProxy.address
+    )
+    .catch(error);
 
   console.log('Transaction hash:', danielArshamErosionsProxyTx.hash);
   await danielArshamErosionsProxyTx.wait();
-  console.log(`Registered DanielArshamErosionsProxy to: ${await registry.getCustomSourceFromString('eip1967.CxipRegistry.DanielArshamErosionsProxy')}`);
+  console.log(
+    `Registered DanielArshamErosionsProxy to: ${await registry.getCustomSourceFromString(
+      'eip1967.CxipRegistry.DanielArshamErosionsProxy'
+    )}`
+  );
 
   // Asset Signer
   const signerTx = await registry.setAssetSigner(deployer);
