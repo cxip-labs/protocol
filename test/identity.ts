@@ -33,6 +33,7 @@ describe('CXIP', () => {
       'CxipIdentityProxy',
       'CxipProvenanceProxy',
       'PA1DProxy',
+      'DanielArshamErosionsProxy',
       'CxipProvenance',
       'CxipIdentity',
       'CxipERC721',
@@ -40,6 +41,7 @@ describe('CXIP', () => {
       'CxipCopyright',
       'CxipAsset',
       'PA1D',
+      'DanielArshamErosions',
 
       'Register',
     ]);
