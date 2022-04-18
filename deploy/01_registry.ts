@@ -42,6 +42,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     log: true,
   });
   config.erc721ProxyBytecode = erc721Proxy?.bytecode?.substring(2); // remove 0x
+
+  fs.writeFileSync('./config/' + network + '.config.json', JSON.stringify(config, null, 4), 'utf8');
   /**
    * End hack
    */
@@ -68,51 +70,34 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   };
 
   const recursiveBuild = function (buildDir: any, deployDir: any) {
-    fs.readdir(buildDir, function (err: any, files: any) {
-      if (err) {
-        throw err;
+    let files: any = fs.readdirSync(buildDir);
+    for (let i = 0; i < files.length; i++) {
+      let file: any = files[i];
+      let stats: any = fs.statSync(buildDir + '/' + file);
+      if (stats.isDirectory()) {
+        // we go into it
+        try {
+          fs.mkdirSync(deployDir + '/' + file);
+        } catch (ex) {
+          // we ignore this error on purpose
+        }
+        recursiveBuild(buildDir + '/' + file, deployDir + '/' + file);
+      } else {
+        if (file.endsWith('.sol')) {
+          // console.log(file);
+          let data: any = fs.readFileSync(buildDir + '/' + file, 'utf8');
+          fs.writeFileSync(deployDir + '/' + file, replaceValues(data), 'utf8');
+        }
       }
-      files.forEach(function (file: any) {
-        fs.stat(buildDir + '/' + file, function (err: any, stats: any) {
-          if (err) {
-            throw err;
-          }
-          if (stats.isDirectory()) {
-            // we go into it
-            fs.mkdir(deployDir + '/' + file, function () {
-              recursiveBuild(buildDir + '/' + file, deployDir + '/' + file);
-            });
-          } else {
-            if (file.endsWith('.sol')) {
-              // console.log(file);
-              fs.readFile(
-                buildDir + '/' + file,
-                'utf8',
-                function (err: any, data: any) {
-                  if (err) {
-                    throw err;
-                  }
-                  fs.writeFile(
-                    deployDir + '/' + file,
-                    replaceValues(data),
-                    function (err: any) {
-                      if (err) {
-                        throw err;
-                      }
-                    }
-                  );
-                }
-              );
-            }
-          }
-        });
-      });
-    });
+    }
   };
 
-  fs.mkdir(deployDir, function () {
-    recursiveBuild(buildDir, deployDir);
-  });
+  try {
+    fs.mkdirSync(deployDir);
+  } catch (ex) {
+    // we ignore this error on purpose
+  }
+  recursiveBuild(buildDir, deployDir);
 };
 
 export default func;
