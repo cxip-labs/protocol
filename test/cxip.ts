@@ -85,35 +85,43 @@ describe('CXIP', () => {
 
       'Register',
     ]);
-    registry = await ethers.getContract('CxipRegistry');
+    registry = (await ethers.getContract('CxipRegistry')) as CxipRegistry;
 
-    copyrightProxy = await ethers.getContract('CxipCopyrightProxy');
-    erc1155Proxy = await ethers.getContract('CxipERC1155Proxy');
+    copyrightProxy = (await ethers.getContract(
+      'CxipCopyrightProxy'
+    )) as CxipCopyrightProxy;
+    erc1155Proxy = (await ethers.getContract(
+      'CxipERC1155Proxy'
+    )) as CxipERC1155Proxy;
 
     provenanceProxy = (await ethers.getContract(
       'CxipProvenanceProxy'
     )) as CxipProvenanceProxy;
     provenance = (await ethers.getContract('CxipProvenance')) as CxipProvenance;
 
-    identityProxy = await ethers.getContract('CxipIdentityProxy');
-    identity = await ethers.getContract('CxipIdentity');
+    identityProxy = (await ethers.getContract(
+      'CxipIdentityProxy'
+    )) as CxipIdentityProxy;
+    identity = (await ethers.getContract('CxipIdentity')) as CxipIdentity;
 
-    erc721Proxy = await ethers.getContract('CxipERC721Proxy');
-    erc721 = await ethers.getContract('CxipERC721');
+    erc721Proxy = (await ethers.getContract(
+      'CxipERC721Proxy'
+    )) as CxipERC721Proxy;
+    erc721 = (await ethers.getContract('CxipERC721')) as CxipERC721;
 
-    assetProxy = await ethers.getContract('CxipAssetProxy');
-    asset = await ethers.getContract('CxipAsset');
+    assetProxy = (await ethers.getContract('CxipAssetProxy')) as CxipAssetProxy;
+    asset = (await ethers.getContract('CxipAsset')) as CxipAsset;
 
-    royaltiesProxy = await ethers.getContract('PA1DProxy');
-    royalties = await ethers.getContract('PA1D');
+    royaltiesProxy = (await ethers.getContract('PA1DProxy')) as PA1DProxy;
+    royalties = (await ethers.getContract('PA1D')) as PA1D as PA1D;
 
-    danielArshamErosionsProxy = await ethers.getContract(
+    danielArshamErosionsProxy = (await ethers.getContract(
       'DanielArshamErosionsProxy'
-    );
+    )) as DanielArshamErosionsProxy;
     danielArshamErosions = await ethers.getContract('DanielArshamErosions');
-    danielArshamErosionsProxy = await ethers.getContract(
+    danielArshamErosionsProxy = (await ethers.getContract(
       'DanielArshamErosionsProxy'
-    );
+    )) as DanielArshamErosionsProxy;
 
     danielArshamErosionsProxyBytecode = (
       (await ethers.getContractFactory(
@@ -131,13 +139,11 @@ describe('CXIP', () => {
       const assetTx = await registry.setAssetSource(asset.address);
       await assetTx.wait();
       const assetSourceAddress = await registry.getAssetSource();
-
       expect(assetSourceAddress).to.equal(asset.address);
     });
 
     it('should set and get asset proxy', async () => {
       const assetProxyTx = await registry.setAsset(assetProxy.address);
-
       await assetProxyTx.wait();
       const assetProxyAddress = await registry.getAsset();
       expect(assetProxyAddress).to.equal(assetProxy.address);
@@ -428,7 +434,7 @@ describe('CXIP', () => {
       expect(collectionAddress).not.to.equal(ZERO_ADDRESS);
       expect(collectionType).not.to.equal(ZERO_ADDRESS);
 
-      // Finally create a new ERC721 NFT inot the collection
+      // Finally create a new ERC721 NFT in the collection
       const payload =
         '0x398d6a45a2c3d1145dfc3a229313e4c3b65165eb0b8b04c0fe787d0e32924775';
       const tokenId =

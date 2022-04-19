@@ -43,7 +43,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   });
   config.erc721ProxyBytecode = erc721Proxy?.bytecode?.substring(2); // remove 0x
 
-  fs.writeFileSync('./config/' + network + '.config.json', JSON.stringify(config, null, 4), 'utf8');
+  fs.writeFileSync(
+    './config/' + network + '.config.json',
+    JSON.stringify(config, null, 4),
+    'utf8'
+  );
   /**
    * End hack
    */
