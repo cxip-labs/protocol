@@ -527,13 +527,6 @@ describe('CXIP', () => {
       // First create a new identity
       const salt = user4.address + '0x000000000000000000000000'.substring(2);
 
-      danielArshamErosionsProxyBytecode =
-        '0x' +
-        danielArshamErosionsProxyBytecode.substring(2, 176) +
-        registry.address.substring(2) +
-        danielArshamErosionsProxyBytecode.substring(218);
-      console.log(danielArshamErosionsProxyBytecode);
-
       // Attach the provenance implementation ABI to provenance proxy
       const p = await provenance.attach(provenanceProxy.address);
       const tx = await p.connect(user4).createIdentity(
