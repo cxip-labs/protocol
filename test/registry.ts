@@ -106,7 +106,7 @@ describe('CXIP - Registry', () => {
 
   afterEach(async () => {});
 
-  describe('Registry', () => {
+  describe('Registry', async () => {
     it('should set and get asset source', async () => {
       const assetTx = await registry.setAssetSource(asset.address);
       await assetTx.wait();

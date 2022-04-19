@@ -13,6 +13,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   // Get the registry contract and set the required contract addresses
   const registry = await ethers.getContract('CxipRegistry');
+  console.log('Registry address is:', registry.address);
 
   // Asset
   const asset = await ethers.getContract('CxipAsset');

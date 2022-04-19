@@ -1,51 +1,49 @@
-import { expect } from 'chai';
+import { expect, assert } from 'chai';
 import { ethers } from 'hardhat';
+import Web3 from 'web3';
 import { deployments } from 'hardhat';
 
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
-  CxipRegistry,
-  CxipAssetProxy,
-  CxipCopyrightProxy,
-  CxipERC721Proxy,
-  CxipERC1155Proxy,
-  CxipIdentityProxy,
   CxipProvenanceProxy,
   PA1DProxy,
   CxipProvenance,
   CxipIdentity,
   CxipERC721,
+  CxipAsset,
+  PA1D,
   DanielArshamErosionsProxy,
   DanielArshamErosions,
 } from '../typechain-types';
 import { utf8ToBytes32, ZERO_ADDRESS } from './utils';
-import { BigNumberish, BytesLike } from 'ethers';
+import { BigNumberish, BytesLike, ContractFactory } from 'ethers';
 
-describe('CXIP - Collection', () => {
+const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
+
+describe('CXIP - Daniel Arsham Erosions', async () => {
   let deployer: SignerWithAddress;
   let user: SignerWithAddress;
 
-  let registry: CxipRegistry;
-
-  let assetProxy: CxipAssetProxy;
-  let copyrightProxy: CxipCopyrightProxy;
-  let erc721Proxy: CxipERC721Proxy;
-  let erc1155Proxy: CxipERC1155Proxy;
-  let identityProxy: CxipIdentityProxy;
   let provenanceProxy: CxipProvenanceProxy;
   let royaltiesProxy: PA1DProxy;
 
+  let asset: CxipAsset;
+  let erc721: CxipERC721;
   let identity: CxipIdentity;
   let provenance: CxipProvenance;
-  let erc721: CxipERC721;
+  let royalties: PA1D;
 
-  let danielArshamErosionsProxy: DanielArshamErosionsProxy;
+  let danielArshamErosionsProxy: any;
   let danielArshamErosions: DanielArshamErosions;
+
+  let danielArshamErosionsProxyBytecode: string;
 
   before(async () => {
     const accounts = await ethers.getSigners();
     deployer = accounts[0];
     user = accounts[1];
+
+    const { deploy } = deployments;
 
     await deployments.fixture([
       'CxipRegistry',
@@ -63,26 +61,28 @@ describe('CXIP - Collection', () => {
       'CxipCopyright',
       'CxipAsset',
       'PA1D',
-      'DanielArshamErosionsProxy',
       'DanielArshamErosions',
+      'DanielArshamErosionsProxy',
 
       'Register',
     ]);
-    registry = await ethers.getContract('CxipRegistry');
-    assetProxy = await ethers.getContract('CxipAssetProxy');
-    copyrightProxy = await ethers.getContract('CxipCopyrightProxy');
-    erc721Proxy = await ethers.getContract('CxipERC721Proxy');
-    erc1155Proxy = await ethers.getContract('CxipERC1155Proxy');
-    identityProxy = await ethers.getContract('CxipIdentityProxy');
-    provenanceProxy = await ethers.getContract('CxipProvenanceProxy');
-    royaltiesProxy = await ethers.getContract('PA1DProxy');
+
+    provenanceProxy = (await ethers.getContract(
+      'CxipProvenanceProxy'
+    )) as CxipProvenanceProxy;
+    royaltiesProxy = (await ethers.getContract('PA1DProxy')) as PA1DProxy;
+
+    provenance = (await ethers.getContract('CxipProvenance')) as CxipProvenance;
+    identity = (await ethers.getContract('CxipIdentity')) as CxipIdentity;
+    erc721 = (await ethers.getContract('CxipERC721')) as CxipERC721;
+    asset = (await ethers.getContract('CxipAsset')) as CxipAsset;
+    royalties = (await ethers.getContract('PA1D')) as PA1D;
+
+
+    danielArshamErosionsProxyBytecode = ((await ethers.getContractFactory('DanielArshamErosionsProxy')) as ContractFactory).bytecode;
     danielArshamErosionsProxy = await ethers.getContract(
       'DanielArshamErosionsProxy'
     );
-
-    provenance = await ethers.getContract('CxipProvenance');
-    identity = await ethers.getContract('CxipIdentity');
-    erc721 = await ethers.getContract('CxipERC721');
     danielArshamErosions = await ethers.getContract('DanielArshamErosions');
   });
 
@@ -90,9 +90,12 @@ describe('CXIP - Collection', () => {
 
   afterEach(async () => {});
 
-  describe('Collection', async () => {
-    it('should create a collection', async () => {
+  describe('Daniel Arsham Erosions', async () => {
+    it('should create a ERC721 NFT in a collection', async () => {
+      // First create a new identity
       const salt = user.address + '0x000000000000000000000000'.substring(2);
+
+      assert('a' === danielArshamErosionsProxyBytecode, 'danielArshamErosionsProxyBytecode -->> ' + danielArshamErosionsProxyBytecode);
 
       // Attach the provenance implementation ABI to provenance proxy
       const p = await provenance.attach(provenanceProxy.address);
@@ -109,17 +112,18 @@ describe('CXIP - Collection', () => {
       const receipt = await tx.wait();
       const identityAddress = await p.connect(user).getIdentity();
 
-      // // Attach the identity implementation ABI to the newly created identity proxy
+      // Attach the identity implementation ABI to the newly created identity proxy
       const i = await identity.attach(identityAddress);
 
-      const result = await i.connect(user).createERC721Collection(
+      // Then create the collection
+      const result = await i.connect(user).createCustomERC721Collection(
         salt,
         user.address,
         [
           `0x0000000000000000000000000000000000000000000000000000000000000000`,
           `0x0000000000000000000000000000000000000000000000000000000000000000`,
           '0x0',
-        ] as any,
+        ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish },
         [
           `${utf8ToBytes32('Collection name')}`, // Collection name
           '0x0000000000000000000000000000000000000000000000000000000000000000', // Collection name 2
@@ -132,29 +136,18 @@ describe('CXIP - Collection', () => {
           symbol: BytesLike;
           royalties: string;
           bps: BigNumberish;
-        }
+        },
+        '0x34614b2160c4ad0a9004a062b1210e491f551c3b3eb86397949dc0279cf60c0d',
+        danielArshamErosionsProxyBytecode
       );
 
       result.wait();
 
       const collectionAddress = await i.getCollectionById(0);
       const collectionType = await i.getCollectionType(collectionAddress);
-      const c = erc721.attach(collectionAddress);
-
       expect(collectionAddress).not.to.equal(ZERO_ADDRESS);
       expect(collectionType).not.to.equal(ZERO_ADDRESS);
-      expect(await c.connect(user).isOwner()).to.equal(true);
-      expect(await c.connect(user).owner()).to.equal(user.address);
-      expect(await c.connect(user).name()).to.equal('Collection name');
-      expect(await c.connect(user).symbol()).to.equal('Collection symbol');
-      expect(await c.connect(user).baseURI()).to.equal(
-        `https://cxip.dev/nft/${collectionAddress.toLowerCase()}`
-      );
-      expect(await c.connect(user).contractURI()).to.equal(
-        `https://nft.cxip.dev/${collectionAddress.toLowerCase()}/`
-      );
-    });
 
-    it.skip('should create a collection using a different wallet in the identity', async () => {});
+    });
   });
 });

@@ -51,7 +51,7 @@ describe('CXIP - Identity', () => {
     provenance = (await ethers.getContract('CxipProvenance')) as CxipProvenance;
   });
 
-  describe('Identity', () => {
+  describe('Identity', async () => {
     it('should create an identity', async () => {
       const salt = deployer.address + '0x000000000000000000000000'.substring(2);
       const tx = await provenance.createIdentity(

@@ -83,7 +83,7 @@ describe('CXIP - ERC721', () => {
 
   afterEach(async () => {});
 
-  describe('ERC721', () => {
+  describe('ERC721', async () => {
     it('should create a ERC721 NFT in a collection', async () => {
       // First create a new identity
       const salt = user.address + '0x000000000000000000000000'.substring(2);

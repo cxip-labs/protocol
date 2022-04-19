@@ -50,6 +50,7 @@ pragma solidity 0.8.12;
 */
 
 import "./external/OpenSea.sol";
+import "./interface/IERC165.sol";
 import "./interface/ICxipERC721.sol";
 import "./interface/ICxipIdentity.sol";
 import "./interface/ICxipProvenance.sol";
@@ -57,18 +58,11 @@ import "./interface/ICxipRegistry.sol";
 import "./interface/IPA1D.sol";
 import "./library/Address.sol";
 import "./library/Bytes.sol";
-import "./library/RotatingToken.sol";
 import "./library/Strings.sol";
 import "./struct/CollectionData.sol";
 import "./struct/TokenData.sol";
 import "./struct/Verification.sol";
 
-/**
- * @title CXIP ERC721
- * @author CXIP-Labs
- * @notice A smart contract for minting and managing ERC721 NFTs.
- * @dev The entire logic and functionality of the smart contract is self-contained.
- */
 contract DanielArshamErosions {
     /**
      * @dev Stores default collection data: name, symbol, and royalties.
@@ -169,14 +163,6 @@ contract DanielArshamErosions {
     event ApprovalForAll(address indexed wallet, address indexed operator, bool approved);
 
     /**
-     * @notice Event emitted to signal to OpenSea that a permanent URI was created.
-     * @dev Even though OpenSea advertises support for this, they do not listen to this event, and do not respond to it.
-     * @param uri The permanent/static URL of the NFT. Cannot ever be changed again.
-     * @param id Token id of the NFT.
-     */
-    event PermanentURI(string uri, uint256 indexed id);
-
-    /**
      * @notice Constructor is empty and not utilised.
      * @dev To make exact CREATE2 deployment possible, constructor is left empty. We utilize the "init" function instead.
      */
@@ -191,12 +177,9 @@ contract DanielArshamErosions {
     }
 
     /**
-     * @notice Enables royaltiy functionality at the ERC721 level when ether is sent with no calldata.
-     * @dev See implementation of _royaltiesFallback.
+     * @dev Left empty on purpose to prevent out of gas errors.
      */
-    receive() external payable {
-        _royaltiesFallback();
-    }
+    receive() external payable {}
 
     /**
      * @notice Enables royaltiy functionality at the ERC721 level no other function matches the call.
@@ -206,6 +189,43 @@ contract DanielArshamErosions {
         _royaltiesFallback();
     }
 
+    function getIntervalConfig() public view returns (uint256[4] memory intervals) {
+        uint64 unpacked;
+        // The slot hash has been precomputed for gas optimizaion
+        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.DanielArshamErosions.intervalConfig')) - 1);
+        assembly {
+            unpacked := sload(
+                /* slot */
+                0xf8883f7674e7099512a3eb674d514a03c06b3984f509bd9a7b34673ea2a79349
+            )
+        }
+        intervals[0] = uint256(uint16(unpacked >> 48));
+        intervals[1] = uint256(uint16(unpacked >> 32));
+        intervals[2] = uint256(uint16(unpacked >> 16));
+        intervals[3] = uint256(uint16(unpacked));
+    }
+
+    function setIntervalConfig(uint256[4] memory intervals) external onlyOwner {
+        // The slot hash has been precomputed for gas optimizaion
+        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.DanielArshamErosions.intervalConfig')) - 1);
+        uint256 packed = uint256(intervals[0] << 48 | intervals[1] << 32 | intervals[2] << 16 | intervals[3]);
+        assembly {
+            sstore(
+                /* slot */
+                0xf8883f7674e7099512a3eb674d514a03c06b3984f509bd9a7b34673ea2a79349,
+                packed
+            )
+        }
+    }
+
+    function _calculateRotation(uint256 tokenId) internal view returns (uint256 rotationIndex) {
+        uint256 configIndex = (tokenId / getTokenSeparator());
+        uint256 interval = getIntervalConfig()[configIndex - 1];
+        uint256 remainder = ((block.timestamp - getStartTimestamp()) / interval) % 2;
+        // (remainder == 0 ? "even" : "odd")
+        rotationIndex = (configIndex * 2) + remainder;
+    }
+
     /**
      * @notice Gets the URI of the NFT on Arweave.
      * @dev Concatenates 2 sections of the arweave URI.
@@ -213,7 +233,7 @@ contract DanielArshamErosions {
      */
     function arweaveURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
-        uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
+        uint256 index = _calculateRotation(tokenId);
         return string(abi.encodePacked("https://arweave.net/", _tokenData[index].arweave, _tokenData[index].arweave2));
     }
 
@@ -233,7 +253,7 @@ contract DanielArshamErosions {
      */
     function creator(uint256 tokenId) external view returns (address) {
         require(_exists(tokenId), "CXIP: token does not exist");
-        uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
+        uint256 index = _calculateRotation(tokenId);
         return _tokenData[index].creator;
     }
 
@@ -254,7 +274,7 @@ contract DanielArshamErosions {
      */
     function ipfsURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
-        uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
+        uint256 index = _calculateRotation(tokenId);
         return string(abi.encodePacked("https://ipfs.io/ipfs/", _tokenData[index].ipfs, _tokenData[index].ipfs2));
     }
 
@@ -275,7 +295,7 @@ contract DanielArshamErosions {
      */
     function payloadHash(uint256 tokenId) external view returns (bytes32) {
         require(_exists(tokenId), "CXIP: token does not exist");
-        uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
+        uint256 index = _calculateRotation(tokenId);
         return _tokenData[index].payloadHash;
     }
 
@@ -287,7 +307,7 @@ contract DanielArshamErosions {
      */
     function payloadSignature(uint256 tokenId) external view returns (Verification memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
-        uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
+        uint256 index = _calculateRotation(tokenId);
         return _tokenData[index].payloadSignature;
     }
 
@@ -299,7 +319,7 @@ contract DanielArshamErosions {
      */
     function payloadSigner(uint256 tokenId) external view returns (address) {
         require(_exists(tokenId), "CXIP: token does not exist");
-        uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
+        uint256 index = _calculateRotation(tokenId);
         return _tokenData[index].creator;
     }
 
@@ -341,7 +361,7 @@ contract DanielArshamErosions {
      */
     function tokenURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
-        uint256 index = RotatingToken.calculateRotation(tokenId, getTokenSeparator());
+        uint256 index = _calculateRotation(tokenId);
         return string(abi.encodePacked("https://arweave.net/", _tokenData[index].arweave, _tokenData[index].arweave2));
     }
 
@@ -352,18 +372,6 @@ contract DanielArshamErosions {
      */
     function tokensOfOwner(address wallet) external view returns (uint256[] memory) {
         return _ownedTokens[wallet];
-    }
-
-    /**
-     * @notice Checks if a given hash matches a payload hash.
-     * @dev Uses sha256 instead of keccak.
-     * @param hash The hash to check.
-     * @param payload The payload prehashed.
-     * @return bool True if the hashes match.
-     */
-    function verifySHA256(bytes32 hash, bytes calldata payload) external pure returns (bool) {
-        bytes32 thePayloadHash = sha256(payload);
-        return hash == thePayloadHash;
     }
 
     /**
@@ -418,11 +426,7 @@ contract DanielArshamErosions {
      * @param to cannot be the zero address.
      * @param tokenId token must exist and be owned by `from`.
      */
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public payable {
+    function safeTransferFrom(address from, address to, uint256 tokenId) public payable {
         safeTransferFrom(from, to, tokenId, "");
     }
 
@@ -434,19 +438,17 @@ contract DanielArshamErosions {
      * @param to cannot be the zero address.
      * @param tokenId token must exist and be owned by `from`.
      */
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory data
-    ) public payable {
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public payable {
         require(_isApproved(msg.sender, tokenId), "CXIP: not approved sender");
         _transferFrom(from, to, tokenId);
         if (Address.isContract(to)) {
-            require(
-                ICxipERC721(to).onERC721Received(address(this), from, tokenId, data) == 0x150b7a02,
-                "CXIP: onERC721Received fail"
-            );
+            // quick sanity check that the contract supports EIP-165 interfaces, and supports onERC721Received
+            if (IERC165(to).supportsInterface(0x01ffc9a7) && IERC165(to).supportsInterface(0x150b7a02)) {
+                require(
+                    ICxipERC721(to).onERC721Received(address(this), from, tokenId, data) == 0x150b7a02,
+                    "CXIP: onERC721Received fail"
+                );
+            }
         }
     }
 
@@ -469,11 +471,7 @@ contract DanielArshamErosions {
      * @param to cannot be the zero address.
      * @param tokenId token must be owned by `from`.
      */
-    function transferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public payable {
+    function transferFrom(address from, address to, uint256 tokenId) public payable {
         transferFrom(from, to, tokenId, "");
     }
 
@@ -485,12 +483,7 @@ contract DanielArshamErosions {
      * @param to cannot be the zero address.
      * @param tokenId token must be owned by `from`.
      */
-    function transferFrom(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory /*_data*/
-    ) public payable {
+    function transferFrom(address from, address to, uint256 tokenId, bytes memory /*_data*/) public payable {
         require(_isApproved(msg.sender, tokenId), "CXIP: not approved sender");
         _transferFrom(from, to, tokenId);
     }
@@ -526,8 +519,15 @@ contract DanielArshamErosions {
         }
     }
 
-    function getStartTimestamp() public view returns (uint256) {
-        return RotatingToken.getStartTimestamp();
+    function getStartTimestamp() public view returns (uint256 _timestamp) {
+        // The slot hash has been precomputed for gas optimizaion
+        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.DanielArshamErosions.startTimestamp')) - 1);
+        assembly {
+            _timestamp := sload(
+                /* slot */
+                0xf2aaccfcfa4e77d7601ed4ebe139368f313960f63d25a2f26ec905d019eba48b
+            )
+        }
     }
 
     /**
@@ -647,20 +647,6 @@ contract DanielArshamErosions {
     }
 
     /**
-     * @dev Sets the configuration for rotation calculations.
-     * @param interval The number of seconds each rotation is shown for.
-     * @param steps Total number of steps for complete rotation. Reverse rotation including.
-     * @param halfwayPoint Step at which to reverse the rotation backwards. Must be exactly in the middle.
-     */
-    function setRotationConfig(uint256 index, uint256 interval, uint256 steps, uint256 halfwayPoint) public onlyOwner {
-        RotatingToken.setRotationConfig(index, interval, steps, halfwayPoint);
-    }
-
-    function getRotationConfig(uint256 index) public view returns (uint256, uint256, uint256) {
-        return RotatingToken.getRotationConfig(index);
-    }
-
-    /**
      * @notice Sets a name for the collection.
      * @dev The name is split in two for gas optimization.
      * @param newName First part of name.
@@ -677,7 +663,15 @@ contract DanielArshamErosions {
      * @param _timestamp UNIX timestamp in seconds.
      */
     function setStartTimestamp(uint256 _timestamp) public onlyOwner {
-        RotatingToken.setStartTimestamp(_timestamp);
+        // The slot hash has been precomputed for gas optimizaion
+        // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.DanielArshamErosions.startTimestamp')) - 1);
+        assembly {
+            sstore(
+                /* slot */
+                0xf2aaccfcfa4e77d7601ed4ebe139368f313960f63d25a2f26ec905d019eba48b,
+                _timestamp
+            )
+        }
     }
 
     /**
@@ -746,12 +740,7 @@ contract DanielArshamErosions {
      * @return bool True if approved.
      */
     function isApprovedForAll(address wallet, address operator) public view returns (bool) {
-        // pre-approved OpenSea and Rarible proxies removed, per Nifty Gateway's request
-        return (_operatorApprovals[wallet][operator]/* ||
-            // Rarible Transfer Proxy
-            0x4feE7B061C97C9c496b01DbcE9CDb10c02f0a0Be == operator ||
-            // OpenSea Transfer Proxy
-            address(OpenSeaProxyRegistry(0xa5409ec958C83C3f309868babACA7c86DCB077c1).proxies(wallet)) == operator*/);
+        return _operatorApprovals[wallet][operator];
     }
 
     /**
@@ -802,10 +791,7 @@ contract DanielArshamErosions {
      * @param index Index of token in array.
      * @return uint256 Returns the token id of token located at that index in specified wallet.
      */
-    function tokenOfOwnerByIndex(
-        address wallet,
-        uint256 index
-    ) public view returns (uint256) {
+    function tokenOfOwnerByIndex(address wallet, uint256 index) public view returns (uint256) {
         require(index < balanceOf(wallet));
         return _ownedTokens[wallet][index];
     }
@@ -828,12 +814,7 @@ contract DanielArshamErosions {
      * @dev Since it's not being used, the _data variable is commented out to avoid compiler warnings.
      * @return bytes4 Returns the interfaceId of onERC721Received.
      */
-    function onERC721Received(
-        address, /*_operator*/
-        address, /*_from*/
-        uint256, /*_tokenId*/
-        bytes calldata /*_data*/
-    ) public pure returns (bytes4) {
+    function onERC721Received(address, /*_operator*/address, /*_from*/uint256, /*_tokenId*/bytes calldata /*_data*/) public pure returns (bytes4) {
         return 0x150b7a02;
     }
 
@@ -931,10 +912,7 @@ contract DanielArshamErosions {
      * @param from Address of token owner for which to remove the token.
      * @param tokenId Id of token to remove.
      */
-    function _removeTokenFromOwnerEnumeration(
-        address from,
-        uint256 tokenId
-    ) private {
+    function _removeTokenFromOwnerEnumeration(address from, uint256 tokenId) private {
         _removeTokenFromAllTokensEnumeration(tokenId);
         _ownedTokensCount[from]--;
         uint256 lastTokenIndex = _ownedTokensCount[from];
@@ -958,11 +936,7 @@ contract DanielArshamErosions {
      * @param to Address to whom the token is being transferred. Zero address means it is being burned.
      * @param tokenId Id of token that is being transferred/minted/burned.
      */
-    function _transferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) private {
+    function _transferFrom(address from, address to, uint256 tokenId) private {
         require(_tokenOwner[tokenId] == from, "CXIP: not from's token");
         require(!Address.isZero(to), "CXIP: use burn instead");
         _clearApproval(tokenId);
