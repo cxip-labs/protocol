@@ -27,7 +27,7 @@ import { utf8ToBytes32, ZERO_ADDRESS } from './utils';
 
 const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
 
-describe.only('CXIP', () => {
+describe('CXIP', () => {
   let deployer: SignerWithAddress;
   let user: SignerWithAddress;
   let user2: SignerWithAddress;
@@ -262,6 +262,7 @@ describe.only('CXIP', () => {
 
     it.skip('should create an identity with a secondary wallet', async () => {
       // TODO: Come back to this and use signatures for second address
+      // Not supported currently
     });
 
     it('should be a valid identity', async () => {
@@ -370,7 +371,9 @@ describe.only('CXIP', () => {
       );
     });
 
-    it.skip('should create a collection using a different wallet in the identity', async () => {});
+    it.skip('should create a collection using a different wallet in the identity', async () => {
+      // TODO: Not supported currently
+    });
   });
 
   describe('ERC721', async () => {
