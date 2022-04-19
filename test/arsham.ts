@@ -5,6 +5,7 @@ import { deployments } from 'hardhat';
 
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
+  CxipRegistry,
   CxipProvenanceProxy,
   PA1DProxy,
   CxipProvenance,
@@ -23,6 +24,8 @@ const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
 describe('CXIP - Daniel Arsham Erosions', async () => {
   let deployer: SignerWithAddress;
   let user: SignerWithAddress;
+
+  let registry: CxipRegistry;
 
   let provenanceProxy: CxipProvenanceProxy;
   let royaltiesProxy: PA1DProxy;
@@ -67,6 +70,8 @@ describe('CXIP - Daniel Arsham Erosions', async () => {
       'Register',
     ]);
 
+    registry = (await ethers.getContract('CxipRegistry')) as CxipRegistry;
+
     provenanceProxy = (await ethers.getContract(
       'CxipProvenanceProxy'
     )) as CxipProvenanceProxy;
@@ -83,6 +88,7 @@ describe('CXIP - Daniel Arsham Erosions', async () => {
     danielArshamErosionsProxy = await ethers.getContract(
       'DanielArshamErosionsProxy'
     );
+//    assert('a' === danielArshamErosionsProxyBytecode, 'danielArshamErosionsProxyBytecode -->> ' + JSON.stringify(danielArshamErosionsProxy, null, 4));
     danielArshamErosions = await ethers.getContract('DanielArshamErosions');
   });
 
@@ -95,7 +101,8 @@ describe('CXIP - Daniel Arsham Erosions', async () => {
       // First create a new identity
       const salt = user.address + '0x000000000000000000000000'.substring(2);
 
-      assert('a' === danielArshamErosionsProxyBytecode, 'danielArshamErosionsProxyBytecode -->> ' + danielArshamErosionsProxyBytecode);
+      danielArshamErosionsProxyBytecode = '0x' + danielArshamErosionsProxyBytecode.substring (2, 176) + registry.address.substring (2) + danielArshamErosionsProxyBytecode.substring(218);
+//      assert('a' === danielArshamErosionsProxyBytecode, 'danielArshamErosionsProxyBytecode -->> ' + danielArshamErosionsProxyBytecode);
 
       // Attach the provenance implementation ABI to provenance proxy
       const p = await provenance.attach(provenanceProxy.address);

@@ -97,7 +97,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   } catch (ex) {
     // we ignore this error on purpose
   }
-  recursiveBuild(buildDir, deployDir);
+  await recursiveBuild(buildDir, deployDir);
 };
 
 export default func;
