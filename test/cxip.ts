@@ -111,17 +111,15 @@ describe('CXIP', () => {
       'DanielArshamErosionsProxy'
     );
     danielArshamErosions = await ethers.getContract('DanielArshamErosions');
+    danielArshamErosionsProxy = await ethers.getContract(
+      'DanielArshamErosionsProxy'
+    );
 
     danielArshamErosionsProxyBytecode = (
       (await ethers.getContractFactory(
         'DanielArshamErosionsProxy'
       )) as ContractFactory
     ).bytecode;
-    danielArshamErosionsProxy = await ethers.getContract(
-      'DanielArshamErosionsProxy'
-    );
-    //    assert('a' === danielArshamErosionsProxyBytecode, 'danielArshamErosionsProxyBytecode -->> ' + JSON.stringify(danielArshamErosionsProxy, null, 4));
-    danielArshamErosions = await ethers.getContract('DanielArshamErosions');
   });
 
   beforeEach(async () => {});
@@ -534,6 +532,7 @@ describe('CXIP', () => {
         danielArshamErosionsProxyBytecode.substring(2, 176) +
         registry.address.substring(2) +
         danielArshamErosionsProxyBytecode.substring(218);
+      console.log(danielArshamErosionsProxyBytecode);
 
       // Attach the provenance implementation ABI to provenance proxy
       const p = await provenance.attach(provenanceProxy.address);
