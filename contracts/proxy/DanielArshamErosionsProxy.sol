@@ -55,7 +55,7 @@ import "../interface/ICxipRegistry.sol";
 contract DanielArshamErosionsProxy {
     fallback() external payable {
         // sha256(abi.encodePacked('eip1967.CxipRegistry.DanielArshamErosions')) == 0x748042799f1a8ea5aa2ae183edddb216f96c3c6ada37066aa2ce51a56438ede7
-        address _target = ICxipRegistry(0xc5a5C42992dECbae36851359345FE25997F5C42d).getCustomSource(0x748042799f1a8ea5aa2ae183edddb216f96c3c6ada37066aa2ce51a56438ede7);
+        address _target = ICxipRegistry(0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512).getCustomSource(0x748042799f1a8ea5aa2ae183edddb216f96c3c6ada37066aa2ce51a56438ede7);
         assembly {
             calldatacopy(0, 0, calldatasize())
             let result := delegatecall(gas(), _target, 0, calldatasize(), 0, 0)
