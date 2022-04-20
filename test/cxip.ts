@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { expect, assert } from 'chai';
 import { ethers } from 'hardhat';
 import Web3 from 'web3';
 import { deployments, getNamedAccounts } from 'hardhat';
@@ -559,11 +559,15 @@ describe('CXIP', () => {
           `0x0000000000000000000000000000000000000000000000000000000000000000`,
           `0x0000000000000000000000000000000000000000000000000000000000000000`,
           '0x0',
-        ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish },
+        ] as unknown as {
+          r: BytesLike;
+          s: BytesLike;
+          v: BigNumberish
+        },
         [
-          `${utf8ToBytes32('Collection name')}`, // Collection name
+          `${utf8ToBytes32('Eroding and Reforming Cars')}`, // Collection name
           '0x0000000000000000000000000000000000000000000000000000000000000000', // Collection name 2
-          `${utf8ToBytes32('Collection symbol')}`, // Collection symbol
+          `${utf8ToBytes32('ERCs')}`, // Collection symbol
           user4.address, // royalties (address)
           '0x0000000000000000000003e8', // 1000 bps (uint96)
         ] as unknown as {
@@ -573,8 +577,8 @@ describe('CXIP', () => {
           royalties: string;
           bps: BigNumberish;
         },
-        '0x34614b2160c4ad0a9004a062b1210e491f551c3b3eb86397949dc0279cf60c0d',
-        danielArshamErosionsProxyBytecode
+        '0x34614b2160c4ad0a9004a062b1210e491f551c3b3eb86397949dc0279cf60c0d', // Daniel Arsham Erosions Proxy - Registry storage slot
+        danielArshamErosionsProxyBytecode // proxy contract byte code
       );
 
       result.wait();
@@ -583,6 +587,310 @@ describe('CXIP', () => {
       const collectionType = await i.getCollectionType(collectionAddress);
       expect(collectionAddress).not.to.equal(ZERO_ADDRESS);
       expect(collectionType).not.to.equal(ZERO_ADDRESS);
+
+      const c = danielArshamErosions.attach(collectionAddress);
+      const collectionName = await c.name();
+      const collectionSymbol = await c.symbol();
+
+      assert.isNotOk(collectionName != 'Eroding and Reforming Cars', 'Collection name missmatch, we want "Eroding and Reforming Cars", but got "' + collectionName + '" instead.');
+      assert.isNotOk(collectionSymbol != 'ERCs', 'Collection symbol missmatch, we want "ERCs", but got "' + collectionSymbol + '" instead.');
+
+      await c.connect(user4).setStartTimestamp('0x' + Date.now().toString(16));
+      await c.connect(user4).setTokenSeparator(10000);
+      await c.connect(user4).setTokenLimit(50 + 100 + 100 + 150);
+      await c.connect(user4).setIntervalConfig([113 * 60, 116 * 60, 103 * 60, 126 * 60]);
+
+      const wallet = user4.address;
+      let payload: BytesLike;
+      let arHash: BytesLike;
+      let ipfsHash: BytesLike;
+      let sig: any;
+      let signature: { r: BytesLike; s: BytesLike; v: BigNumberish };
+
+      // Mustang (State 1)
+      arHash = 'k6Dej-c5ga1TkKlJ5vjxtCyY6W6Ipc2ds7gzHAZKir0';
+      ipfsHash = 'QmVLY9uE6quyCumNg4CqhAPh8Q8Kn4Hw5FTE6wKPMxKK9w';
+      payload = '0x' + '00'.repeat(32);
+      sig = await user3.signMessage(payload);
+      signature = {
+        r: '0x' + sig.substring(2, 66),
+        s: '0x' + sig.substring(66, 130),
+        v: '0x' + (parseInt('0x' + sig.substring(130, 132)) + 27).toString(16),
+      };
+      const mustang1 = [
+        payload,
+        [signature.r, signature.s, signature.v],
+        wallet,
+        web3.utils.asciiToHex(arHash.substring(0, 32)),
+        web3.utils.asciiToHex(arHash.substring(32, 43)),
+        web3.utils.asciiToHex(ipfsHash.substring(0, 32)),
+        web3.utils.asciiToHex(ipfsHash.substring(32, 46)),
+      ] as unknown as {
+        payloadHash: BytesLike;
+        payloadSignature: { r: BytesLike; s: BytesLike; v: BigNumberish };
+        creator: string;
+        arweave: BytesLike;
+        arweave2: BytesLike;
+        ipfs: BytesLike;
+        ipfs2: BytesLike;
+      };
+
+      // Mustang (State 2)
+      arHash = '3hBx7NynGoLPctHG8oS5uYKYdJNDj7A_IwTos9K-bUA';
+      ipfsHash = 'QmYpYw7pk3pJqeLF7GNCP6QD7WjST3JK8zzG4cmDMM4RiU';
+      payload = '0x' + '00'.repeat(32);
+      sig = await user3.signMessage(payload);
+      signature = {
+        r: '0x' + sig.substring(2, 66),
+        s: '0x' + sig.substring(66, 130),
+        v: '0x' + (parseInt('0x' + sig.substring(130, 132)) + 27).toString(16),
+      };
+      const mustang2 = [
+        payload,
+        [signature.r, signature.s, signature.v],
+        wallet,
+        web3.utils.asciiToHex(arHash.substring(0, 32)),
+        web3.utils.asciiToHex(arHash.substring(32, 43)),
+        web3.utils.asciiToHex(ipfsHash.substring(0, 32)),
+        web3.utils.asciiToHex(ipfsHash.substring(32, 46)),
+      ] as unknown as {
+        payloadHash: BytesLike;
+        payloadSignature: { r: BytesLike; s: BytesLike; v: BigNumberish };
+        creator: string;
+        arweave: BytesLike;
+        arweave2: BytesLike;
+        ipfs: BytesLike;
+        ipfs2: BytesLike;
+      };
+
+      // mustang
+      const mustangTx = await c.connect(user4).prepareMintDataBatch([2, 3], [mustang1, mustang2]);
+
+      await mustangTx.wait();
+
+
+      // DeLorean (State 1)
+      arHash = 'tbkb5xO694ktcSTGn7WVIwm8Y_7cucgoN6bduo9kZDA';
+      ipfsHash = 'QmeZEHUkaXhRBUQhCVSJ3wrqjpAiGjySoeWq8aHufFX87e';
+      payload = '0x' + '00'.repeat(32);
+      sig = await user3.signMessage(payload);
+      signature = {
+        r: '0x' + sig.substring(2, 66),
+        s: '0x' + sig.substring(66, 130),
+        v: '0x' + (parseInt('0x' + sig.substring(130, 132)) + 27).toString(16),
+      };
+      const delorean1 = [
+        payload,
+        [signature.r, signature.s, signature.v],
+        wallet,
+        web3.utils.asciiToHex(arHash.substring(0, 32)),
+        web3.utils.asciiToHex(arHash.substring(32, 43)),
+        web3.utils.asciiToHex(ipfsHash.substring(0, 32)),
+        web3.utils.asciiToHex(ipfsHash.substring(32, 46)),
+      ] as unknown as {
+        payloadHash: BytesLike;
+        payloadSignature: { r: BytesLike; s: BytesLike; v: BigNumberish };
+        creator: string;
+        arweave: BytesLike;
+        arweave2: BytesLike;
+        ipfs: BytesLike;
+        ipfs2: BytesLike;
+      };
+
+      // DeLorean (State 2)
+      arHash = 'KLBvdyxNunXuNhCyrDkPyEuJUA9frtKNa-bjFAEusB4';
+      ipfsHash = 'QmXXtXd943CP6fx2ZMgX4iPvZpzzW9a4FbpFCs1GMeeMof';
+      payload = '0x' + '00'.repeat(32);
+      sig = await user3.signMessage(payload);
+      signature = {
+        r: '0x' + sig.substring(2, 66),
+        s: '0x' + sig.substring(66, 130),
+        v: '0x' + (parseInt('0x' + sig.substring(130, 132)) + 27).toString(16),
+      };
+      const delorean2 = [
+        payload,
+        [signature.r, signature.s, signature.v],
+        wallet,
+        web3.utils.asciiToHex(arHash.substring(0, 32)),
+        web3.utils.asciiToHex(arHash.substring(32, 43)),
+        web3.utils.asciiToHex(ipfsHash.substring(0, 32)),
+        web3.utils.asciiToHex(ipfsHash.substring(32, 46)),
+      ] as unknown as {
+        payloadHash: BytesLike;
+        payloadSignature: { r: BytesLike; s: BytesLike; v: BigNumberish };
+        creator: string;
+        arweave: BytesLike;
+        arweave2: BytesLike;
+        ipfs: BytesLike;
+        ipfs2: BytesLike;
+      };
+
+      // delorean
+      const deloreanTx = await c.connect(user4).prepareMintDataBatch([4, 5], [delorean1, delorean2]);
+
+      await deloreanTx.wait();
+
+
+      // California (State 1)
+      arHash = 'veEDJpGhtGpA4bac62nyhY3HTbWDAV_bTtAkj6vi4dc';
+      ipfsHash = 'QmfX685GuEWkeLtPyyXm4DSRpHXXUsgAYDCEShrHY7GHej';
+      payload = '0x' + '00'.repeat(32);
+      sig = await user3.signMessage(payload);
+      signature = {
+        r: '0x' + sig.substring(2, 66),
+        s: '0x' + sig.substring(66, 130),
+        v: '0x' + (parseInt('0x' + sig.substring(130, 132)) + 27).toString(16),
+      };
+      const california1 = [
+        payload,
+        [signature.r, signature.s, signature.v],
+        wallet,
+        web3.utils.asciiToHex(arHash.substring(0, 32)),
+        web3.utils.asciiToHex(arHash.substring(32, 43)),
+        web3.utils.asciiToHex(ipfsHash.substring(0, 32)),
+        web3.utils.asciiToHex(ipfsHash.substring(32, 46)),
+      ] as unknown as {
+        payloadHash: BytesLike;
+        payloadSignature: { r: BytesLike; s: BytesLike; v: BigNumberish };
+        creator: string;
+        arweave: BytesLike;
+        arweave2: BytesLike;
+        ipfs: BytesLike;
+        ipfs2: BytesLike;
+      };
+
+      // California (State 2)
+      arHash = '_XAoDq-i3N7bwMNeNoUwCDVLvasCh46Fnhl9wKoaF88';
+      ipfsHash = 'QmQpH5cm3CDCBGUEJ9Lo1aZc6afRdpy4jUbb9R7yfZLHxX';
+      payload = '0x' + '00'.repeat(32);
+      sig = await user3.signMessage(payload);
+      signature = {
+        r: '0x' + sig.substring(2, 66),
+        s: '0x' + sig.substring(66, 130),
+        v: '0x' + (parseInt('0x' + sig.substring(130, 132)) + 27).toString(16),
+      };
+      const california2 = [
+        payload,
+        [signature.r, signature.s, signature.v],
+        wallet,
+        web3.utils.asciiToHex(arHash.substring(0, 32)),
+        web3.utils.asciiToHex(arHash.substring(32, 43)),
+        web3.utils.asciiToHex(ipfsHash.substring(0, 32)),
+        web3.utils.asciiToHex(ipfsHash.substring(32, 46)),
+      ] as unknown as {
+        payloadHash: BytesLike;
+        payloadSignature: { r: BytesLike; s: BytesLike; v: BigNumberish };
+        creator: string;
+        arweave: BytesLike;
+        arweave2: BytesLike;
+        ipfs: BytesLike;
+        ipfs2: BytesLike;
+      };
+
+      // california
+      const californiaTx = await c.connect(user4).prepareMintDataBatch([6, 7], [california1, california2]);
+
+      await californiaTx.wait();
+
+
+      // E30 (State 1)
+      arHash = 'WYDKFYbl6sbJP5LENzwAIlbtH0enQx_HDde0_kD5QAE';
+      ipfsHash = 'QmYQWLJgq9zVMfkqUwDpGrP31jaobVqRMvgzzch9K1J25Y';
+      payload = '0x' + '00'.repeat(32);
+      sig = await user3.signMessage(payload);
+      signature = {
+        r: '0x' + sig.substring(2, 66),
+        s: '0x' + sig.substring(66, 130),
+        v: '0x' + (parseInt('0x' + sig.substring(130, 132)) + 27).toString(16),
+      };
+      const e301 = [
+        payload,
+        [signature.r, signature.s, signature.v],
+        wallet,
+        web3.utils.asciiToHex(arHash.substring(0, 32)),
+        web3.utils.asciiToHex(arHash.substring(32, 43)),
+        web3.utils.asciiToHex(ipfsHash.substring(0, 32)),
+        web3.utils.asciiToHex(ipfsHash.substring(32, 46)),
+      ] as unknown as {
+        payloadHash: BytesLike;
+        payloadSignature: { r: BytesLike; s: BytesLike; v: BigNumberish };
+        creator: string;
+        arweave: BytesLike;
+        arweave2: BytesLike;
+        ipfs: BytesLike;
+        ipfs2: BytesLike;
+      };
+
+      // E30 (State 2)
+      arHash = 'ucbj933WwVHVTQZP2yupmfEatLqoFYnWCQr1xXKbKdg';
+      ipfsHash = 'QmNs7Fvu81wDuWE2oG7D3SdSpDRmS5aDzFQHDGXdXzz8AU';
+      payload = '0x' + '00'.repeat(32);
+      sig = await user3.signMessage(payload);
+      signature = {
+        r: '0x' + sig.substring(2, 66),
+        s: '0x' + sig.substring(66, 130),
+        v: '0x' + (parseInt('0x' + sig.substring(130, 132)) + 27).toString(16),
+      };
+      const e302 = [
+        payload,
+        [signature.r, signature.s, signature.v],
+        wallet,
+        web3.utils.asciiToHex(arHash.substring(0, 32)),
+        web3.utils.asciiToHex(arHash.substring(32, 43)),
+        web3.utils.asciiToHex(ipfsHash.substring(0, 32)),
+        web3.utils.asciiToHex(ipfsHash.substring(32, 46)),
+      ] as unknown as {
+        payloadHash: BytesLike;
+        payloadSignature: { r: BytesLike; s: BytesLike; v: BigNumberish };
+        creator: string;
+        arweave: BytesLike;
+        arweave2: BytesLike;
+        ipfs: BytesLike;
+        ipfs2: BytesLike;
+      };
+
+      // e30
+      const e30Tx = await c.connect(user4).prepareMintDataBatch([8, 9], [e301, e302]);
+
+      await e30Tx.wait();
+
+      // mustang #50
+      await c.connect(user4).batchMint(wallet, 10001, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
+
+      // delorean #100
+      await c.connect(user4).batchMint(wallet, 20001, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
+      await c.connect(user4).batchMint(wallet, 20051, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
+
+      // california #100
+      await c.connect(user4).batchMint(wallet, 30001, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
+      await c.connect(user4).batchMint(wallet, 30051, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
+
+      // e30 #150
+      await c.connect(user4).batchMint(wallet, 40001, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
+      await c.connect(user4).batchMint(wallet, 40051, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
+      await c.connect(user4).batchMint(wallet, 40101, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
+
+      await c.connect(user4).setMintingClosed();
+/*
+      expect(await c.connect(user4).payloadHash(tokenId)).to.equal(payload);
+      expect(await c.connect(user4).payloadSigner(tokenId)).to.equal(
+        user4.address
+      );
+      expect(await c.connect(user4).arweaveURI(tokenId)).to.equal(
+        `https://arweave.cxip.dev/${arHash}`
+      );
+      expect(await c.connect(user4).tokenURI(tokenId)).to.equal(
+        `https://arweave.cxip.dev/${arHash}`
+      );
+      expect(await c.connect(user4).ipfsURI(tokenId)).to.equal(
+        `https://ipfs.cxip.dev/${ipfsHash}`
+      );
+      expect(await c.connect(user4).httpURI(tokenId)).to.equal(
+        `https://cxip.dev/nft/${collectionAddress.toLowerCase()}/0x${tokenId.slice(
+          -2
+        )}`
+      );
+*/
     });
   });
 });
