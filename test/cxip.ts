@@ -33,6 +33,7 @@ describe('CXIP', () => {
   let user2: SignerWithAddress;
   let user3: SignerWithAddress;
   let user4: SignerWithAddress;
+  let user5: SignerWithAddress;
 
   let registry: CxipRegistry;
 
@@ -62,6 +63,7 @@ describe('CXIP', () => {
     user2 = accounts[2];
     user3 = accounts[3];
     user4 = accounts[4];
+    user5 = accounts[5];
 
     await deployments.fixture([
       'CxipRegistry',
@@ -312,77 +314,6 @@ describe('CXIP', () => {
 
   describe('Collection', async () => {
     it('should create a collection', async () => {
-      const salt = user.address + '0x000000000000000000000000'.substring(2);
-
-      // Attach the provenance implementation ABI to provenance proxy
-      const p = await provenance.attach(provenanceProxy.address);
-      const tx = await p.connect(user).createIdentity(
-        salt,
-        '0x' + '00'.repeat(20), // zero address
-        [
-          `0x000000000000000000000000${user.address.substring(2)}`,
-          `0x000000000000000000000000${user.address.substring(2)}`,
-          '0x0',
-        ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish }
-      );
-
-      const receipt = await tx.wait();
-      const identityAddress = await p.connect(user).getIdentity();
-
-      // // Attach the identity implementation ABI to the newly created identity proxy
-      const i = await identity.attach(identityAddress);
-
-      const result = await i.connect(user).createERC721Collection(
-        salt,
-        user.address,
-        [
-          `0x0000000000000000000000000000000000000000000000000000000000000000`,
-          `0x0000000000000000000000000000000000000000000000000000000000000000`,
-          '0x0',
-        ] as any,
-        [
-          `${utf8ToBytes32('Collection name')}`, // Collection name
-          '0x0000000000000000000000000000000000000000000000000000000000000000', // Collection name 2
-          `${utf8ToBytes32('Collection symbol')}`, // Collection symbol
-          user.address, // royalties (address)
-          '0x0000000000000000000003e8', // 1000 bps (uint96)
-        ] as unknown as {
-          name: BytesLike;
-          name2: BytesLike;
-          symbol: BytesLike;
-          royalties: string;
-          bps: BigNumberish;
-        }
-      );
-
-      result.wait();
-
-      const collectionAddress = await i.getCollectionById(0);
-      const collectionType = await i.getCollectionType(collectionAddress);
-      const c = erc721.attach(collectionAddress);
-
-      expect(collectionAddress).not.to.equal(ZERO_ADDRESS);
-      expect(collectionType).not.to.equal(ZERO_ADDRESS);
-      expect(await c.connect(user).isOwner()).to.equal(true);
-      expect(await c.connect(user).owner()).to.equal(user.address);
-      expect(await c.connect(user).name()).to.equal('Collection name');
-      expect(await c.connect(user).symbol()).to.equal('Collection symbol');
-      expect(await c.connect(user).baseURI()).to.equal(
-        `https://cxip.dev/nft/${collectionAddress.toLowerCase()}`
-      );
-      expect(await c.connect(user).contractURI()).to.equal(
-        `https://nft.cxip.dev/${collectionAddress.toLowerCase()}/`
-      );
-    });
-
-    it.skip('should create a collection using a different wallet in the identity', async () => {
-      // TODO: Not supported currently
-    });
-  });
-
-  describe('ERC721', async () => {
-    it('should create a ERC721 NFT in a collection', async () => {
-      // First create a new identity
       const salt = user3.address + '0x000000000000000000000000'.substring(2);
 
       // Attach the provenance implementation ABI to provenance proxy
@@ -391,7 +322,7 @@ describe('CXIP', () => {
         salt,
         '0x' + '00'.repeat(20), // zero address
         [
-          `0x000000000000000000000000${user3.address.substring(2)}`,
+          `0x000000000000000000000000${user.address.substring(2)}`,
           `0x000000000000000000000000${user3.address.substring(2)}`,
           '0x0',
         ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish }
@@ -400,10 +331,9 @@ describe('CXIP', () => {
       const receipt = await tx.wait();
       const identityAddress = await p.connect(user3).getIdentity();
 
-      // Attach the identity implementation ABI to the newly created identity proxy
+      // // Attach the identity implementation ABI to the newly created identity proxy
       const i = await identity.attach(identityAddress);
 
-      // Then create the collection
       const result = await i.connect(user3).createERC721Collection(
         salt,
         user3.address,
@@ -411,7 +341,7 @@ describe('CXIP', () => {
           `0x0000000000000000000000000000000000000000000000000000000000000000`,
           `0x0000000000000000000000000000000000000000000000000000000000000000`,
           '0x0',
-        ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish },
+        ] as any,
         [
           `${utf8ToBytes32('Collection name')}`, // Collection name
           '0x0000000000000000000000000000000000000000000000000000000000000000', // Collection name 2
@@ -431,105 +361,29 @@ describe('CXIP', () => {
 
       const collectionAddress = await i.getCollectionById(0);
       const collectionType = await i.getCollectionType(collectionAddress);
+      const c = erc721.attach(collectionAddress);
+
       expect(collectionAddress).not.to.equal(ZERO_ADDRESS);
       expect(collectionType).not.to.equal(ZERO_ADDRESS);
-
-      // Finally create a new ERC721 NFT in the collection
-      const payload =
-        '0x398d6a45a2c3d1145dfc3a229313e4c3b65165eb0b8b04c0fe787d0e32924775';
-      const tokenId =
-        '0x0000000000000000000000000000000000000000000000000000000000000001';
-      const wallet = user3.address;
-
-      // This signature composition is required to send in the payload to create ERC721
-      const sig = await user3.signMessage(payload);
-      const signature = {
-        r: '0x' + sig.substring(2, 66),
-        s: '0x' + sig.substring(66, 130),
-        v: '0x' + (parseInt('0x' + sig.substring(130, 132)) + 27).toString(16),
-      };
-
-      // The arweave and ipfs hashes are split into two variables to pack into slots
-      const arHash = 'd3dStWPKvAsticf1YqNT3FQCzT2nYlAw' + 'RVNFVlKmonc';
-      const ipfsHash = 'QmX3UFC6GeqnmBbthWQhxRW6WgTmWWVd' + 'ist3TL59UbTZYx';
-      const nftTx = await i
-        .connect(user3)
-        .createERC721Token(collectionAddress, tokenId, [
-          payload,
-          [signature.r, signature.s, signature.v],
-          wallet,
-          web3.utils.asciiToHex(arHash.substring(0, 32)),
-          web3.utils.asciiToHex(arHash.substring(32, 43)),
-          web3.utils.asciiToHex(ipfsHash.substring(0, 32)),
-          web3.utils.asciiToHex(ipfsHash.substring(32, 46)),
-        ] as unknown as {
-          payloadHash: BytesLike;
-          payloadSignature: { r: BytesLike; s: BytesLike; v: BigNumberish };
-          creator: string;
-          arweave: BytesLike;
-          arweave2: BytesLike;
-          ipfs: BytesLike;
-          ipfs2: BytesLike;
-        });
-
-      await nftTx.wait();
-
-      const c = erc721.attach(collectionAddress);
-      expect(await c.connect(user3).payloadHash(tokenId)).to.equal(payload);
-      expect(await c.connect(user3).payloadSigner(tokenId)).to.equal(
-        user3.address
+      expect(await c.connect(user3).isOwner()).to.equal(true);
+      expect(await c.connect(user3).owner()).to.equal(user3.address);
+      expect(await c.connect(user3).name()).to.equal('Collection name');
+      expect(await c.connect(user3).symbol()).to.equal('Collection symbol');
+      expect(await c.connect(user3).baseURI()).to.equal(
+        `https://cxip.dev/nft/${collectionAddress.toLowerCase()}`
       );
-      expect(await c.connect(user3).arweaveURI(tokenId)).to.equal(
-        `https://arweave.cxip.dev/${arHash}`
+      expect(await c.connect(user3).contractURI()).to.equal(
+        `https://nft.cxip.dev/${collectionAddress.toLowerCase()}/`
       );
-      expect(await c.connect(user3).tokenURI(tokenId)).to.equal(
-        `https://arweave.cxip.dev/${arHash}`
-      );
-      expect(await c.connect(user3).ipfsURI(tokenId)).to.equal(
-        `https://ipfs.cxip.dev/${ipfsHash}`
-      );
-      expect(await c.connect(user3).httpURI(tokenId)).to.equal(
-        `https://cxip.dev/nft/${collectionAddress.toLowerCase()}/0x${tokenId.slice(
-          -2
-        )}`
-      );
+    });
 
-      const r = royalties.attach(collectionAddress);
-
-      // Check unset royalties (only one benificiary is set in the royalties array)
-      let royaltiesData = await r.connect(user3).getRoyalties(tokenId);
-
-      expect(royaltiesData[0][0]).to.equal(ZERO_ADDRESS);
-      expect(ethers.utils.formatUnits(royaltiesData[0][0], 18)).to.equal('0.0');
-
-      // Set royalties to 10000 bps (100%)
-      const royaltyBPS = 10000;
-      await r.connect(user3).setRoyalties(tokenId, user3.address, royaltyBPS);
-
-      // Check again after setting
-      royaltiesData = await r.connect(user3).getRoyalties(tokenId);
-      expect(royaltiesData[0][0]).to.equal(user3.address);
-      expect(royaltiesData[1][0].toNumber()).to.equal(royaltyBPS);
-
-      // Configure the royalty payout amounts and beneficiaries
-      // 3000 bps (30%) to the deployer and 7000 (70%) to the user3
-      await r
-        .connect(user3)
-        .configurePayouts([deployer.address, user3.address], [3000, 7000]);
-
-      // Check that the payout info matches what was set in configuration
-      let payoutInfo = await r.connect(user3).getPayoutInfo();
-      const payoutAccounts = payoutInfo[0];
-      const payoutAmounts = payoutInfo[1];
-      expect(payoutAmounts[0].toNumber()).to.equal(3000);
-      expect(payoutAmounts[1].toNumber()).to.equal(7000);
-      expect(payoutAccounts[0]).to.equal(deployer.address);
-      expect(payoutAccounts[1]).to.equal(user3.address);
+    it.skip('should create a collection using a different wallet in the identity', async () => {
+      // TODO: Not supported currently
     });
   });
 
-  describe('Daniel Arsham Erosions', async () => {
-    it('should create a ERC721 NFT in the Arsham collection', async () => {
+  describe('ERC721', async () => {
+    it('should create a ERC721 NFT in a collection', async () => {
       // First create a new identity
       const salt = user4.address + '0x000000000000000000000000'.substring(2);
 
@@ -552,9 +406,157 @@ describe('CXIP', () => {
       const i = await identity.attach(identityAddress);
 
       // Then create the collection
-      const result = await i.connect(user4).createCustomERC721Collection(
+      const result = await i.connect(user4).createERC721Collection(
         salt,
         user4.address,
+        [
+          `0x0000000000000000000000000000000000000000000000000000000000000000`,
+          `0x0000000000000000000000000000000000000000000000000000000000000000`,
+          '0x0',
+        ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish },
+        [
+          `${utf8ToBytes32('Collection name')}`, // Collection name
+          '0x0000000000000000000000000000000000000000000000000000000000000000', // Collection name 2
+          `${utf8ToBytes32('Collection symbol')}`, // Collection symbol
+          user4.address, // royalties (address)
+          '0x0000000000000000000003e8', // 1000 bps (uint96)
+        ] as unknown as {
+          name: BytesLike;
+          name2: BytesLike;
+          symbol: BytesLike;
+          royalties: string;
+          bps: BigNumberish;
+        }
+      );
+
+      result.wait();
+
+      const collectionAddress = await i.getCollectionById(0);
+      const collectionType = await i.getCollectionType(collectionAddress);
+      expect(collectionAddress).not.to.equal(ZERO_ADDRESS);
+      expect(collectionType).not.to.equal(ZERO_ADDRESS);
+
+      // Finally create a new ERC721 NFT in the collection
+      const payload =
+        '0x398d6a45a2c3d1145dfc3a229313e4c3b65165eb0b8b04c0fe787d0e32924775';
+      const tokenId =
+        '0x0000000000000000000000000000000000000000000000000000000000000001';
+      const wallet = user4.address;
+
+      // This signature composition is required to send in the payload to create ERC721
+      const sig = await user4.signMessage(payload);
+      const signature = {
+        r: '0x' + sig.substring(2, 66),
+        s: '0x' + sig.substring(66, 130),
+        v: '0x' + (parseInt('0x' + sig.substring(130, 132)) + 27).toString(16),
+      };
+
+      // The arweave and ipfs hashes are split into two variables to pack into slots
+      const arHash = 'd3dStWPKvAsticf1YqNT3FQCzT2nYlAw' + 'RVNFVlKmonc';
+      const ipfsHash = 'QmX3UFC6GeqnmBbthWQhxRW6WgTmWWVd' + 'ist3TL59UbTZYx';
+      const nftTx = await i
+        .connect(user4)
+        .createERC721Token(collectionAddress, tokenId, [
+          payload,
+          [signature.r, signature.s, signature.v],
+          wallet,
+          web3.utils.asciiToHex(arHash.substring(0, 32)),
+          web3.utils.asciiToHex(arHash.substring(32, 43)),
+          web3.utils.asciiToHex(ipfsHash.substring(0, 32)),
+          web3.utils.asciiToHex(ipfsHash.substring(32, 46)),
+        ] as unknown as {
+          payloadHash: BytesLike;
+          payloadSignature: { r: BytesLike; s: BytesLike; v: BigNumberish };
+          creator: string;
+          arweave: BytesLike;
+          arweave2: BytesLike;
+          ipfs: BytesLike;
+          ipfs2: BytesLike;
+        });
+
+      await nftTx.wait();
+
+      const c = erc721.attach(collectionAddress);
+      expect(await c.connect(user4).payloadHash(tokenId)).to.equal(payload);
+      expect(await c.connect(user4).payloadSigner(tokenId)).to.equal(
+        user4.address
+      );
+      expect(await c.connect(user4).arweaveURI(tokenId)).to.equal(
+        `https://arweave.cxip.dev/${arHash}`
+      );
+      expect(await c.connect(user4).tokenURI(tokenId)).to.equal(
+        `https://arweave.cxip.dev/${arHash}`
+      );
+      expect(await c.connect(user4).ipfsURI(tokenId)).to.equal(
+        `https://ipfs.cxip.dev/${ipfsHash}`
+      );
+      expect(await c.connect(user4).httpURI(tokenId)).to.equal(
+        `https://cxip.dev/nft/${collectionAddress.toLowerCase()}/0x${tokenId.slice(
+          -2
+        )}`
+      );
+
+      const r = royalties.attach(collectionAddress);
+
+      // Check unset royalties (only one benificiary is set in the royalties array)
+      let royaltiesData = await r.connect(user4).getRoyalties(tokenId);
+
+      expect(royaltiesData[0][0]).to.equal(ZERO_ADDRESS);
+      expect(ethers.utils.formatUnits(royaltiesData[0][0], 18)).to.equal('0.0');
+
+      // Set royalties to 10000 bps (100%)
+      const royaltyBPS = 10000;
+      await r.connect(user4).setRoyalties(tokenId, user4.address, royaltyBPS);
+
+      // Check again after setting
+      royaltiesData = await r.connect(user4).getRoyalties(tokenId);
+      expect(royaltiesData[0][0]).to.equal(user4.address);
+      expect(royaltiesData[1][0].toNumber()).to.equal(royaltyBPS);
+
+      // Configure the royalty payout amounts and beneficiaries
+      // 3000 bps (30%) to the deployer and 7000 (70%) to the user4
+      await r
+        .connect(user4)
+        .configurePayouts([deployer.address, user4.address], [3000, 7000]);
+
+      // Check that the payout info matches what was set in configuration
+      let payoutInfo = await r.connect(user4).getPayoutInfo();
+      const payoutAccounts = payoutInfo[0];
+      const payoutAmounts = payoutInfo[1];
+      expect(payoutAmounts[0].toNumber()).to.equal(3000);
+      expect(payoutAmounts[1].toNumber()).to.equal(7000);
+      expect(payoutAccounts[0]).to.equal(deployer.address);
+      expect(payoutAccounts[1]).to.equal(user4.address);
+    });
+  });
+
+  describe('Daniel Arsham Erosions', async () => {
+    it('should create a ERC721 NFT in the Arsham collection', async () => {
+      // First create a new identity
+      const salt = user5.address + '0x000000000000000000000000'.substring(2);
+
+      // Attach the provenance implementation ABI to provenance proxy
+      const p = await provenance.attach(provenanceProxy.address);
+      const tx = await p.connect(user5).createIdentity(
+        salt,
+        '0x' + '00'.repeat(20), // zero address
+        [
+          `0x000000000000000000000000${user5.address.substring(2)}`,
+          `0x000000000000000000000000${user5.address.substring(2)}`,
+          '0x0',
+        ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish }
+      );
+
+      const receipt = await tx.wait();
+      const identityAddress = await p.connect(user5).getIdentity();
+
+      // Attach the identity implementation ABI to the newly created identity proxy
+      const i = await identity.attach(identityAddress);
+
+      // Then create the collection
+      const result = await i.connect(user5).createCustomERC721Collection(
+        salt,
+        user5.address,
         [
           `0x0000000000000000000000000000000000000000000000000000000000000000`,
           `0x0000000000000000000000000000000000000000000000000000000000000000`,
@@ -568,7 +570,7 @@ describe('CXIP', () => {
           `${utf8ToBytes32('Eroding and Reforming Cars')}`, // Collection name
           '0x0000000000000000000000000000000000000000000000000000000000000000', // Collection name 2
           `${utf8ToBytes32('ERCs')}`, // Collection symbol
-          user4.address, // royalties (address)
+          user5.address, // royalties (address)
           '0x0000000000000000000003e8', // 1000 bps (uint96)
         ] as unknown as {
           name: BytesLike;
@@ -595,12 +597,12 @@ describe('CXIP', () => {
       assert.isNotOk(collectionName != 'Eroding and Reforming Cars', 'Collection name missmatch, we want "Eroding and Reforming Cars", but got "' + collectionName + '" instead.');
       assert.isNotOk(collectionSymbol != 'ERCs', 'Collection symbol missmatch, we want "ERCs", but got "' + collectionSymbol + '" instead.');
 
-      await c.connect(user4).setStartTimestamp('0x' + Date.now().toString(16));
-      await c.connect(user4).setTokenSeparator(10000);
-      await c.connect(user4).setTokenLimit(50 + 100 + 100 + 150);
-      await c.connect(user4).setIntervalConfig([113 * 60, 116 * 60, 103 * 60, 126 * 60]);
+      await c.connect(user5).setStartTimestamp('0x' + Date.now().toString(16));
+      await c.connect(user5).setTokenSeparator(10000);
+      await c.connect(user5).setTokenLimit(50 + 100 + 100 + 150);
+      await c.connect(user5).setIntervalConfig([113 * 60, 116 * 60, 103 * 60, 126 * 60]);
 
-      const wallet = user4.address;
+      const wallet = user5.address;
       let payload: BytesLike;
       let arHash: BytesLike;
       let ipfsHash: BytesLike;
@@ -611,7 +613,7 @@ describe('CXIP', () => {
       arHash = 'k6Dej-c5ga1TkKlJ5vjxtCyY6W6Ipc2ds7gzHAZKir0';
       ipfsHash = 'QmVLY9uE6quyCumNg4CqhAPh8Q8Kn4Hw5FTE6wKPMxKK9w';
       payload = '0x' + '00'.repeat(32);
-      sig = await user3.signMessage(payload);
+      sig = await user5.signMessage(payload);
       signature = {
         r: '0x' + sig.substring(2, 66),
         s: '0x' + sig.substring(66, 130),
@@ -639,7 +641,7 @@ describe('CXIP', () => {
       arHash = '3hBx7NynGoLPctHG8oS5uYKYdJNDj7A_IwTos9K-bUA';
       ipfsHash = 'QmYpYw7pk3pJqeLF7GNCP6QD7WjST3JK8zzG4cmDMM4RiU';
       payload = '0x' + '00'.repeat(32);
-      sig = await user3.signMessage(payload);
+      sig = await user5.signMessage(payload);
       signature = {
         r: '0x' + sig.substring(2, 66),
         s: '0x' + sig.substring(66, 130),
@@ -664,7 +666,7 @@ describe('CXIP', () => {
       };
 
       // mustang
-      const mustangTx = await c.connect(user4).prepareMintDataBatch([2, 3], [mustang1, mustang2]);
+      const mustangTx = await c.connect(user5).prepareMintDataBatch([2, 3], [mustang1, mustang2]);
 
       await mustangTx.wait();
 
@@ -673,7 +675,7 @@ describe('CXIP', () => {
       arHash = 'tbkb5xO694ktcSTGn7WVIwm8Y_7cucgoN6bduo9kZDA';
       ipfsHash = 'QmeZEHUkaXhRBUQhCVSJ3wrqjpAiGjySoeWq8aHufFX87e';
       payload = '0x' + '00'.repeat(32);
-      sig = await user3.signMessage(payload);
+      sig = await user5.signMessage(payload);
       signature = {
         r: '0x' + sig.substring(2, 66),
         s: '0x' + sig.substring(66, 130),
@@ -701,7 +703,7 @@ describe('CXIP', () => {
       arHash = 'KLBvdyxNunXuNhCyrDkPyEuJUA9frtKNa-bjFAEusB4';
       ipfsHash = 'QmXXtXd943CP6fx2ZMgX4iPvZpzzW9a4FbpFCs1GMeeMof';
       payload = '0x' + '00'.repeat(32);
-      sig = await user3.signMessage(payload);
+      sig = await user5.signMessage(payload);
       signature = {
         r: '0x' + sig.substring(2, 66),
         s: '0x' + sig.substring(66, 130),
@@ -726,7 +728,7 @@ describe('CXIP', () => {
       };
 
       // delorean
-      const deloreanTx = await c.connect(user4).prepareMintDataBatch([4, 5], [delorean1, delorean2]);
+      const deloreanTx = await c.connect(user5).prepareMintDataBatch([4, 5], [delorean1, delorean2]);
 
       await deloreanTx.wait();
 
@@ -735,7 +737,7 @@ describe('CXIP', () => {
       arHash = 'veEDJpGhtGpA4bac62nyhY3HTbWDAV_bTtAkj6vi4dc';
       ipfsHash = 'QmfX685GuEWkeLtPyyXm4DSRpHXXUsgAYDCEShrHY7GHej';
       payload = '0x' + '00'.repeat(32);
-      sig = await user3.signMessage(payload);
+      sig = await user5.signMessage(payload);
       signature = {
         r: '0x' + sig.substring(2, 66),
         s: '0x' + sig.substring(66, 130),
@@ -763,7 +765,7 @@ describe('CXIP', () => {
       arHash = '_XAoDq-i3N7bwMNeNoUwCDVLvasCh46Fnhl9wKoaF88';
       ipfsHash = 'QmQpH5cm3CDCBGUEJ9Lo1aZc6afRdpy4jUbb9R7yfZLHxX';
       payload = '0x' + '00'.repeat(32);
-      sig = await user3.signMessage(payload);
+      sig = await user5.signMessage(payload);
       signature = {
         r: '0x' + sig.substring(2, 66),
         s: '0x' + sig.substring(66, 130),
@@ -788,7 +790,7 @@ describe('CXIP', () => {
       };
 
       // california
-      const californiaTx = await c.connect(user4).prepareMintDataBatch([6, 7], [california1, california2]);
+      const californiaTx = await c.connect(user5).prepareMintDataBatch([6, 7], [california1, california2]);
 
       await californiaTx.wait();
 
@@ -797,7 +799,7 @@ describe('CXIP', () => {
       arHash = 'WYDKFYbl6sbJP5LENzwAIlbtH0enQx_HDde0_kD5QAE';
       ipfsHash = 'QmYQWLJgq9zVMfkqUwDpGrP31jaobVqRMvgzzch9K1J25Y';
       payload = '0x' + '00'.repeat(32);
-      sig = await user3.signMessage(payload);
+      sig = await user5.signMessage(payload);
       signature = {
         r: '0x' + sig.substring(2, 66),
         s: '0x' + sig.substring(66, 130),
@@ -825,7 +827,7 @@ describe('CXIP', () => {
       arHash = 'ucbj933WwVHVTQZP2yupmfEatLqoFYnWCQr1xXKbKdg';
       ipfsHash = 'QmNs7Fvu81wDuWE2oG7D3SdSpDRmS5aDzFQHDGXdXzz8AU';
       payload = '0x' + '00'.repeat(32);
-      sig = await user3.signMessage(payload);
+      sig = await user5.signMessage(payload);
       signature = {
         r: '0x' + sig.substring(2, 66),
         s: '0x' + sig.substring(66, 130),
@@ -850,42 +852,42 @@ describe('CXIP', () => {
       };
 
       // e30
-      const e30Tx = await c.connect(user4).prepareMintDataBatch([8, 9], [e301, e302]);
+      const e30Tx = await c.connect(user5).prepareMintDataBatch([8, 9], [e301, e302]);
 
       await e30Tx.wait();
 
       // mustang #50
-      await c.connect(user4).batchMint(wallet, 10001, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
+      await c.connect(user5).batchMint(wallet, 10001, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
 
       // delorean #100
-      await c.connect(user4).batchMint(wallet, 20001, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
-      await c.connect(user4).batchMint(wallet, 20051, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
+      await c.connect(user5).batchMint(wallet, 20001, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
+      await c.connect(user5).batchMint(wallet, 20051, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
 
       // california #100
-      await c.connect(user4).batchMint(wallet, 30001, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
-      await c.connect(user4).batchMint(wallet, 30051, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
+      await c.connect(user5).batchMint(wallet, 30001, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
+      await c.connect(user5).batchMint(wallet, 30051, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
 
       // e30 #150
-      await c.connect(user4).batchMint(wallet, 40001, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
-      await c.connect(user4).batchMint(wallet, 40051, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
-      await c.connect(user4).batchMint(wallet, 40101, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
+      await c.connect(user5).batchMint(wallet, 40001, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
+      await c.connect(user5).batchMint(wallet, 40051, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
+      await c.connect(user5).batchMint(wallet, 40101, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
 
-      await c.connect(user4).setMintingClosed();
+      await c.connect(user5).setMintingClosed();
 /*
-      expect(await c.connect(user4).payloadHash(tokenId)).to.equal(payload);
-      expect(await c.connect(user4).payloadSigner(tokenId)).to.equal(
-        user4.address
+      expect(await c.connect(user5).payloadHash(tokenId)).to.equal(payload);
+      expect(await c.connect(user5).payloadSigner(tokenId)).to.equal(
+        user5.address
       );
-      expect(await c.connect(user4).arweaveURI(tokenId)).to.equal(
+      expect(await c.connect(user5).arweaveURI(tokenId)).to.equal(
         `https://arweave.cxip.dev/${arHash}`
       );
-      expect(await c.connect(user4).tokenURI(tokenId)).to.equal(
+      expect(await c.connect(user5).tokenURI(tokenId)).to.equal(
         `https://arweave.cxip.dev/${arHash}`
       );
-      expect(await c.connect(user4).ipfsURI(tokenId)).to.equal(
+      expect(await c.connect(user5).ipfsURI(tokenId)).to.equal(
         `https://ipfs.cxip.dev/${ipfsHash}`
       );
-      expect(await c.connect(user4).httpURI(tokenId)).to.equal(
+      expect(await c.connect(user5).httpURI(tokenId)).to.equal(
         `https://cxip.dev/nft/${collectionAddress.toLowerCase()}/0x${tokenId.slice(
           -2
         )}`
