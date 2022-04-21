@@ -386,6 +386,8 @@ describe('CXIP', () => {
     it('should create a ERC721 NFT in a collection', async () => {
       // First create a new identity
       const salt = user4.address + '0x000000000000000000000000'.substring(2);
+      const tokenId =
+        '0x0000000000000000000000000000000000000000000000000000000000000001';
 
       // Attach the provenance implementation ABI to provenance proxy
       const p = await provenance.attach(provenanceProxy.address);
@@ -439,8 +441,6 @@ describe('CXIP', () => {
       // Finally create a new ERC721 NFT in the collection
       const payload =
         '0x398d6a45a2c3d1145dfc3a229313e4c3b65165eb0b8b04c0fe787d0e32924775';
-      const tokenId =
-        '0x0000000000000000000000000000000000000000000000000000000000000001';
       const wallet = user4.address;
 
       // This signature composition is required to send in the payload to create ERC721
@@ -530,13 +530,19 @@ describe('CXIP', () => {
     });
   });
 
-  describe('Daniel Arsham Erosions', async () => {
+  describe.only('Daniel Arsham Erosions', async () => {
+    const tokenId = 10001;
+    const nonExistentTokenId = 0;
+
+    // This is the custodial wallet that Nifty Gateway uses to hold all of their NFTs that they have listed on their platform.
+    const niftygateway = '0xE052113bd7D7700d623414a0a4585BCaE754E9d5';
+
     it('should create a ERC721 NFT in the Arsham collection', async () => {
       // First create a new identity
       const salt = user5.address + '0x000000000000000000000000'.substring(2);
 
       // Attach the provenance implementation ABI to provenance proxy
-      const p = await provenance.attach(provenanceProxy.address);
+      const p = provenance.attach(provenanceProxy.address);
       const tx = await p.connect(user5).createIdentity(
         salt,
         '0x' + '00'.repeat(20), // zero address
@@ -551,7 +557,7 @@ describe('CXIP', () => {
       const identityAddress = await p.connect(user5).getIdentity();
 
       // Attach the identity implementation ABI to the newly created identity proxy
-      const i = await identity.attach(identityAddress);
+      const i = identity.attach(identityAddress);
 
       // Then create the collection
       const result = await i.connect(user5).createCustomERC721Collection(
@@ -564,7 +570,7 @@ describe('CXIP', () => {
         ] as unknown as {
           r: BytesLike;
           s: BytesLike;
-          v: BigNumberish
+          v: BigNumberish;
         },
         [
           `${utf8ToBytes32('Eroding and Reforming Cars')}`, // Collection name
@@ -594,13 +600,25 @@ describe('CXIP', () => {
       const collectionName = await c.name();
       const collectionSymbol = await c.symbol();
 
-      assert.isNotOk(collectionName != 'Eroding and Reforming Cars', 'Collection name missmatch, we want "Eroding and Reforming Cars", but got "' + collectionName + '" instead.');
-      assert.isNotOk(collectionSymbol != 'ERCs', 'Collection symbol missmatch, we want "ERCs", but got "' + collectionSymbol + '" instead.');
+      assert.isNotOk(
+        collectionName != 'Eroding and Reforming Cars',
+        'Collection name missmatch, we want "Eroding and Reforming Cars", but got "' +
+          collectionName +
+          '" instead.'
+      );
+      assert.isNotOk(
+        collectionSymbol != 'ERCs',
+        'Collection symbol missmatch, we want "ERCs", but got "' +
+          collectionSymbol +
+          '" instead.'
+      );
 
       await c.connect(user5).setStartTimestamp('0x' + Date.now().toString(16));
       await c.connect(user5).setTokenSeparator(10000);
       await c.connect(user5).setTokenLimit(50 + 100 + 100 + 150);
-      await c.connect(user5).setIntervalConfig([113 * 60, 116 * 60, 103 * 60, 126 * 60]);
+      await c
+        .connect(user5)
+        .setIntervalConfig([113 * 60, 116 * 60, 103 * 60, 126 * 60]);
 
       const wallet = user5.address;
       let payload: BytesLike;
@@ -666,10 +684,11 @@ describe('CXIP', () => {
       };
 
       // mustang
-      const mustangTx = await c.connect(user5).prepareMintDataBatch([2, 3], [mustang1, mustang2]);
+      const mustangTx = await c
+        .connect(user5)
+        .prepareMintDataBatch([2, 3], [mustang1, mustang2]);
 
       await mustangTx.wait();
-
 
       // DeLorean (State 1)
       arHash = 'tbkb5xO694ktcSTGn7WVIwm8Y_7cucgoN6bduo9kZDA';
@@ -728,10 +747,11 @@ describe('CXIP', () => {
       };
 
       // delorean
-      const deloreanTx = await c.connect(user5).prepareMintDataBatch([4, 5], [delorean1, delorean2]);
+      const deloreanTx = await c
+        .connect(user5)
+        .prepareMintDataBatch([4, 5], [delorean1, delorean2]);
 
       await deloreanTx.wait();
-
 
       // California (State 1)
       arHash = 'veEDJpGhtGpA4bac62nyhY3HTbWDAV_bTtAkj6vi4dc';
@@ -790,10 +810,11 @@ describe('CXIP', () => {
       };
 
       // california
-      const californiaTx = await c.connect(user5).prepareMintDataBatch([6, 7], [california1, california2]);
+      const californiaTx = await c
+        .connect(user5)
+        .prepareMintDataBatch([6, 7], [california1, california2]);
 
       await californiaTx.wait();
-
 
       // E30 (State 1)
       arHash = 'WYDKFYbl6sbJP5LENzwAIlbtH0enQx_HDde0_kD5QAE';
@@ -852,47 +873,76 @@ describe('CXIP', () => {
       };
 
       // e30
-      const e30Tx = await c.connect(user5).prepareMintDataBatch([8, 9], [e301, e302]);
+      const e30Tx = await c
+        .connect(user5)
+        .prepareMintDataBatch([8, 9], [e301, e302]);
 
       await e30Tx.wait();
 
       // mustang #50
-      await c.connect(user5).batchMint(wallet, 10001, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
+      await c.connect(user5).batchMint(wallet, 10001, 50, niftygateway);
 
       // delorean #100
-      await c.connect(user5).batchMint(wallet, 20001, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
-      await c.connect(user5).batchMint(wallet, 20051, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
+      await c.connect(user5).batchMint(wallet, 20001, 50, niftygateway);
+      await c.connect(user5).batchMint(wallet, 20051, 50, niftygateway);
 
       // california #100
-      await c.connect(user5).batchMint(wallet, 30001, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
-      await c.connect(user5).batchMint(wallet, 30051, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
+      await c.connect(user5).batchMint(wallet, 30001, 50, niftygateway);
+      await c.connect(user5).batchMint(wallet, 30051, 50, niftygateway);
 
       // e30 #150
-      await c.connect(user5).batchMint(wallet, 40001, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
-      await c.connect(user5).batchMint(wallet, 40051, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
-      await c.connect(user5).batchMint(wallet, 40101, 50, '0xE052113bd7D7700d623414a0a4585BCaE754E9d5');
+      await c.connect(user5).batchMint(wallet, 40001, 50, niftygateway);
+      await c.connect(user5).batchMint(wallet, 40051, 50, niftygateway);
+      await c.connect(user5).batchMint(wallet, 40101, 50, niftygateway);
 
       await c.connect(user5).setMintingClosed();
-/*
-      expect(await c.connect(user5).payloadHash(tokenId)).to.equal(payload);
-      expect(await c.connect(user5).payloadSigner(tokenId)).to.equal(
-        user5.address
-      );
-      expect(await c.connect(user5).arweaveURI(tokenId)).to.equal(
-        `https://arweave.cxip.dev/${arHash}`
-      );
-      expect(await c.connect(user5).tokenURI(tokenId)).to.equal(
-        `https://arweave.cxip.dev/${arHash}`
-      );
-      expect(await c.connect(user5).ipfsURI(tokenId)).to.equal(
-        `https://ipfs.cxip.dev/${ipfsHash}`
-      );
-      expect(await c.connect(user5).httpURI(tokenId)).to.equal(
-        `https://cxip.dev/nft/${collectionAddress.toLowerCase()}/0x${tokenId.slice(
-          -2
-        )}`
-      );
-*/
+
+      /// ERC721 Token standard tests
+      describe('balanceOf', function () {
+        context('when the given address owns some tokens', function () {
+          it('returns the amount of tokens owned by the given address', async function () {
+            expect(await c.balanceOf(niftygateway)).to.be.equal('400');
+          });
+        });
+
+        context('when the given address does not own any tokens', function () {
+          it('returns 0', async function () {
+            expect(await c.balanceOf(user.address)).to.be.equal('0');
+          });
+        });
+
+        context('when querying the zero address', function () {
+          it('throws', async function () {
+            await expect(c.balanceOf(ZERO_ADDRESS)).to.be.revertedWith(
+              'CXIP: zero address'
+            );
+          });
+        });
+      });
+
+      describe('ownerOf', function () {
+        context(
+          'when the given token ID was tracked by this token',
+          function () {
+            it('returns the owner of the given token ID', async function () {
+              expect(await c.ownerOf(tokenId)).to.be.equal(niftygateway);
+            });
+          }
+        );
+
+        context(
+          'when the given token ID was not tracked by this token',
+          function () {
+            const tokenId = nonExistentTokenId;
+
+            it('reverts', async function () {
+              await expect(c.ownerOf(tokenId)).to.be.revertedWith(
+                'ERC721: token does not exist'
+              );
+            });
+          }
+        );
+      });
     });
   });
 });
