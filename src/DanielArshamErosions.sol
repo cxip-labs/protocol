@@ -208,9 +208,7 @@ contract DanielArshamErosions {
     function setIntervalConfig(uint256[4] memory intervals) external onlyOwner {
         // The slot hash has been precomputed for gas optimizaion
         // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.DanielArshamErosions.intervalConfig')) - 1);
-        uint256 packed = uint256(
-            (intervals[0] << 48) | (intervals[1] << 32) | (intervals[2] << 16) | intervals[3]
-        );
+        uint256 packed = uint256((intervals[0] << 48) | (intervals[1] << 32) | (intervals[2] << 16) | intervals[3]);
         assembly {
             sstore(
                 /* slot */
@@ -236,14 +234,7 @@ contract DanielArshamErosions {
     function arweaveURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
         uint256 index = _calculateRotation(tokenId);
-        return
-            string(
-                abi.encodePacked(
-                    "https://arweave.net/",
-                    _tokenData[index].arweave,
-                    _tokenData[index].arweave2
-                )
-            );
+        return string(abi.encodePacked("https://arweave.net/", _tokenData[index].arweave, _tokenData[index].arweave2));
     }
 
     /**
@@ -252,10 +243,7 @@ contract DanielArshamErosions {
      * @return string The URI.
      */
     function contractURI() external view returns (string memory) {
-        return
-            string(
-                abi.encodePacked("https://nft.cxip.io/", Strings.toHexString(address(this)), "/")
-            );
+        return string(abi.encodePacked("https://nft.cxip.io/", Strings.toHexString(address(this)), "/"));
     }
 
     /**
@@ -287,14 +275,7 @@ contract DanielArshamErosions {
     function ipfsURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
         uint256 index = _calculateRotation(tokenId);
-        return
-            string(
-                abi.encodePacked(
-                    "https://ipfs.io/ipfs/",
-                    _tokenData[index].ipfs,
-                    _tokenData[index].ipfs2
-                )
-            );
+        return string(abi.encodePacked("https://ipfs.io/ipfs/", _tokenData[index].ipfs, _tokenData[index].ipfs2));
     }
 
     /**
@@ -303,13 +284,7 @@ contract DanielArshamErosions {
      * @return string The collection name.
      */
     function name() external view returns (string memory) {
-        return
-            string(
-                abi.encodePacked(
-                    Bytes.trim(_collectionData.name),
-                    Bytes.trim(_collectionData.name2)
-                )
-            );
+        return string(abi.encodePacked(Bytes.trim(_collectionData.name), Bytes.trim(_collectionData.name2)));
     }
 
     /**
@@ -387,14 +362,7 @@ contract DanielArshamErosions {
     function tokenURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId), "CXIP: token does not exist");
         uint256 index = _calculateRotation(tokenId);
-        return
-            string(
-                abi.encodePacked(
-                    "https://arweave.net/",
-                    _tokenData[index].arweave,
-                    _tokenData[index].arweave2
-                )
-            );
+        return string(abi.encodePacked("https://arweave.net/", _tokenData[index].arweave, _tokenData[index].arweave2));
     }
 
     /**
@@ -486,8 +454,7 @@ contract DanielArshamErosions {
             require(
                 IERC165(to).supportsInterface(0x01ffc9a7) &&
                     IERC165(to).supportsInterface(0x150b7a02) &&
-                    ICxipERC721(to).onERC721Received(address(this), from, tokenId, data) ==
-                    0x150b7a02,
+                    ICxipERC721(to).onERC721Received(address(this), from, tokenId, data) == 0x150b7a02,
                 "CXIP: onERC721Received fail"
             );
         }
@@ -693,10 +660,7 @@ contract DanielArshamErosions {
         _tokenData[id] = tokenData;
     }
 
-    function prepareMintDataBatch(uint256[] calldata ids, TokenData[] calldata tokenData)
-        public
-        onlyOwner
-    {
+    function prepareMintDataBatch(uint256[] calldata ids, TokenData[] calldata tokenData) public onlyOwner {
         require(ids.length == tokenData.length, "CXIP: array lengths missmatch");
         for (uint256 i = 0; i < ids.length; i++) {
             require(Address.isZero(_tokenData[ids[i]].creator), "CXIP: token data already set");
@@ -1037,8 +1001,6 @@ contract DanielArshamErosions {
     function _isApproved(address spender, uint256 tokenId) private view returns (bool) {
         require(_exists(tokenId));
         address tokenOwner = _tokenOwner[tokenId];
-        return (spender == tokenOwner ||
-            getApproved(tokenId) == spender ||
-            isApprovedForAll(tokenOwner, spender));
+        return (spender == tokenOwner || getApproved(tokenId) == spender || isApprovedForAll(tokenOwner, spender));
     }
 }
