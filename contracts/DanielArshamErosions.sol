@@ -432,7 +432,6 @@ contract DanielArshamErosions {
 
     /**
      * @notice Safely transfers `tokenId` token from `from` to `to`, checking first that contract recipients
-     * @dev Since it's not being used, the _data variable is commented out to avoid compiler warnings.
      * are aware of the ERC721 protocol to prevent tokens from being forever locked.
      * @param from cannot be the zero address.
      * @param to cannot be the zero address.
@@ -440,7 +439,6 @@ contract DanielArshamErosions {
      */
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public payable {
         require(_isApproved(msg.sender, tokenId), "CXIP: not approved sender");
-        _transferFrom(from, to, tokenId);
         if (Address.isContract(to)) {
             // quick sanity check that the contract supports EIP-165 interfaces, and supports onERC721Received
             if (IERC165(to).supportsInterface(0x01ffc9a7) && IERC165(to).supportsInterface(0x150b7a02)) {
@@ -450,6 +448,7 @@ contract DanielArshamErosions {
                 );
             }
         }
+        _transferFrom(from, to, tokenId);
     }
 
     /**
