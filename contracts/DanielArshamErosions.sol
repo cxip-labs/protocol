@@ -80,11 +80,6 @@ contract DanielArshamErosions {
     uint256[] private _allTokens;
 
     /**
-     * @dev Map of token id to array index of _ownedTokens.
-     */
-    mapping(uint256 => uint256) private _ownedTokensIndex;
-
-    /**
      * @dev Token id to wallet (owner) address map.
      */
     mapping(uint256 => address) private _tokenOwner;
@@ -93,16 +88,6 @@ contract DanielArshamErosions {
      * @dev 1-to-1 map of token id that was assigned an approved operator address.
      */
     mapping(uint256 => address) private _tokenApprovals;
-
-    /**
-     * @dev Map of total tokens owner by a specific address.
-     */
-    mapping(address => uint256) private _ownedTokensCount;
-
-    /**
-     * @dev Map of array of token ids owned by a specific address.
-     */
-    mapping(address => uint256[]) private _ownedTokens;
 
     /**
      * @notice Map of full operator approval for a particular address.
@@ -208,7 +193,7 @@ contract DanielArshamErosions {
     function setIntervalConfig(uint256[4] memory intervals) external onlyOwner {
         // The slot hash has been precomputed for gas optimizaion
         // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.DanielArshamErosions.intervalConfig')) - 1);
-        uint256 packed = uint256(intervals[0] << 48 | intervals[1] << 32 | intervals[2] << 16 | intervals[3]);
+        uint256 packed = uint256((intervals[0] << 48) | (intervals[1] << 32) | (intervals[2] << 16) | intervals[3]);
         assembly {
             sstore(
                 /* slot */
@@ -333,7 +318,6 @@ contract DanielArshamErosions {
         if (
             interfaceId == 0x01ffc9a7 || // ERC165
             interfaceId == 0x80ac58cd || // ERC721
-            interfaceId == 0x780e9d63 || // ERC721Enumerable
             interfaceId == 0x5b5e139f || // ERC721Metadata
             interfaceId == 0x150b7a02 || // ERC721TokenReceiver
             interfaceId == 0xe8a3d485 || // contractURI()
@@ -366,15 +350,6 @@ contract DanielArshamErosions {
     }
 
     /**
-     * @notice Get list of tokens owned by wallet.
-     * @param wallet The wallet address to get tokens for.
-     * @return uint256[] Returns an array of token ids owned by wallet.
-     */
-    function tokensOfOwner(address wallet) external view returns (uint256[] memory) {
-        return _ownedTokens[wallet];
-    }
-
-    /**
      * @notice Adds a new address to the token's approval list.
      * @dev Requires the sender to be in the approved addresses.
      * @param to The address to approve.
@@ -399,7 +374,6 @@ contract DanielArshamErosions {
         _clearApproval(tokenId);
         _tokenOwner[tokenId] = address(0);
         emit Transfer(wallet, address(0), tokenId);
-        _removeTokenFromOwnerEnumeration(wallet, tokenId);
     }
 
     /**
@@ -414,7 +388,7 @@ contract DanielArshamErosions {
         // temporary set to self, to pass rarible royalties logic trap
         _owner = address(this);
         _collectionData = collectionData;
-        IPA1D(address(this)).init (0, payable(collectionData.royalties), collectionData.bps);
+        IPA1D(address(this)).init(0, payable(collectionData.royalties), collectionData.bps);
         // set to actual owner
         _owner = newOwner;
     }
@@ -426,7 +400,11 @@ contract DanielArshamErosions {
      * @param to cannot be the zero address.
      * @param tokenId token must exist and be owned by `from`.
      */
-    function safeTransferFrom(address from, address to, uint256 tokenId) public payable {
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public payable {
         safeTransferFrom(from, to, tokenId, "");
     }
 
@@ -438,7 +416,12 @@ contract DanielArshamErosions {
      * @param to cannot be the zero address.
      * @param tokenId token must exist and be owned by `from`.
      */
-    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public payable {
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory data
+    ) public payable {
         require(_isApproved(msg.sender, tokenId), "CXIP: not approved sender");
         _transferFrom(from, to, tokenId);
         if (Address.isContract(to)) {
@@ -471,7 +454,11 @@ contract DanielArshamErosions {
      * @param to cannot be the zero address.
      * @param tokenId token must be owned by `from`.
      */
-    function transferFrom(address from, address to, uint256 tokenId) public payable {
+    function transferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public payable {
         transferFrom(from, to, tokenId, "");
     }
 
@@ -483,7 +470,12 @@ contract DanielArshamErosions {
      * @param to cannot be the zero address.
      * @param tokenId token must be owned by `from`.
      */
-    function transferFrom(address from, address to, uint256 tokenId, bytes memory /*_data*/) public payable {
+    function transferFrom(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory /*_data*/
+    ) public payable {
         require(_isApproved(msg.sender, tokenId), "CXIP: not approved sender");
         _transferFrom(from, to, tokenId);
     }
@@ -496,7 +488,12 @@ contract DanielArshamErosions {
      * @param length The total number of NFTs to mint starting from the startId.
      * @param recipient Optional parameter, to send the token to a recipient right after minting.
      */
-    function batchMint(address creatorWallet, uint256 startId, uint256 length, address recipient) public onlyOwner {
+    function batchMint(
+        address creatorWallet,
+        uint256 startId,
+        uint256 length,
+        address recipient
+    ) public onlyOwner {
         require(!getMintingClosed(), "CXIP: minting is now closed");
         require(_allTokens.length + length <= getTokenLimit(), "CXIP: over token limit");
         require(isIdentityWallet(creatorWallet), "CXIP: creator not in identity");
@@ -509,7 +506,6 @@ contract DanielArshamErosions {
                 emit Transfer(address(0), creatorWallet, tokenId);
                 emit Transfer(creatorWallet, recipient, tokenId);
                 _tokenOwner[tokenId] = recipient;
-                _addTokenToOwnerEnumeration(recipient, tokenId);
             } else {
                 _mint(creatorWallet, tokenId);
             }
@@ -694,17 +690,6 @@ contract DanielArshamErosions {
     }
 
     /**
-     * @notice Get total number of tokens owned by wallet.
-     * @dev Used to see total amount of tokens owned by a specific wallet.
-     * @param wallet Address for which to get token balance.
-     * @return uint256 Returns an integer, representing total amount of tokens held by address.
-     */
-    function balanceOf(address wallet) public view returns (uint256) {
-        require(!Address.isZero(wallet), "CXIP: zero address");
-        return _ownedTokensCount[wallet];
-    }
-
-    /**
      * @notice Get a base URI for the token.
      * @dev Concatenates with the CXIP domain name.
      * @return string the token URI.
@@ -785,18 +770,6 @@ contract DanielArshamErosions {
     }
 
     /**
-     * @notice Get token from wallet by index instead of token id.
-     * @dev Helpful for wallet token enumeration where token id info is not yet available. Use in conjunction with balanceOf function.
-     * @param wallet Specific address for which to get token for.
-     * @param index Index of token in array.
-     * @return uint256 Returns the token id of token located at that index in specified wallet.
-     */
-    function tokenOfOwnerByIndex(address wallet, uint256 index) public view returns (uint256) {
-        require(index < balanceOf(wallet));
-        return _ownedTokens[wallet][index];
-    }
-
-    /**
      * @notice Total amount of tokens in the collection.
      * @dev Ignores burned tokens.
      * @return uint256 Returns the total number of active (not burned) tokens.
@@ -814,7 +787,15 @@ contract DanielArshamErosions {
      * @dev Since it's not being used, the _data variable is commented out to avoid compiler warnings.
      * @return bytes4 Returns the interfaceId of onERC721Received.
      */
-    function onERC721Received(address, /*_operator*/address, /*_from*/uint256, /*_tokenId*/bytes calldata /*_data*/) public pure returns (bytes4) {
+    function onERC721Received(
+        address,
+        /*_operator*/
+        address,
+        /*_from*/
+        uint256,
+        /*_tokenId*/
+        bytes calldata /*_data*/
+    ) public pure returns (bytes4) {
         return 0x150b7a02;
     }
 
@@ -861,19 +842,6 @@ contract DanielArshamErosions {
     }
 
     /**
-     * @dev Add a newly minted token into managed list of tokens.
-     * @param to Address of token owner for which to add the token.
-     * @param tokenId Id of token to add.
-     */
-    function _addTokenToOwnerEnumeration(address to, uint256 tokenId) private {
-        _ownedTokensIndex[tokenId] = _ownedTokensCount[to];
-        _ownedTokensCount[to]++;
-        _ownedTokens[to].push(tokenId);
-        _allTokensIndex[tokenId] = _allTokens.length;
-        _allTokens.push(tokenId);
-    }
-
-    /**
      * @notice Deletes a token from the approval list.
      * @dev Removes from count.
      * @param tokenId T.
@@ -893,41 +861,6 @@ contract DanielArshamErosions {
         require(!_exists(tokenId), "CXIP: token already exists");
         _tokenOwner[tokenId] = to;
         emit Transfer(address(0), to, tokenId);
-        _addTokenToOwnerEnumeration(to, tokenId);
-    }
-
-    function _removeTokenFromAllTokensEnumeration(uint256 tokenId) private {
-        uint256 lastTokenIndex = _allTokens.length - 1;
-        uint256 tokenIndex = _allTokensIndex[tokenId];
-        uint256 lastTokenId = _allTokens[lastTokenIndex];
-        _allTokens[tokenIndex] = lastTokenId;
-        _allTokensIndex[lastTokenId] = tokenIndex;
-        delete _allTokensIndex[tokenId];
-        delete _allTokens[lastTokenIndex];
-        _allTokens.pop();
-    }
-
-    /**
-     * @dev Remove a token from managed list of tokens.
-     * @param from Address of token owner for which to remove the token.
-     * @param tokenId Id of token to remove.
-     */
-    function _removeTokenFromOwnerEnumeration(address from, uint256 tokenId) private {
-        _removeTokenFromAllTokensEnumeration(tokenId);
-        _ownedTokensCount[from]--;
-        uint256 lastTokenIndex = _ownedTokensCount[from];
-        uint256 tokenIndex = _ownedTokensIndex[tokenId];
-        if(tokenIndex != lastTokenIndex) {
-            uint256 lastTokenId = _ownedTokens[from][lastTokenIndex];
-            _ownedTokens[from][tokenIndex] = lastTokenId;
-            _ownedTokensIndex[lastTokenId] = tokenIndex;
-        }
-        if(lastTokenIndex == 0) {
-            delete _ownedTokens[from];
-        } else {
-            delete _ownedTokens[from][lastTokenIndex];
-            _ownedTokens[from].pop();
-        }
     }
 
     /**
@@ -936,14 +869,16 @@ contract DanielArshamErosions {
      * @param to Address to whom the token is being transferred. Zero address means it is being burned.
      * @param tokenId Id of token that is being transferred/minted/burned.
      */
-    function _transferFrom(address from, address to, uint256 tokenId) private {
+    function _transferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) private {
         require(_tokenOwner[tokenId] == from, "CXIP: not from's token");
         require(!Address.isZero(to), "CXIP: use burn instead");
         _clearApproval(tokenId);
         _tokenOwner[tokenId] = to;
         emit Transfer(from, to, tokenId);
-        _removeTokenFromOwnerEnumeration(from, tokenId);
-        _addTokenToOwnerEnumeration(to, tokenId);
     }
 
     /**
@@ -967,10 +902,6 @@ contract DanielArshamErosions {
     function _isApproved(address spender, uint256 tokenId) private view returns (bool) {
         require(_exists(tokenId));
         address tokenOwner = _tokenOwner[tokenId];
-        return (
-            spender == tokenOwner ||
-            getApproved(tokenId) == spender ||
-            isApprovedForAll(tokenOwner, spender)
-        );
+        return (spender == tokenOwner || getApproved(tokenId) == spender || isApprovedForAll(tokenOwner, spender));
     }
 }
