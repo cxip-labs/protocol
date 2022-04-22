@@ -34,6 +34,11 @@ describe('CXIP', () => {
   let user3: SignerWithAddress;
   let user4: SignerWithAddress;
   let user5: SignerWithAddress;
+  let testWallet: SignerWithAddress;
+  let testWallet2: SignerWithAddress;
+  let testWallet3: SignerWithAddress;
+
+  let niftygateway: string;
 
   let registry: CxipRegistry;
 
@@ -64,6 +69,10 @@ describe('CXIP', () => {
     user3 = accounts[3];
     user4 = accounts[4];
     user5 = accounts[5];
+    testWallet = accounts[6];
+    testWallet2 = accounts[7];
+    testWallet3 = accounts[8];
+    niftygateway = testWallet.address;
 
     await deployments.fixture([
       'CxipRegistry',
@@ -535,7 +544,9 @@ describe('CXIP', () => {
     const nonExistentTokenId = 0;
 
     // This is the custodial wallet that Nifty Gateway uses to hold all of their NFTs that they have listed on their platform.
-    const niftygateway = '0xE052113bd7D7700d623414a0a4585BCaE754E9d5';
+    // const niftygateway = '0xE052113bd7D7700d623414a0a4585BCaE754E9d5';
+    // we are using a test wallet in this case, to be able to do tests without access to private key
+//    const niftygateway = testWallet.address;
 
     it('should create a ERC721 NFT in the Arsham collection', async () => {
       // First create a new identity
@@ -943,6 +954,62 @@ describe('CXIP', () => {
           }
         );
       });
+
+      describe('approve', function () {
+        context(
+          'approving address for tokenId',
+          function () {
+            const tokenId = 10001;
+            it('returns correct wallet as approved', async function () {
+              await c.connect(testWallet).approve(testWallet2.address, tokenId);
+              expect(await c.getApproved(tokenId)).to.be.equal(testWallet2.address);
+            });
+
+            it('reverts for not approved wallet', async function () {
+              await expect(c.connect(testWallet3)['transferFrom(address,address,uint256)'](testWallet.address, testWallet3.address, tokenId)).to.be.revertedWith(
+                'CXIP: not approved sender'
+              );
+            });
+
+            it('reverts for not approved tokenId transfer', async function () {
+              const wrongTokendId = 10002;
+              await expect(c.connect(testWallet2)['transferFrom(address,address,uint256)'](testWallet.address, testWallet3.address, wrongTokendId)).to.be.revertedWith(
+                'CXIP: not approved sender'
+              );
+            });
+
+            it('allows approved to transfer token', async function () {
+              await c.connect(testWallet2)['transferFrom(address,address,uint256)'](testWallet.address, testWallet3.address, tokenId);
+              expect(await c.ownerOf(tokenId)).to.be.equal(testWallet3.address);
+            });
+          }
+        );
+      });
+
+      describe('approveForAll', function () {
+        context(
+          'approving operator for all owned tokens',
+          function () {
+            const tokenId = 10001;
+            it('returns operator as approvedForAll', async function () {
+              await c.connect(testWallet3).setApprovalForAll(testWallet2.address, true);
+              expect(await c.isApprovedForAll(testWallet3.address, testWallet2.address)).to.be.equal(true);
+            });
+
+            it('reverts for not approvedForAll wallet', async function () {
+              await expect(c.connect(testWallet)['transferFrom(address,address,uint256)'](testWallet3.address, testWallet.address, tokenId)).to.be.revertedWith(
+                'CXIP: not approved sender'
+              );
+            });
+
+            it('allows operator to transfer any owned token', async function () {
+              await c.connect(testWallet2)['transferFrom(address,address,uint256)'](testWallet3.address, testWallet.address, tokenId);
+              expect(await c.ownerOf(tokenId)).to.be.equal(testWallet.address);
+            });
+          }
+        );
+      });
+
     });
   });
 });
