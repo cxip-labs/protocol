@@ -6,12 +6,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  const danielArshamErosions = await deploy('DanielArshamErodingAndReformingCars', {
+  const mockErc721Receiver = await deploy('MockERC721Receiver', {
     from: deployer,
     args: [],
     log: true,
   });
 };
 export default func;
-func.tags = ['DanielArshamErodingAndReformingCars'];
-func.dependencies = ['CxipFactory', 'CxipRegistry'];
+func.tags = ['MockERC721Receiver'];
+func.dependencies = ['CxipFactory'];

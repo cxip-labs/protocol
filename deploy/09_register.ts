@@ -98,10 +98,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log(`Registered PA1DProxy to: ${await registry.getPA1D()}`);
 
   // DanielArshamErosions (Royalties)
-  const danielArshamErosions = await ethers.getContract('DanielArshamErosions');
+  const danielArshamErosions = await ethers.getContract('DanielArshamErodingAndReformingCars');
   const danielArshamErosionsTx = await registry
     .setCustomSource(
-      'eip1967.CxipRegistry.DanielArshamErosions',
+      'eip1967.CxipRegistry.DanielArshamErodingAndReformingCars',
       danielArshamErosions.address
     )
     .catch(error);
@@ -109,18 +109,18 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log('Transaction hash:', danielArshamErosionsTx.hash);
   await danielArshamErosionsTx.wait();
   console.log(
-    `Registered DanielArshamErosions to: ${await registry.getCustomSourceFromString(
-      'eip1967.CxipRegistry.DanielArshamErosions'
+    `Registered DanielArshamErodingAndReformingCars to: ${await registry.getCustomSourceFromString(
+      'eip1967.CxipRegistry.DanielArshamErodingAndReformingCars'
     )}`
   );
 
   // DanielArshamErosions Proxy (Royalties)
   const danielArshamErosionsProxy = await ethers.getContract(
-    'DanielArshamErosionsProxy'
+    'DanielArshamErodingAndReformingCarsProxy'
   );
   const danielArshamErosionsProxyTx = await registry
     .setCustomSource(
-      'eip1967.CxipRegistry.DanielArshamErosionsProxy',
+      'eip1967.CxipRegistry.DanielArshamErodingAndReformingCarsProxy',
       danielArshamErosionsProxy.address
     )
     .catch(error);
@@ -128,8 +128,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log('Transaction hash:', danielArshamErosionsProxyTx.hash);
   await danielArshamErosionsProxyTx.wait();
   console.log(
-    `Registered DanielArshamErosionsProxy to: ${await registry.getCustomSourceFromString(
-      'eip1967.CxipRegistry.DanielArshamErosionsProxy'
+    `Registered DanielArshamErodingAndReformingCarsProxy to: ${await registry.getCustomSourceFromString(
+      'eip1967.CxipRegistry.DanielArshamErodingAndReformingCarsProxy'
     )}`
   );
 

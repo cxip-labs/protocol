@@ -10,14 +10,16 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const cxipIdentityProxy = await hre.ethers.getContract('CxipIdentityProxy');
   const cxipProvenanceProxy = await hre.ethers.getContract('CxipProvenanceProxy');
   const pA1DProxy = await hre.ethers.getContract('PA1DProxy');
-  const danielArshamErosionsProxy = await hre.ethers.getContract('DanielArshamErosionsProxy');
+  const danielArshamErosionsProxy = await hre.ethers.getContract('DanielArshamErodingAndReformingCarsProxy');
 
   const cxipProvenance = await hre.ethers.getContract('CxipProvenance');
   const cxipIdentity = await hre.ethers.getContract('CxipIdentity');
   const cxipERC721 = await hre.ethers.getContract('CxipERC721');
   const cxipAsset = await hre.ethers.getContract('CxipAsset');
   const pA1D = await hre.ethers.getContract('PA1D');
-  const danielArshamErosions = await hre.ethers.getContract('DanielArshamErosions');
+  const danielArshamErosions = await hre.ethers.getContract('DanielArshamErodingAndReformingCars');
+
+  const mockErc721Receiver = await hre.ethers.getContract('MockERC721Receiver');
 
   // Registry
   try {
@@ -86,7 +88,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       constructorArguments: [],
     });
   } catch (error) {
-    console.error(`Failed to verify DanielArshamErosionsProxy ${error}`);
+    console.error(`Failed to verify DanielArshamErodingAndReformingCarsProxy ${error}`);
   }
 
   // Implementations
@@ -136,7 +138,15 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       constructorArguments: [],
     });
   } catch (error) {
-    console.error(`Failed to verify DanielArshamErosions ${error}`);
+    console.error(`Failed to verify DanielArshamErodingAndReformingCars ${error}`);
+  }
+  try {
+    await hre.run('verify:verify', {
+      address: mockErc721Receiver.address,
+      constructorArguments: [],
+    });
+  } catch (error) {
+    console.error(`Failed to verify MockERC721Receiver ${error}`);
   }
 };
 export default func;

@@ -51,11 +51,11 @@ pragma solidity 0.8.12;
 
 import "../interface/ICxipRegistry.sol";
 
-// sha256(abi.encodePacked('eip1967.CxipRegistry.DanielArshamErosionsProxy')) == 0x34614b2160c4ad0a9004a062b1210e491f551c3b3eb86397949dc0279cf60c0d
-contract DanielArshamErosionsProxy {
+// sha256(abi.encodePacked('eip1967.CxipRegistry.DanielArshamErodingAndReformingCarsProxy')) == 0xa02fc078e74005974d5615d21c608de70bf6b5bb5d4859bca6aeb16e41be6ff9
+contract DanielArshamErodingAndReformingCarsProxy {
     fallback() external payable {
-        // sha256(abi.encodePacked('eip1967.CxipRegistry.DanielArshamErosions')) == 0x748042799f1a8ea5aa2ae183edddb216f96c3c6ada37066aa2ce51a56438ede7
-        address _target = ICxipRegistry(0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD).getCustomSource(0x748042799f1a8ea5aa2ae183edddb216f96c3c6ada37066aa2ce51a56438ede7);
+        // sha256(abi.encodePacked('eip1967.CxipRegistry.DanielArshamErodingAndReformingCars')) == 0xe3b4c4e0b41f8dc247603a686e2acd61e0a5b5d2a95ce2e35a1744406075c82f
+        address _target = ICxipRegistry(0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD).getCustomSource(0xe3b4c4e0b41f8dc247603a686e2acd61e0a5b5d2a95ce2e35a1744406075c82f);
         assembly {
             calldatacopy(0, 0, calldatasize())
             let result := delegatecall(gas(), _target, 0, calldatasize(), 0, 0)

@@ -14,16 +14,17 @@ import {
   CxipIdentityProxy,
   CxipProvenanceProxy,
   PA1DProxy,
-  DanielArshamErosionsProxy,
+  DanielArshamErodingAndReformingCarsProxy,
   CxipProvenance,
   CxipIdentity,
   CxipERC721,
   CxipAsset,
   PA1D,
-  DanielArshamErosions,
+  DanielArshamErodingAndReformingCars,
+  MockERC721Receiver,
   CxipFactory,
 } from '../typechain-types';
-import { utf8ToBytes32, ZERO_ADDRESS } from './utils';
+import { utf8ToBytes32, ZERO_ADDRESS, sha256 } from './utils';
 
 const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
 
@@ -49,15 +50,17 @@ describe('CXIP', () => {
   let identityProxy: CxipIdentityProxy;
   let provenanceProxy: CxipProvenanceProxy;
   let royaltiesProxy: PA1DProxy;
-  let danielArshamErosionsProxy: DanielArshamErosionsProxy;
+  let danielArshamErosionsProxy: DanielArshamErodingAndReformingCarsProxy;
 
   let asset: CxipAsset;
   let erc721: CxipERC721;
   let identity: CxipIdentity;
   let provenance: CxipProvenance;
   let royalties: PA1D;
-  let danielArshamErosions: DanielArshamErosions;
+  let danielArshamErosions: DanielArshamErodingAndReformingCars;
   let danielArshamErosionsProxyBytecode: string;
+
+  let mockErc721Receiver: MockERC721Receiver;
 
   let factory: CxipFactory;
 
@@ -83,7 +86,7 @@ describe('CXIP', () => {
       'CxipIdentityProxy',
       'CxipProvenanceProxy',
       'PA1DProxy',
-      'DanielArshamErosionsProxy',
+      'DanielArshamErodingAndReformingCarsProxy',
 
       'CxipProvenance',
       'CxipIdentity',
@@ -92,7 +95,9 @@ describe('CXIP', () => {
       'CxipCopyright',
       'CxipAsset',
       'PA1D',
-      'DanielArshamErosions',
+      'DanielArshamErodingAndReformingCars',
+
+      'MockERC721Receiver',
 
       'Register',
     ]);
@@ -127,18 +132,17 @@ describe('CXIP', () => {
     royalties = (await ethers.getContract('PA1D')) as PA1D as PA1D;
 
     danielArshamErosionsProxy = (await ethers.getContract(
-      'DanielArshamErosionsProxy'
-    )) as DanielArshamErosionsProxy;
-    danielArshamErosions = await ethers.getContract('DanielArshamErosions');
-    danielArshamErosionsProxy = (await ethers.getContract(
-      'DanielArshamErosionsProxy'
-    )) as DanielArshamErosionsProxy;
+      'DanielArshamErodingAndReformingCarsProxy'
+    )) as DanielArshamErodingAndReformingCarsProxy;
+    danielArshamErosions = await ethers.getContract('DanielArshamErodingAndReformingCars');
 
     danielArshamErosionsProxyBytecode = (
       (await ethers.getContractFactory(
-        'DanielArshamErosionsProxy'
+        'DanielArshamErodingAndReformingCarsProxy'
       )) as ContractFactory
     ).bytecode;
+
+    mockErc721Receiver = (await ethers.getContract('MockERC721Receiver')) as MockERC721Receiver;
   });
 
   beforeEach(async () => {});
@@ -539,7 +543,7 @@ describe('CXIP', () => {
     });
   });
 
-  describe.only('Daniel Arsham Erosions', async () => {
+  describe.only('Daniel Arsham: Eroding and Reforming Cars', async () => {
     const tokenId = 10001;
     const nonExistentTokenId = 0;
 
@@ -584,8 +588,8 @@ describe('CXIP', () => {
           v: BigNumberish;
         },
         [
-          `${utf8ToBytes32('Eroding and Reforming Cars')}`, // Collection name
-          '0x0000000000000000000000000000000000000000000000000000000000000000', // Collection name 2
+          `${utf8ToBytes32('Daniel Arsham: Eroding and Refor')}`, // Collection name
+          `${utf8ToBytes32('ming Cars')}`, // Collection name 2
           `${utf8ToBytes32('ERCs')}`, // Collection symbol
           user5.address, // royalties (address)
           '0x0000000000000000000003e8', // 1000 bps (uint96)
@@ -596,7 +600,7 @@ describe('CXIP', () => {
           royalties: string;
           bps: BigNumberish;
         },
-        '0x34614b2160c4ad0a9004a062b1210e491f551c3b3eb86397949dc0279cf60c0d', // Daniel Arsham Erosions Proxy - Registry storage slot
+        sha256('eip1967.CxipRegistry.DanielArshamErodingAndReformingCarsProxy'), // Daniel Arsham Erosions Proxy - Registry storage slot
         danielArshamErosionsProxyBytecode // proxy contract byte code
       );
 
@@ -612,8 +616,8 @@ describe('CXIP', () => {
       const collectionSymbol = await c.symbol();
 
       assert.isNotOk(
-        collectionName != 'Eroding and Reforming Cars',
-        'Collection name missmatch, we want "Eroding and Reforming Cars", but got "' +
+        collectionName != 'Daniel Arsham: Eroding and Reforming Cars',
+        'Collection name missmatch, we want "Daniel Arsham: Eroding and Reforming Cars", but got "' +
           collectionName +
           '" instead.'
       );
@@ -629,7 +633,7 @@ describe('CXIP', () => {
       await c.connect(user5).setTokenLimit(50 + 100 + 100 + 150);
       await c
         .connect(user5)
-        .setIntervalConfig([113 * 60, 116 * 60, 103 * 60, 126 * 60]);
+        .setIntervalConfig([(113 * 60) / 2, (116 * 60) / 2, (103 * 60) / 2, (126 * 60) / 2]);
 
       const wallet = user5.address;
       let payload: BytesLike;
@@ -1005,6 +1009,33 @@ describe('CXIP', () => {
             it('allows operator to transfer any owned token', async function () {
               await c.connect(testWallet2)['transferFrom(address,address,uint256)'](testWallet3.address, testWallet.address, tokenId);
               expect(await c.ownerOf(tokenId)).to.be.equal(testWallet.address);
+            });
+          }
+        );
+      });
+
+      describe('safeTransferFrom', function () {
+        context(
+          'using MockErc721Receiver to test safeTransferFrom functionality',
+          function () {
+            const r = mockErc721Receiver.attach(mockErc721Receiver.address);
+            const tokenId = 10001;
+
+            it('reverts for safeTransferFrom on unsupported ERC721 Receiver smart contract', async function () {
+              // we disable support first
+              await r.toggleWorks(false);
+              // we try a transfer
+              await expect(c.connect(testWallet)['safeTransferFrom(address,address,uint256)'](testWallet.address, r.address, tokenId)).to.be.revertedWith(
+                'CXIP: onERC721Received fail'
+              );
+            });
+
+            it('succeeds for safeTransferFrom on supported ERC721 Receiver smart contract', async function () {
+              // we enable support first
+              await r.toggleWorks(true);
+              // we try a safeTransferFrom
+              await c.connect(testWallet)['safeTransferFrom(address,address,uint256)'](testWallet.address, r.address, tokenId);
+              expect(await c.ownerOf(tokenId)).to.be.equal(r.address);
             });
           }
         );

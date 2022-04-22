@@ -63,7 +63,7 @@ import "./struct/CollectionData.sol";
 import "./struct/TokenData.sol";
 import "./struct/Verification.sol";
 
-contract DanielArshamErosions {
+contract DanielArshamErodingAndReformingCars {
     /**
      * @dev Stores default collection data: name, symbol, and royalties.
      */
@@ -442,13 +442,12 @@ contract DanielArshamErosions {
         require(_isApproved(msg.sender, tokenId), "CXIP: not approved sender");
         _transferFrom(from, to, tokenId);
         if (Address.isContract(to)) {
-            // quick sanity check that the contract supports EIP-165 interfaces, and supports onERC721Received
-            if (IERC165(to).supportsInterface(0x01ffc9a7) && IERC165(to).supportsInterface(0x150b7a02)) {
-                require(
-                    ICxipERC721(to).onERC721Received(address(this), from, tokenId, data) == 0x150b7a02,
-                    "CXIP: onERC721Received fail"
-                );
-            }
+            require(
+                IERC165(to).supportsInterface(0x01ffc9a7) &&
+                IERC165(to).supportsInterface(0x150b7a02) &&
+                ICxipERC721(to).onERC721Received(address(this), from, tokenId, data) == 0x150b7a02,
+                "CXIP: onERC721Received fail"
+            );
         }
     }
 
