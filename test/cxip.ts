@@ -628,23 +628,52 @@ describe('CXIP', () => {
           '" instead.'
       );
 
-      await c.connect(user5).setStartTimestamp('0x' + Date.now().toString(16));
+      let startTime = Math.floor (Date.now() / 1000);
+      const rotations: Array<number> = [
+        Math.round((113 * 60) / 2),
+        Math.round((116 * 60) / 2),
+        Math.round((103 * 60) / 2),
+        Math.round((126 * 60) / 2)
+      ];
+      await c.connect(user5).setStartTimestamp('0x' + startTime.toString(16));
       await c.connect(user5).setTokenSeparator(10000);
-      await c.connect(user5).setTokenLimit(50 + 100 + 100 + 150);
+      const totalSupply: number = 50 + 100 + 100 + 150;
+      await c.connect(user5).setTokenLimit(totalSupply);
       await c
         .connect(user5)
-        .setIntervalConfig([(113 * 60) / 2, (116 * 60) / 2, (103 * 60) / 2, (126 * 60) / 2]);
+        .setIntervalConfig([rotations[0], rotations[1], rotations[2], rotations[3]]);
 
       const wallet = user5.address;
       let payload: BytesLike;
+      const arweave: string = 'https://arweave.net/';
+      const arHashes: Array<string> = [
+        'k6Dej-c5ga1TkKlJ5vjxtCyY6W6Ipc2ds7gzHAZKir0',
+        '3hBx7NynGoLPctHG8oS5uYKYdJNDj7A_IwTos9K-bUA',
+        'tbkb5xO694ktcSTGn7WVIwm8Y_7cucgoN6bduo9kZDA',
+        'KLBvdyxNunXuNhCyrDkPyEuJUA9frtKNa-bjFAEusB4',
+        'veEDJpGhtGpA4bac62nyhY3HTbWDAV_bTtAkj6vi4dc',
+        '_XAoDq-i3N7bwMNeNoUwCDVLvasCh46Fnhl9wKoaF88',
+        'WYDKFYbl6sbJP5LENzwAIlbtH0enQx_HDde0_kD5QAE',
+        'ucbj933WwVHVTQZP2yupmfEatLqoFYnWCQr1xXKbKdg'
+      ];
       let arHash: BytesLike;
+      const ipfsHashes: Array<string> = [
+        'QmVLY9uE6quyCumNg4CqhAPh8Q8Kn4Hw5FTE6wKPMxKK9w',
+        'QmYpYw7pk3pJqeLF7GNCP6QD7WjST3JK8zzG4cmDMM4RiU',
+        'QmeZEHUkaXhRBUQhCVSJ3wrqjpAiGjySoeWq8aHufFX87e',
+        'QmXXtXd943CP6fx2ZMgX4iPvZpzzW9a4FbpFCs1GMeeMof',
+        'QmfX685GuEWkeLtPyyXm4DSRpHXXUsgAYDCEShrHY7GHej',
+        'QmQpH5cm3CDCBGUEJ9Lo1aZc6afRdpy4jUbb9R7yfZLHxX',
+        'QmYQWLJgq9zVMfkqUwDpGrP31jaobVqRMvgzzch9K1J25Y',
+        'QmNs7Fvu81wDuWE2oG7D3SdSpDRmS5aDzFQHDGXdXzz8AU'
+      ];
       let ipfsHash: BytesLike;
       let sig: any;
       let signature: { r: BytesLike; s: BytesLike; v: BigNumberish };
 
       // Mustang (State 1)
-      arHash = 'k6Dej-c5ga1TkKlJ5vjxtCyY6W6Ipc2ds7gzHAZKir0';
-      ipfsHash = 'QmVLY9uE6quyCumNg4CqhAPh8Q8Kn4Hw5FTE6wKPMxKK9w';
+      arHash = arHashes[0];
+      ipfsHash = ipfsHashes[0];
       payload = '0x' + '00'.repeat(32);
       sig = await user5.signMessage(payload);
       signature = {
@@ -671,8 +700,8 @@ describe('CXIP', () => {
       };
 
       // Mustang (State 2)
-      arHash = '3hBx7NynGoLPctHG8oS5uYKYdJNDj7A_IwTos9K-bUA';
-      ipfsHash = 'QmYpYw7pk3pJqeLF7GNCP6QD7WjST3JK8zzG4cmDMM4RiU';
+      arHash = arHashes[1];
+      ipfsHash = ipfsHashes[1];
       payload = '0x' + '00'.repeat(32);
       sig = await user5.signMessage(payload);
       signature = {
@@ -706,8 +735,8 @@ describe('CXIP', () => {
       await mustangTx.wait();
 
       // DeLorean (State 1)
-      arHash = 'tbkb5xO694ktcSTGn7WVIwm8Y_7cucgoN6bduo9kZDA';
-      ipfsHash = 'QmeZEHUkaXhRBUQhCVSJ3wrqjpAiGjySoeWq8aHufFX87e';
+      arHash = arHashes[2];
+      ipfsHash = ipfsHashes[2];
       payload = '0x' + '00'.repeat(32);
       sig = await user5.signMessage(payload);
       signature = {
@@ -734,8 +763,8 @@ describe('CXIP', () => {
       };
 
       // DeLorean (State 2)
-      arHash = 'KLBvdyxNunXuNhCyrDkPyEuJUA9frtKNa-bjFAEusB4';
-      ipfsHash = 'QmXXtXd943CP6fx2ZMgX4iPvZpzzW9a4FbpFCs1GMeeMof';
+      arHash = arHashes[3];
+      ipfsHash = ipfsHashes[3];
       payload = '0x' + '00'.repeat(32);
       sig = await user5.signMessage(payload);
       signature = {
@@ -769,8 +798,8 @@ describe('CXIP', () => {
       await deloreanTx.wait();
 
       // California (State 1)
-      arHash = 'veEDJpGhtGpA4bac62nyhY3HTbWDAV_bTtAkj6vi4dc';
-      ipfsHash = 'QmfX685GuEWkeLtPyyXm4DSRpHXXUsgAYDCEShrHY7GHej';
+      arHash = arHashes[4];
+      ipfsHash = ipfsHashes[4];
       payload = '0x' + '00'.repeat(32);
       sig = await user5.signMessage(payload);
       signature = {
@@ -797,8 +826,8 @@ describe('CXIP', () => {
       };
 
       // California (State 2)
-      arHash = '_XAoDq-i3N7bwMNeNoUwCDVLvasCh46Fnhl9wKoaF88';
-      ipfsHash = 'QmQpH5cm3CDCBGUEJ9Lo1aZc6afRdpy4jUbb9R7yfZLHxX';
+      arHash = arHashes[5];
+      ipfsHash = ipfsHashes[5];
       payload = '0x' + '00'.repeat(32);
       sig = await user5.signMessage(payload);
       signature = {
@@ -832,8 +861,8 @@ describe('CXIP', () => {
       await californiaTx.wait();
 
       // E30 (State 1)
-      arHash = 'WYDKFYbl6sbJP5LENzwAIlbtH0enQx_HDde0_kD5QAE';
-      ipfsHash = 'QmYQWLJgq9zVMfkqUwDpGrP31jaobVqRMvgzzch9K1J25Y';
+      arHash = arHashes[6];
+      ipfsHash = ipfsHashes[6];
       payload = '0x' + '00'.repeat(32);
       sig = await user5.signMessage(payload);
       signature = {
@@ -860,8 +889,8 @@ describe('CXIP', () => {
       };
 
       // E30 (State 2)
-      arHash = 'ucbj933WwVHVTQZP2yupmfEatLqoFYnWCQr1xXKbKdg';
-      ipfsHash = 'QmNs7Fvu81wDuWE2oG7D3SdSpDRmS5aDzFQHDGXdXzz8AU';
+      arHash = arHashes[7];
+      ipfsHash = ipfsHashes[7];
       payload = '0x' + '00'.repeat(32);
       sig = await user5.signMessage(payload);
       signature = {
@@ -912,6 +941,76 @@ describe('CXIP', () => {
 
       await c.connect(user5).setMintingClosed();
 
+      describe('tokenURI', function () {
+        context('when getting State 1 tokenURIs', function () {
+          it('returns correct Arweave URI for 10001-10050', async function () {
+            await c.connect(user5).setStartTimestamp('0x' + (startTime).toString(16));
+            const firstToken = 10001;
+            const lastToken = 10050;
+            expect(await c.tokenURI(firstToken)).to.be.equal(arweave + arHashes[0]);
+            expect(await c.tokenURI(lastToken)).to.be.equal(arweave + arHashes[0]);
+          });
+
+          it('returns correct Arweave URI for 20001-20100', async function () {
+            await c.connect(user5).setStartTimestamp('0x' + (startTime).toString(16));
+            const firstToken = 20001;
+            const lastToken = 20100;
+            expect(await c.tokenURI(firstToken)).to.be.equal(arweave + arHashes[2]);
+            expect(await c.tokenURI(lastToken)).to.be.equal(arweave + arHashes[2]);
+          });
+
+          it('returns correct Arweave URI for 30001-30100', async function () {
+            await c.connect(user5).setStartTimestamp('0x' + (startTime).toString(16));
+            const firstToken = 30001;
+            const lastToken = 30100;
+            expect(await c.tokenURI(firstToken)).to.be.equal(arweave + arHashes[4]);
+            expect(await c.tokenURI(lastToken)).to.be.equal(arweave + arHashes[4]);
+          });
+
+          it('returns correct Arweave URI for 40001-40150', async function () {
+            await c.connect(user5).setStartTimestamp('0x' + (startTime).toString(16));
+            const firstToken = 40001;
+            const lastToken = 40150;
+            expect(await c.tokenURI(firstToken)).to.be.equal(arweave + arHashes[6]);
+            expect(await c.tokenURI(lastToken)).to.be.equal(arweave + arHashes[6]);
+          });
+        });
+
+        context('when getting State 2 tokenURIs', function () {
+          it('returns correct Arweave URI for 10001-10050', async function () {
+            await c.connect(user5).setStartTimestamp('0x' + (startTime - rotations[0]).toString(16));
+            const firstToken = 10001;
+            const lastToken = 10050;
+            expect(await c.tokenURI(firstToken)).to.be.equal(arweave + arHashes[1]);
+            expect(await c.tokenURI(lastToken)).to.be.equal(arweave + arHashes[1]);
+          });
+
+          it('returns correct Arweave URI for 20001-20100', async function () {
+            await c.connect(user5).setStartTimestamp('0x' + (startTime - rotations[1]).toString(16));
+            const firstToken = 20001;
+            const lastToken = 20100;
+            expect(await c.tokenURI(firstToken)).to.be.equal(arweave + arHashes[3]);
+            expect(await c.tokenURI(lastToken)).to.be.equal(arweave + arHashes[3]);
+          });
+
+          it('returns correct Arweave URI for 30001-30100', async function () {
+            await c.connect(user5).setStartTimestamp('0x' + (startTime - rotations[2]).toString(16));
+            const firstToken = 30001;
+            const lastToken = 30100;
+            expect(await c.tokenURI(firstToken)).to.be.equal(arweave + arHashes[5]);
+            expect(await c.tokenURI(lastToken)).to.be.equal(arweave + arHashes[5]);
+          });
+
+          it('returns correct Arweave URI for 40001-40150', async function () {
+            await c.connect(user5).setStartTimestamp('0x' + (startTime - rotations[3]).toString(16));
+            const firstToken = 40001;
+            const lastToken = 40150;
+            expect(await c.tokenURI(firstToken)).to.be.equal(arweave + arHashes[7]);
+            expect(await c.tokenURI(lastToken)).to.be.equal(arweave + arHashes[7]);
+          });
+        });
+      });
+
       /// ERC721 Token standard tests
       describe('balanceOf', function () {
         context('when the given address owns some tokens', function () {
@@ -957,6 +1056,42 @@ describe('CXIP', () => {
             });
           }
         );
+      });
+
+      describe('balanceOf', function () {
+        context('get total owned tokens for wallet', function () {
+          it('returns ' + totalSupply.toString() + ' for wallet', async function () {
+            expect(await c.balanceOf(testWallet.address)).to.be.equal(totalSupply);
+          });
+
+          it('returns 0 for test wallet', async function () {
+            expect(await c.balanceOf(testWallet2.address)).to.be.equal(0);
+          });
+        });
+      });
+
+      describe('tokenByIndex', function () {
+        context('get token by index, within totalSupply limit', function () {
+          it('returns tokenId for index 0', async function () {
+            expect(await c.tokenByIndex(0)).to.be.equal(10001);
+          });
+
+          it('fails tokenId for index ' + totalSupply.toString(), async function () {
+            await expect(c.tokenByIndex(totalSupply)).to.be.revertedWith('CXIP: index out of bounds');
+          });
+        });
+      });
+
+      describe('tokenOfOwnerByIndex', function () {
+        context('get token of owner by index', function () {
+          it('returns 10001 for index 0', async function () {
+            expect(await c.tokenOfOwnerByIndex(testWallet.address, 0)).to.be.equal(10001);
+          });
+
+          it('fails tokenId for index ' + totalSupply.toString(), async function () {
+            await expect(c.tokenOfOwnerByIndex(testWallet.address, totalSupply)).to.be.revertedWith('CXIP: index out of bounds');
+          });
+        });
       });
 
       describe('approve', function () {

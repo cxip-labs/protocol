@@ -208,7 +208,7 @@ contract DanielArshamErodingAndReformingCars {
     function setIntervalConfig(uint256[4] memory intervals) external onlyOwner {
         // The slot hash has been precomputed for gas optimizaion
         // bytes32 slot = bytes32(uint256(keccak256('eip1967.CXIP.DanielArshamErosions.intervalConfig')) - 1);
-        uint256 packed = uint256(intervals[0] << 48 | intervals[1] << 32 | intervals[2] << 16 | intervals[3]);
+        uint256 packed = uint256((intervals[0] << 48) | (intervals[1] << 32) | (intervals[2] << 16) | intervals[3]);
         assembly {
             sstore(
                 /* slot */
@@ -414,7 +414,7 @@ contract DanielArshamErodingAndReformingCars {
         // temporary set to self, to pass rarible royalties logic trap
         _owner = address(this);
         _collectionData = collectionData;
-        IPA1D(address(this)).init (0, payable(collectionData.royalties), collectionData.bps);
+        IPA1D(address(this)).init(0, payable(collectionData.royalties), collectionData.bps);
         // set to actual owner
         _owner = newOwner;
     }
@@ -426,7 +426,11 @@ contract DanielArshamErodingAndReformingCars {
      * @param to cannot be the zero address.
      * @param tokenId token must exist and be owned by `from`.
      */
-    function safeTransferFrom(address from, address to, uint256 tokenId) public payable {
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public payable {
         safeTransferFrom(from, to, tokenId, "");
     }
 
@@ -438,14 +442,19 @@ contract DanielArshamErodingAndReformingCars {
      * @param to cannot be the zero address.
      * @param tokenId token must exist and be owned by `from`.
      */
-    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public payable {
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory data
+    ) public payable {
         require(_isApproved(msg.sender, tokenId), "CXIP: not approved sender");
         _transferFrom(from, to, tokenId);
         if (Address.isContract(to)) {
             require(
                 IERC165(to).supportsInterface(0x01ffc9a7) &&
-                IERC165(to).supportsInterface(0x150b7a02) &&
-                ICxipERC721(to).onERC721Received(address(this), from, tokenId, data) == 0x150b7a02,
+                    IERC165(to).supportsInterface(0x150b7a02) &&
+                    ICxipERC721(to).onERC721Received(address(this), from, tokenId, data) == 0x150b7a02,
                 "CXIP: onERC721Received fail"
             );
         }
@@ -470,7 +479,11 @@ contract DanielArshamErodingAndReformingCars {
      * @param to cannot be the zero address.
      * @param tokenId token must be owned by `from`.
      */
-    function transferFrom(address from, address to, uint256 tokenId) public payable {
+    function transferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public payable {
         transferFrom(from, to, tokenId, "");
     }
 
@@ -482,7 +495,12 @@ contract DanielArshamErodingAndReformingCars {
      * @param to cannot be the zero address.
      * @param tokenId token must be owned by `from`.
      */
-    function transferFrom(address from, address to, uint256 tokenId, bytes memory /*_data*/) public payable {
+    function transferFrom(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory /*_data*/
+    ) public payable {
         require(_isApproved(msg.sender, tokenId), "CXIP: not approved sender");
         _transferFrom(from, to, tokenId);
     }
@@ -495,7 +513,12 @@ contract DanielArshamErodingAndReformingCars {
      * @param length The total number of NFTs to mint starting from the startId.
      * @param recipient Optional parameter, to send the token to a recipient right after minting.
      */
-    function batchMint(address creatorWallet, uint256 startId, uint256 length, address recipient) public onlyOwner {
+    function batchMint(
+        address creatorWallet,
+        uint256 startId,
+        uint256 length,
+        address recipient
+    ) public onlyOwner {
         require(!getMintingClosed(), "CXIP: minting is now closed");
         require(_allTokens.length + length <= getTokenLimit(), "CXIP: over token limit");
         require(isIdentityWallet(creatorWallet), "CXIP: creator not in identity");
@@ -791,7 +814,7 @@ contract DanielArshamErodingAndReformingCars {
      * @return uint256 Returns the token id of token located at that index in specified wallet.
      */
     function tokenOfOwnerByIndex(address wallet, uint256 index) public view returns (uint256) {
-        require(index < balanceOf(wallet));
+        require(index < balanceOf(wallet), "CXIP: index out of bounds");
         return _ownedTokens[wallet][index];
     }
 
@@ -813,7 +836,15 @@ contract DanielArshamErodingAndReformingCars {
      * @dev Since it's not being used, the _data variable is commented out to avoid compiler warnings.
      * @return bytes4 Returns the interfaceId of onERC721Received.
      */
-    function onERC721Received(address, /*_operator*/address, /*_from*/uint256, /*_tokenId*/bytes calldata /*_data*/) public pure returns (bytes4) {
+    function onERC721Received(
+        address,
+        /*_operator*/
+        address,
+        /*_from*/
+        uint256,
+        /*_tokenId*/
+        bytes calldata /*_data*/
+    ) public pure returns (bytes4) {
         return 0x150b7a02;
     }
 
@@ -916,12 +947,12 @@ contract DanielArshamErodingAndReformingCars {
         _ownedTokensCount[from]--;
         uint256 lastTokenIndex = _ownedTokensCount[from];
         uint256 tokenIndex = _ownedTokensIndex[tokenId];
-        if(tokenIndex != lastTokenIndex) {
+        if (tokenIndex != lastTokenIndex) {
             uint256 lastTokenId = _ownedTokens[from][lastTokenIndex];
             _ownedTokens[from][tokenIndex] = lastTokenId;
             _ownedTokensIndex[lastTokenId] = tokenIndex;
         }
-        if(lastTokenIndex == 0) {
+        if (lastTokenIndex == 0) {
             delete _ownedTokens[from];
         } else {
             delete _ownedTokens[from][lastTokenIndex];
@@ -935,7 +966,11 @@ contract DanielArshamErodingAndReformingCars {
      * @param to Address to whom the token is being transferred. Zero address means it is being burned.
      * @param tokenId Id of token that is being transferred/minted/burned.
      */
-    function _transferFrom(address from, address to, uint256 tokenId) private {
+    function _transferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) private {
         require(_tokenOwner[tokenId] == from, "CXIP: not from's token");
         require(!Address.isZero(to), "CXIP: use burn instead");
         _clearApproval(tokenId);
@@ -966,10 +1001,6 @@ contract DanielArshamErodingAndReformingCars {
     function _isApproved(address spender, uint256 tokenId) private view returns (bool) {
         require(_exists(tokenId));
         address tokenOwner = _tokenOwner[tokenId];
-        return (
-            spender == tokenOwner ||
-            getApproved(tokenId) == spender ||
-            isApprovedForAll(tokenOwner, spender)
-        );
+        return (spender == tokenOwner || getApproved(tokenId) == spender || isApprovedForAll(tokenOwner, spender));
     }
 }
