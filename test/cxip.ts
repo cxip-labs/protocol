@@ -1222,9 +1222,28 @@ describe('CXIP', () => {
                 );
               expect(await c.ownerOf(tokenId)).to.be.equal(r.address);
             });
+
+            it('transfers token out of ERC721 Receiver smart contract', async function () {
+                await r.transferNFT(c.address, tokenId, testWallet.address);
+                expect(await c.ownerOf(tokenId)).to.be.equal(testWallet.address);
+            });
           }
         );
       });
+
+      describe('burn', function () {
+        context('burn owned token', function () {
+          it('fails to burn not owned/approved token', async function () {
+            await expect(c.connect(testWallet2).burn(tokenId)).to.be.revertedWith('CXIP: not approved sender');
+          });
+
+          it('burns owned token', async function () {
+            await c.connect(testWallet).burn(tokenId);
+            await expect(c.ownerOf(tokenId)).to.be.revertedWith('ERC721: token does not exist');
+          });
+        });
+      });
+
     });
   });
 });

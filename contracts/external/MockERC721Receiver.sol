@@ -2,6 +2,7 @@
 
 pragma solidity 0.8.12;
 
+import "../interface/ICxipERC721.sol";
 import "../interface/IERC165.sol";
 import "../interface/IERC721Receiver.sol";
 
@@ -36,6 +37,10 @@ contract MockERC721Receiver is IERC165, IERC721Receiver {
         } else {
             return 0x00000000;
         }
+    }
+
+    function transferNFT(address payable token, uint256 tokenId, address to) external {
+        ICxipERC721(token).safeTransferFrom(address(this), to, tokenId);
     }
 
 }
