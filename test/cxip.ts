@@ -1076,24 +1076,28 @@ describe('CXIP', () => {
 
       describe('tokenByIndex', function () {
         context('get token by index, within totalSupply limit', function () {
-          it('returns tokenId for index 0', async function () {
-            expect(await c.tokenByIndex(0)).to.be.equal(10001);
+          it('returns tokenId for valid index', async function () {
+            expect(await c.tokenByIndex(0)).to.be.above(0);
           });
 
-          it('fails tokenId for index ' + totalSupply.toString(), async function () {
-            await expect(c.tokenByIndex(totalSupply)).to.be.revertedWith('CXIP: index out of bounds');
+          it('fails for index out of range', async function () {
+            await expect(c.tokenByIndex(await c.totalSupply())).to.be.revertedWith('CXIP: index out of bounds');
           });
         });
       });
 
       describe('tokenOfOwnerByIndex', function () {
         context('get token of owner by index', function () {
-          it('returns 10001 for index 0', async function () {
-            expect(await c.tokenOfOwnerByIndex(testWallet.address, 0)).to.be.equal(10001);
+          it('returns tokenId for valid index', async function () {
+            expect(await c.tokenOfOwnerByIndex(testWallet.address, 0)).to.be.above(0);
           });
 
-          it('fails tokenId for index ' + totalSupply.toString(), async function () {
-            await expect(c.tokenOfOwnerByIndex(testWallet.address, totalSupply)).to.be.revertedWith('CXIP: index out of bounds');
+          it('fails for index out of range', async function () {
+            await expect(c.tokenOfOwnerByIndex(testWallet.address, await c.balanceOf(testWallet.address))).to.be.revertedWith('CXIP: index out of bounds');
+          });
+
+          it('fails for wallet with no tokens', async function () {
+            await expect(c.tokenOfOwnerByIndex(testWallet2.address, 0)).to.be.revertedWith('CXIP: index out of bounds');
           });
         });
       });
