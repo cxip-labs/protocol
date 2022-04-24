@@ -253,7 +253,7 @@ describe('CXIP', () => {
       );
 
       const receipt = await tx.wait();
-      const events = receipt.events?.filter((x) => {
+      const events = receipt.events?.filter((x: any) => {
         return x.event == 'IdentityCreated';
       });
 
