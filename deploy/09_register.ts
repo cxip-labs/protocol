@@ -13,6 +13,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   // Get the registry contract and set the required contract addresses
   const registry = await ethers.getContract('CxipRegistry');
+  console.log('Registry address is:', registry.address);
 
   // Asset
   const asset = await ethers.getContract('CxipAsset');
@@ -24,9 +25,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   // Asset Proxy
   const assetProxy = await ethers.getContract('CxipAssetProxy');
-  const assetProxyTx = await registry
-    .setAssetSource(assetProxy.address)
-    .catch(error);
+  const assetProxyTx = await registry.setAsset(assetProxy.address).catch(error);
 
   console.log('Transaction hash:', assetProxyTx.hash);
   await assetProxyTx.wait();
@@ -67,7 +66,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   );
 
   // Provenance Proxy
-  const provenanceProxy = await ethers.getContract('CxipProvenance');
+  const provenanceProxy = await ethers.getContract('CxipProvenanceProxy');
   const provenanceProxyTx = await registry
     .setProvenance(provenanceProxy.address)
     .catch(error);
@@ -80,11 +79,59 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   // PA1D (Royalties)
   const royalties = await ethers.getContract('PA1D');
-  const royaltiesTx = await registry.setPA1D(royalties.address).catch(error);
+  const royaltiesTx = await registry
+    .setPA1DSource(royalties.address)
+    .catch(error);
 
   console.log('Transaction hash:', royaltiesTx.hash);
   await royaltiesTx.wait();
-  console.log(`Registered PA1D to: ${await registry.getPA1D()}`);
+  console.log(`Registered PA1D to: ${await registry.getPA1DSource()}`);
+
+  // PA1D Proxy (Royalties)
+  const royaltiesProxy = await ethers.getContract('PA1DProxy');
+  const royaltiesProxyTx = await registry
+    .setPA1D(royaltiesProxy.address)
+    .catch(error);
+
+  console.log('Transaction hash:', royaltiesProxyTx.hash);
+  await royaltiesProxyTx.wait();
+  console.log(`Registered PA1DProxy to: ${await registry.getPA1D()}`);
+
+  // DanielArshamErosions (Royalties)
+  const danielArshamErosions = await ethers.getContract('DanielArshamErodingAndReformingCars');
+  const danielArshamErosionsTx = await registry
+    .setCustomSource(
+      'eip1967.CxipRegistry.DanielArshamErodingAndReformingCars',
+      danielArshamErosions.address
+    )
+    .catch(error);
+
+  console.log('Transaction hash:', danielArshamErosionsTx.hash);
+  await danielArshamErosionsTx.wait();
+  console.log(
+    `Registered DanielArshamErodingAndReformingCars to: ${await registry.getCustomSourceFromString(
+      'eip1967.CxipRegistry.DanielArshamErodingAndReformingCars'
+    )}`
+  );
+
+  // DanielArshamErosions Proxy (Royalties)
+  const danielArshamErosionsProxy = await ethers.getContract(
+    'DanielArshamErodingAndReformingCarsProxy'
+  );
+  const danielArshamErosionsProxyTx = await registry
+    .setCustomSource(
+      'eip1967.CxipRegistry.DanielArshamErodingAndReformingCarsProxy',
+      danielArshamErosionsProxy.address
+    )
+    .catch(error);
+
+  console.log('Transaction hash:', danielArshamErosionsProxyTx.hash);
+  await danielArshamErosionsProxyTx.wait();
+  console.log(
+    `Registered DanielArshamErodingAndReformingCarsProxy to: ${await registry.getCustomSourceFromString(
+      'eip1967.CxipRegistry.DanielArshamErodingAndReformingCarsProxy'
+    )}`
+  );
 
   // Asset Signer
   const signerTx = await registry.setAssetSigner(deployer);

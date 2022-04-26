@@ -26,3 +26,15 @@ export const remove0x = function (input: string) {
     return input;
   }
 };
+
+import crypto from 'crypto';
+
+export function sha256(x: string) {
+  return (
+    '0x' +
+    crypto
+      .createHash('sha256')
+      .update(x, 'utf8')
+      .digest('hex')
+  );
+};

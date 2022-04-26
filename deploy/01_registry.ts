@@ -42,12 +42,17 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     log: true,
   });
   config.erc721ProxyBytecode = erc721Proxy?.bytecode?.substring(2); // remove 0x
+
+  fs.writeFileSync(
+    './config/' + network + '.config.json',
+    JSON.stringify(config, null, 2),
+    'utf8'
+  );
   /**
    * End hack
    */
 
   console.log(`Config: ${JSON.stringify(config, null, 2)}`);
-
   // TODO: It turns out we also need to inject the proper registry and bytecode to run tests locally
   // Need to figure out best way to manage to keep dev address and bytecode in sync when on live networks
   // For now we allow variable / changing of the registry and bytecode on develop branch, but not on live networks
@@ -60,59 +65,42 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   //   console.log('Injecting code into build contracts');
   // }
 
-  const replaceValues = function (data: any) {
-    Object.keys(buildConfig).forEach(function (key, index) {
-      data = data.replace(new RegExp(buildConfig[key], 'gi'), config[key]);
-    });
-    return data;
-  };
+   const replaceValues = function (data: any) {
+     Object.keys(buildConfig).forEach(function (key, index) {
+       data = data.replace(new RegExp(buildConfig[key], 'gi'), config[key]);
+     });
+     return data;
+   };
 
-  const recursiveBuild = function (buildDir: any, deployDir: any) {
-    fs.readdir(buildDir, function (err: any, files: any) {
-      if (err) {
-        throw err;
-      }
-      files.forEach(function (file: any) {
-        fs.stat(buildDir + '/' + file, function (err: any, stats: any) {
-          if (err) {
-            throw err;
-          }
-          if (stats.isDirectory()) {
-            // we go into it
-            fs.mkdir(deployDir + '/' + file, function () {
-              recursiveBuild(buildDir + '/' + file, deployDir + '/' + file);
-            });
-          } else {
-            if (file.endsWith('.sol')) {
-              // console.log(file);
-              fs.readFile(
-                buildDir + '/' + file,
-                'utf8',
-                function (err: any, data: any) {
-                  if (err) {
-                    throw err;
-                  }
-                  fs.writeFile(
-                    deployDir + '/' + file,
-                    replaceValues(data),
-                    function (err: any) {
-                      if (err) {
-                        throw err;
-                      }
-                    }
-                  );
-                }
-              );
-            }
-          }
-        });
-      });
-    });
-  };
+   const recursiveBuild = function (buildDir: any, deployDir: any) {
+     let files: any = fs.readdirSync(buildDir);
+     for (let i = 0; i < files.length; i++) {
+       let file: any = files[i];
+       let stats: any = fs.statSync(buildDir + '/' + file);
+       if (stats.isDirectory()) {
+         // we go into it
+         try {
+           fs.mkdirSync(deployDir + '/' + file);
+         } catch (ex) {
+           // we ignore this error on purpose
+         }
+         recursiveBuild(buildDir + '/' + file, deployDir + '/' + file);
+       } else {
+         if (file.endsWith('.sol')) {
+           // console.log(file);
+           let data: any = fs.readFileSync(buildDir + '/' + file, 'utf8');
+           fs.writeFileSync(deployDir + '/' + file, replaceValues(data), 'utf8');
+         }
+       }
+     }
+   };
 
-  fs.mkdir(deployDir, function () {
-    recursiveBuild(buildDir, deployDir);
-  });
+   try {
+     fs.mkdirSync(deployDir);
+   } catch (ex) {
+     // we ignore this error on purpose
+   }
+   await recursiveBuild(buildDir, deployDir);
 };
 
 export default func;
