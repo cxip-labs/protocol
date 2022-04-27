@@ -86,8 +86,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     danielArshamErosionsProxyBytecode // proxy contract byte code
   );
 
-  const collectionCreationResult = await collectionCreationTx.wait();
-
   const collectionId: number = (network == 'mainnet' ? 1 : 0);
 
   const collectionAddress = await identity.getCollectionById(collectionId);
@@ -205,7 +203,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   };
 
   // mustang
-  const mustangResult = await collection
+  const mustangTx = await collection
     .connect(deployer)
     .prepareMintDataBatch([2, 3], [mustang1, mustang2]);
 
@@ -266,7 +264,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   };
 
   // delorean
-  const deloreanResult = await collection
+  const deloreanTx = await collection
     .connect(deployer)
     .prepareMintDataBatch([4, 5], [delorean1, delorean2]);
 
@@ -327,7 +325,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   };
 
   // california
-  const californiaResult = await collection
+  const californiaTx = await collection
     .connect(deployer)
     .prepareMintDataBatch([6, 7], [california1, california2]);
 
@@ -388,32 +386,34 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   };
 
   // e30
-  const e30Result = await collection
+  const e30Tx = await collection
     .connect(deployer)
     .prepareMintDataBatch([8, 9], [e301, e302]);
 
+  const collectionCreationResult = await collectionCreationTx.wait();
+
   // pushed these to the end to avoid blocking
-  const timestampTx = await timestampResult.wait();
-  const tokenSeparatorTx = await tokenSeparatorResult.wait();
-  const tokenLimitTx = await tokenLimitResult.wait();
-  const intervalConfigTx = await intervalConfigResult.wait();
+  const timestampResult = await timestampTx.wait();
+  const tokenSeparatorResult = await tokenSeparatorTx.wait();
+  const tokenLimitResult = await tokenLimitTx.wait();
+  const intervalConfigResult = await intervalConfigTx.wait();
 
-  const mustangTx = await mustangResult.wait();
-  const deloreanTx = await deloreanResult.wait();
-  const californiaTx = await californiaResult.wait();
-  const e30Tx = await e30Result.wait();
+  const mustangResult = await mustangTx.wait();
+  const deloreanResult = await deloreanTx.wait();
+  const californiaResult = await californiaTx.wait();
+  const e30Result = await e30Tx.wait();
 
-  console.log('collectionTx', collectionTx);
+  console.log('collectionCreation', collectionCreationResult);
 
-  console.log('timestampTx', timestampTx);
-  console.log('tokenSeparatorTx', tokenSeparatorTx);
-  console.log('tokenLimitTx', tokenLimitTx);
-  console.log('intervalConfigTx', intervalConfigTx);
+  console.log('timestamp', timestampResult);
+  console.log('tokenSeparator', tokenSeparatorResult);
+  console.log('tokenLimit', tokenLimitResult);
+  console.log('intervalConfig', intervalConfigResult);
 
-  console.log('mustangTx', mustangTx);
-  console.log('deloreanTx', deloreanTx);
-  console.log('californiaTx', californiaTx);
-  console.log('e30Tx', e30Tx);
+  console.log('mustang', mustangResult);
+  console.log('delorean', deloreanResult);
+  console.log('california', californiaResult);
+  console.log('e30', e30Result);
 
 };
 
