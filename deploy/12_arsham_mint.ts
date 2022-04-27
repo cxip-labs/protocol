@@ -37,7 +37,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   if (network == 'hardhat') {
     // if we on localhost, we make an identity
-    const identityCreationResult = await provenance.connect(deployer).createIdentity(
+    const identityCreationTx = await provenance.connect(deployer).createIdentity(
       salt,
       '0x' + '00'.repeat(20), // zero address
       [
@@ -46,7 +46,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         '0x0',
       ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish }
     );
-    await identityCreationResult.wait();
+    await identityCreationTx.wait();
   }
 
   const identityAddress = await provenance.connect(deployer).getIdentity();
@@ -57,7 +57,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const identity = identityContract.attach(identityAddress);
 
-  const collectionCreationResult = await identity.connect(deployer).createCustomERC721Collection(
+  const collectionCreationTx = await identity.connect(deployer).createCustomERC721Collection(
     salt,
     deployer.address,
     [
@@ -86,7 +86,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     danielArshamErosionsProxyBytecode // proxy contract byte code
   );
 
-  const collectionTx = await collectionCreationResult.wait();
+  const collectionCreationResult = await collectionCreationTx.wait();
 
   const collectionId: number = (network == 'mainnet' ? 1 : 0);
 
@@ -205,7 +205,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   };
 
   // mustang
-  const mustangTx = await collection
+  const mustangResult = await collection
     .connect(deployer)
     .prepareMintDataBatch([2, 3], [mustang1, mustang2]);
 
@@ -266,7 +266,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   };
 
   // delorean
-  const deloreanTx = await collection
+  const deloreanResult = await collection
     .connect(deployer)
     .prepareMintDataBatch([4, 5], [delorean1, delorean2]);
 
@@ -327,7 +327,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   };
 
   // california
-  const californiaTx = await collection
+  const californiaResult = await collection
     .connect(deployer)
     .prepareMintDataBatch([6, 7], [california1, california2]);
 
@@ -388,20 +388,22 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   };
 
   // e30
-  const e30Tx = await collection
+  const e30Result = await collection
     .connect(deployer)
     .prepareMintDataBatch([8, 9], [e301, e302]);
 
   // pushed these to the end to avoid blocking
-  await timestampTx.wait();
-  await tokenSeparatorTx.wait();
-  await tokenLimitTx.wait();
-  await intervalConfigTx.wait();
+  const timestampTx = await timestampResult.wait();
+  const tokenSeparatorTx = await tokenSeparatorResult.wait();
+  const tokenLimitTx = await tokenLimitResult.wait();
+  const intervalConfigTx = await intervalConfigResult.wait();
 
-  await mustangTx.wait();
-  await deloreanTx.wait();
-  await californiaTx.wait();
-  await e30Tx.wait();
+  const mustangTx = await mustangResult.wait();
+  const deloreanTx = await deloreanResult.wait();
+  const californiaTx = await californiaResult.wait();
+  const e30Tx = await e30Result.wait();
+
+  console.log('collectionTx', collectionTx);
 
   console.log('timestampTx', timestampTx);
   console.log('tokenSeparatorTx', tokenSeparatorTx);
