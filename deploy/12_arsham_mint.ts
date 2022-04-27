@@ -415,6 +415,26 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log('california', californiaResult);
   console.log('e30', e30Result);
 
+  const niftygateway = '0xE052113bd7D7700d623414a0a4585BCaE754E9d5';
+
+  // mustang #50
+  await collection.connect(deployer).batchMint(wallet, 10001, 50, niftygateway);
+
+  // delorean #100
+  await collection.connect(deployer).batchMint(wallet, 20001, 50, niftygateway);
+  await collection.connect(deployer).batchMint(wallet, 20051, 50, niftygateway);
+
+  // california #100
+  await collection.connect(deployer).batchMint(wallet, 30001, 50, niftygateway);
+  await collection.connect(deployer).batchMint(wallet, 30051, 50, niftygateway);
+
+  // e30 #150
+  await collection.connect(deployer).batchMint(wallet, 40001, 50, niftygateway);
+  await collection.connect(deployer).batchMint(wallet, 40051, 50, niftygateway);
+  await collection.connect(deployer).batchMint(wallet, 40101, 50, niftygateway);
+
+  await collection.connect(deployer).setMintingClosed();
+
 };
 
 export default func;
