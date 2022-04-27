@@ -50,12 +50,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     args: [],
     log: true,
   });
-
-  const danielArshamErosionsProxy = await deploy('DanielArshamErodingAndReformingCarsProxy', {
-    from: deployer,
-    args: [],
-    log: true,
-  });
 };
 
 export default func;
@@ -67,6 +61,5 @@ func.tags = [
   // 'CxipIdentityProxy',
   'CxipProvenanceProxy',
   'PA1DProxy',
-  'DanielArshamErodingAndReformingCarsProxy'
 ];
 func.dependencies = ['CxipRegistry'];
