@@ -52,9 +52,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
           v: BigNumberish;
         }
       );
-    receipt = await identityCreationTx.wait();
-
-    receipt.getTransactionReceipt().gasUsed;
+    const identityResult = await identityCreationTx.wait();
+    console.log(
+      `identityResult tx: ${identityResult.id}. Gas used: ${identityResult.gasUsed}`
+    );
+    totalGas += identityResult.getTransactionReceipt().gasUsed;
   }
 
   const identityAddress = await provenance.connect(deployer).getIdentity();
