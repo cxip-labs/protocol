@@ -8,8 +8,8 @@
 
 ### Deploying:
 
-`hardhat deploy --network <network-to-deploy-to>`
+`npx hardhat deploy --network <network-to-deploy-to>`
 
 ### Verifying:
 
-`hardhat sourcify --network rinkeby && hardhat etherscan-verify --network rinkeby`
+`npx hardhat verify --network <network-to-deploy-to>`

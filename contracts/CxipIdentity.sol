@@ -198,14 +198,12 @@ contract CxipIdentity {
      * @param collection Address of the smart contract for the collection. Must have been created by this identity.
      * @param id Token id for the NFT to mint. Can be left as 0 to allow automatic token id allocation.
      * @param tokenData A struct containing all of the necessary NFT information.
-     * @param verification A verification signature issued by the CXIP Asset Signer as a guarantee of a valid NFT.
      * @return uint256 Returns the token id of the newly minted NFT.
      */
     function createERC721Token(
         address collection,
         uint256 id,
-        TokenData calldata tokenData,
-        Verification calldata verification
+        TokenData calldata tokenData
     ) public nonReentrant returns (uint256) {
         require(_isOwner(msg.sender), "CXIP: you are not an the owner");
         require(_isOwner(tokenData.creator), "CXIP: creator not owner");
@@ -213,27 +211,6 @@ contract CxipIdentity {
             _additionalInfo[collection] == InterfaceType.ERC721,
             "CXIP: collection not ERC721"
         );
-        bytes memory encoded = abi.encodePacked(
-            address(this),
-            tokenData.creator,
-            collection,
-            id,
-            tokenData.payloadHash,
-            tokenData.payloadSignature.r,
-            tokenData.payloadSignature.s,
-            tokenData.payloadSignature.v,
-            tokenData.arweave,
-            tokenData.arweave2,
-            tokenData.ipfs,
-            tokenData.ipfs2
-        );
-        require(Signature.Valid(
-            getRegistry().getAssetSigner(),
-            verification.r,
-            verification.s,
-            verification.v,
-            encoded
-        ), "CXIP: invalid signature");
         return ICxipERC721(collection).cxipMint(id, tokenData);
     }
 
@@ -273,7 +250,7 @@ contract CxipIdentity {
             );
         }
         require(_isOwner(collectionCreator), "CXIP: creator not owner");
-        bytes memory bytecode = hex"608060405234801561001057600080fd5b50610128806100206000396000f3fe608060408190527f58bfd99600000000000000000000000000000000000000000000000000000000815260009073deaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD906358bfd9969060849060209060048186803b158015605f57600080fd5b505afa1580156072573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906094919060b9565b90503660008037600080366000845af43d6000803e80801560b4573d6000f35b3d6000fd5b60006020828403121560c9578081fd5b815173ffffffffffffffffffffffffffffffffffffffff8116811460eb578182fd5b939250505056fea2646970667358221220e40db164da39a10669859af903c7c9d1a96e3a2e162855f6b00aa89d483e4c6164736f6c63430008040033";
+        bytes memory bytecode = hex"608060405234801561001057600080fd5b5060f68061001f6000396000f3fe60806040819052632c5feccb60e11b8152600090735fbdb2315678afecb367f032d93f642f64180aa3906358bfd99690608490602090600481865afa158015604b573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190606d91906092565b90503660008037600080366000845af43d6000803e808015608d573d6000f35b3d6000fd5b60006020828403121560a357600080fd5b81516001600160a01b038116811460b957600080fd5b939250505056fea26469706673582212204996b86e77580c314351168858984744a572372b6231618c5b166e22158c56ef64736f6c634300080c0033";
         address cxipAddress;
         assembly {
             cxipAddress := create2(
@@ -338,7 +315,7 @@ contract CxipIdentity {
             )
         }
         require(
-            keccak256(cxipAddress.code) == keccak256(ICxipRegistry(0xdFbb74177C45C82aC06327C204bB5Ef2dAeC57B8).getCustomSource(slot).code),
+            keccak256(cxipAddress.code) == keccak256(ICxipRegistry(0x5FbDB2315678afecb367f032d93F642f64180aa3).getCustomSource(slot).code),
             "CXIP: byte code missmatch"
         );
         ICxipERC721(cxipAddress).init(collectionCreator, collectionData);
@@ -643,6 +620,6 @@ contract CxipIdentity {
      * @return ICxipRegistry The address of the top-level CXIP Registry smart contract.
      */
     function getRegistry() internal pure returns (ICxipRegistry) {
-        return ICxipRegistry(0xdFbb74177C45C82aC06327C204bB5Ef2dAeC57B8);
+        return ICxipRegistry(0x5FbDB2315678afecb367f032d93F642f64180aa3);
     }
 }

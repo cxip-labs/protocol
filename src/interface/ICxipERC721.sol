@@ -41,11 +41,7 @@ interface ICxipERC721 {
 
     function tokenURI(uint256 tokenId) external view returns (string memory);
 
-    /* Disabled due to tokenEnumeration not enabled.
-    function tokensOfOwner(
-        address wallet
-    ) external view returns (uint256[] memory);
-    */
+    function tokensOfOwner(address wallet) external view returns (uint256[] memory);
 
     function verifySHA256(bytes32 hash, bytes calldata payload) external pure returns (bool);
 
@@ -54,15 +50,6 @@ interface ICxipERC721 {
     function burn(uint256 tokenId) external;
 
     function init(address newOwner, CollectionData calldata collectionData) external;
-
-    /* Disabled since this flow has not been agreed on.
-    function onERC721Received(
-        address operator,
-        address from,
-        uint256 tokenId,
-        bytes calldata data
-    ) external returns (bytes4);
-    */
 
     function safeTransferFrom(
         address from,
@@ -106,10 +93,8 @@ interface ICxipERC721 {
 
     function transferOwnership(address newOwner) external;
 
-    /*
-    // Disabled due to tokenEnumeration not enabled.
     function balanceOf(address wallet) external view returns (uint256);
-    */
+
     function baseURI() external view returns (string memory);
 
     function getApproved(uint256 tokenId) external view returns (address);
@@ -124,20 +109,9 @@ interface ICxipERC721 {
 
     function ownerOf(uint256 tokenId) external view returns (address);
 
-    /* Disabled due to tokenEnumeration not enabled.
     function tokenByIndex(uint256 index) external view returns (uint256);
-    */
 
-    /* Disabled due to tokenEnumeration not enabled.
-    function tokenOfOwnerByIndex(
-        address wallet,
-        uint256 index
-    ) external view returns (uint256);
-    */
-
-    /* Disabled due to tokenEnumeration not enabled.
-    function totalSupply() external view returns (uint256);
-    */
+    function tokenOfOwnerByIndex(address wallet, uint256 index) external view returns (uint256);
 
     function totalSupply() external view returns (uint256);
 

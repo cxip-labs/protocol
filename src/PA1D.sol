@@ -62,27 +62,27 @@ contract PA1D {
         address payable receiver,
         uint256 bp
     ) public onlyOwner {
-        // if (Address.isZero(receiver)) {
-        //     receiver = payable(this);
-        // }
-        // setRoyalties(tokenId, receiver, bp);
-        // // We register the smart contract with Rarible(V1) as the controller for royalties.
-        // // This makes sure that all royalty info will be queried from the contract and not somewhere else
-        // /**
-        //  * @dev Keep in mind that Rarible V1 makes a "owner" function call to the overlying smart contract.
-        //  * @dev It is mandatory to have owner function call return this contract address, or the function will fail.
-        //  */
-        // (
-        //     bool setProviderSuccess, /*bytes memory setProviderResponse*/
-        // ) = address(0x20202052617269626C6520526F79616c74696573).call(
+        //         if (Address.isZero(receiver)) {
+        //             receiver = payable(this);
+        //         }
+        //         setRoyalties(tokenId, receiver, bp);
+        //         // We register the smart contract with Rarible(V1) as the controller for royalties.
+        //         // This makes sure that all royalty info will be queried from the contract and not somewhere else
         //         /**
-        //          * @dev We hardcode the bytes4 function hash to save on gas
+        //          * @dev Keep in mind that Rarible V1 makes a "owner" function call to the overlying smart contract.
+        //          * @dev It is mandatory to have owner function call return this contract address, or the function will fail.
         //          */
-        //         // abi.encodeWithSignature(
-        //         //     'setProviderByToken(address,address)',
-        //         abi.encodeWithSelector(bytes4(0xd836f013), address(this), address(this))
-        //     );
-        // require(setProviderSuccess, "PA1D: failed setting Rarible");
+        //         (
+        //             bool setProviderSuccess, /*bytes memory setProviderResponse*/
+        //         ) = address(0x20202052617269626C6520526F79616c74696573).call(
+        //                 /**
+        //                  * @dev We hardcode the bytes4 function hash to save on gas
+        //                  */
+        //                 // abi.encodeWithSignature(
+        //                 //     'setProviderByToken(address,address)',
+        //                 abi.encodeWithSelector(bytes4(0xd836f013), address(this), address(this))
+        //             );
+        //         require(setProviderSuccess, "PA1D: failed setting Rarible");
     }
 
     /**
@@ -248,46 +248,74 @@ contract PA1D {
     function _getPayoutAddresses() internal view returns (address payable[] memory addresses) {
         // The slot hash has been precomputed for gas optimizaion
         // bytes32 slot = bytes32(uint256(keccak256('eip1967.PA1D.payout.addresses')) - 1);
+        bytes32 slot = 0xda9d0b1bc91e594968e30b896be60318d483303fc3ba08af8ac989d483bdd7ca;
+        uint256 length;
         assembly {
-            addresses := sload(
-                /* slot */
-                0xda9d0b1bc91e594968e30b896be60318d483303fc3ba08af8ac989d483bdd7ca
-            )
+            length := sload(slot)
+        }
+        addresses = new address payable[](length);
+        address payable value;
+        for (uint256 i = 0; i < length; i++) {
+            slot = keccak256(abi.encodePacked(i, slot));
+            assembly {
+                value := sload(slot)
+            }
+            addresses[i] = value;
         }
     }
 
     function _setPayoutAddresses(address payable[] memory addresses) internal {
         // The slot hash has been precomputed for gas optimizaion
         // bytes32 slot = bytes32(uint256(keccak256('eip1967.PA1D.payout.addresses')) - 1);
+        bytes32 slot = 0xda9d0b1bc91e594968e30b896be60318d483303fc3ba08af8ac989d483bdd7ca;
+        uint256 length = addresses.length;
         assembly {
-            sstore(
-                /* slot */
-                0xda9d0b1bc91e594968e30b896be60318d483303fc3ba08af8ac989d483bdd7ca,
-                addresses
-            )
+            sstore(slot, length)
+        }
+        address payable value;
+        for (uint256 i = 0; i < length; i++) {
+            slot = keccak256(abi.encodePacked(i, slot));
+            value = addresses[i];
+            assembly {
+                sstore(slot, value)
+            }
         }
     }
 
     function _getPayoutBps() internal view returns (uint256[] memory bps) {
         // The slot hash has been precomputed for gas optimizaion
         // bytes32 slot = bytes32(uint256(keccak256('eip1967.PA1D.payout.bps')) - 1);
+        bytes32 slot = 0x7862b872ab9e3483d8176282b22f4ac86ad99c9035b3f794a541d84a66004fa2;
+        uint256 length;
         assembly {
-            bps := sload(
-                /* slot */
-                0x7862b872ab9e3483d8176282b22f4ac86ad99c9035b3f794a541d84a66004fa2
-            )
+            length := sload(slot)
+        }
+        bps = new uint256[](length);
+        uint256 value;
+        for (uint256 i = 0; i < length; i++) {
+            slot = keccak256(abi.encodePacked(i, slot));
+            assembly {
+                value := sload(slot)
+            }
+            bps[i] = value;
         }
     }
 
     function _setPayoutBps(uint256[] memory bps) internal {
         // The slot hash has been precomputed for gas optimizaion
         // bytes32 slot = bytes32(uint256(keccak256('eip1967.PA1D.payout.bps')) - 1);
+        bytes32 slot = 0x7862b872ab9e3483d8176282b22f4ac86ad99c9035b3f794a541d84a66004fa2;
+        uint256 length = bps.length;
         assembly {
-            sstore(
-                /* slot */
-                0x7862b872ab9e3483d8176282b22f4ac86ad99c9035b3f794a541d84a66004fa2,
-                bps
-            )
+            sstore(slot, length)
+        }
+        uint256 value;
+        for (uint256 i = 0; i < length; i++) {
+            slot = keccak256(abi.encodePacked(i, slot));
+            value = bps[i];
+            assembly {
+                sstore(slot, value)
+            }
         }
     }
 
@@ -327,11 +355,9 @@ contract PA1D {
         require(balance - gasCost > 10000, "PA1D: Not enough ETH to transfer");
         balance = balance - gasCost;
         uint256 sending;
-        // uint256 sent;
         for (uint256 i = 0; i < length; i++) {
             sending = ((bps[i] * balance) / 10000);
             addresses[i].transfer(sending);
-            // sent = sent + sending;
         }
     }
 
@@ -351,7 +377,6 @@ contract PA1D {
         for (uint256 i = 0; i < length; i++) {
             sending = ((bps[i] * balance) / 10000);
             require(erc20.transfer(addresses[i], sending), "PA1D: Couldn't transfer token");
-            // sent = sent + sending;
         }
     }
 
@@ -370,11 +395,9 @@ contract PA1D {
             erc20 = IERC20(tokenAddresses[t]);
             balance = erc20.balanceOf(address(this));
             require(balance > 10000, "PA1D: Not enough tokens to transfer");
-            // uint256 sent;
             for (uint256 i = 0; i < addresses.length; i++) {
                 sending = ((bps[i] * balance) / 10000);
                 require(erc20.transfer(addresses[i], sending), "PA1D: Couldn't transfer token");
-                // sent = sent + sending;
             }
         }
     }
@@ -513,9 +536,6 @@ contract PA1D {
             // Rarible V1
             // bytes4(keccak256('getFeeRecipients(uint256)')) == 0xb9c4d9fb
             interfaceId == 0xb9c4d9fb ||
-            // Rarible V2(not being used since it creates a conflict with Manifold royalties)
-            // bytes4(keccak256('getRoyalties(uint256)')) == 0xcad96cca
-            // interfaceId == 0xcad96cca ||
             // Manifold
             // bytes4(keccak256('getRoyalties(uint256)')) == 0xbb3bafd6
             interfaceId == 0xbb3bafd6 ||
@@ -599,16 +619,6 @@ contract PA1D {
         }
         return receivers;
     }
-
-    // Rarible V2(not being used since it creates a conflict with Manifold royalties)
-    // struct Part {
-    //     address payable account;
-    //     uint96 value;
-    // }
-
-    // function getRoyalties(uint256 tokenId) public view returns (Part[] memory) {
-    //     return royalties[id];
-    // }
 
     // Manifold
     function getRoyalties(uint256 tokenId)

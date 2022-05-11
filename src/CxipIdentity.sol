@@ -198,14 +198,12 @@ contract CxipIdentity {
      * @param collection Address of the smart contract for the collection. Must have been created by this identity.
      * @param id Token id for the NFT to mint. Can be left as 0 to allow automatic token id allocation.
      * @param tokenData A struct containing all of the necessary NFT information.
-     * @param verification A verification signature issued by the CXIP Asset Signer as a guarantee of a valid NFT.
      * @return uint256 Returns the token id of the newly minted NFT.
      */
     function createERC721Token(
         address collection,
         uint256 id,
-        TokenData calldata tokenData,
-        Verification calldata verification
+        TokenData calldata tokenData
     ) public nonReentrant returns (uint256) {
         require(_isOwner(msg.sender), "CXIP: you are not an the owner");
         require(_isOwner(tokenData.creator), "CXIP: creator not owner");
@@ -213,27 +211,6 @@ contract CxipIdentity {
             _additionalInfo[collection] == InterfaceType.ERC721,
             "CXIP: collection not ERC721"
         );
-        bytes memory encoded = abi.encodePacked(
-            address(this),
-            tokenData.creator,
-            collection,
-            id,
-            tokenData.payloadHash,
-            tokenData.payloadSignature.r,
-            tokenData.payloadSignature.s,
-            tokenData.payloadSignature.v,
-            tokenData.arweave,
-            tokenData.arweave2,
-            tokenData.ipfs,
-            tokenData.ipfs2
-        );
-        require(Signature.Valid(
-            getRegistry().getAssetSigner(),
-            verification.r,
-            verification.s,
-            verification.v,
-            encoded
-        ), "CXIP: invalid signature");
         return ICxipERC721(collection).cxipMint(id, tokenData);
     }
 

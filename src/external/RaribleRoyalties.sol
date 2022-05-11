@@ -13,7 +13,6 @@ contract RaribleRoyalties {
     }
 
     function setProviderByToken(address token, address provider) public {
-        // checkOwner(token);
         royaltiesProviders[token] = provider;
     }
 

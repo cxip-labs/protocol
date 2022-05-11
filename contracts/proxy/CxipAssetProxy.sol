@@ -16,7 +16,7 @@ import "../interface/ICxipRegistry.sol";
 
 contract CxipAssetProxy {
     fallback() external payable {
-        address _target = ICxipRegistry(0xdFbb74177C45C82aC06327C204bB5Ef2dAeC57B8)
+        address _target = ICxipRegistry(0x5FbDB2315678afecb367f032d93F642f64180aa3)
             .getAssetSource();
         assembly {
             calldatacopy(0, 0, calldatasize())
