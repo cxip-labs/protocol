@@ -17,7 +17,6 @@ import "./library/Zora.sol";
 import "./interface/IERC20.sol";
 import "./interface/ICxipRegistry.sol";
 import "./interface/ICxipERC.sol";
-import "./interface/ICxipIdentity.sol";
 
 /**
  * @title PA1D (CXIP)
@@ -74,7 +73,7 @@ contract PA1D {
         //          */
         //         (
         //             bool setProviderSuccess, /*bytes memory setProviderResponse*/
-        //         ) = address(0xEa90CFad1b8e030B8Fd3E63D22074E0AEb8E0DCD).call(
+        //         ) = address(0x20202052617269626C6520526F79616c74696573).call(
         //                 /**
         //                  * @dev We hardcode the bytes4 function hash to save on gas
         //                  */
@@ -90,31 +89,7 @@ contract PA1D {
      * @return The address of the top-level CXIP Registry smart contract.
      */
     function getRegistry() internal pure returns (ICxipRegistry) {
-        return ICxipRegistry(0xC267d41f81308D7773ecB3BDd863a902ACC01Ade);
-    }
-
-    /**
-     * @notice Check if the underlying identity has sender as registered wallet.
-     * @dev Check the overlying smart contract's identity for wallet registration.
-     * @param sender Address which should be checked against the identity.
-     * @return Returns true if the sender is a valid wallet of the identity.
-     */
-    function isIdentityWallet(address sender) internal view returns (bool) {
-        return isIdentityWallet(ICxipERC(address(this)).getIdentity(), sender);
-    }
-
-    /**
-     * @notice Check if a specific identity has sender as registered wallet.
-     * @dev Don't use this function directly unless you know what you're doing.
-     * @param identity Address of the identity smart contract.
-     * @param sender Address which should be checked against the identity.
-     * @return Returns true if the sender is a valid wallet of the identity.
-     */
-    function isIdentityWallet(address identity, address sender) internal view returns (bool) {
-        if (Address.isZero(identity)) {
-            return false;
-        }
-        return ICxipIdentity(identity).isWalletRegistered(sender);
+        return ICxipRegistry(0x5FbDB2315678afecb367f032d93F642f64180aa3);
     }
 
     /**
@@ -123,10 +98,7 @@ contract PA1D {
      * @return Returns true is message sender is an owner.
      */
     function isOwner() internal view returns (bool) {
-        ICxipERC erc = ICxipERC(address(this));
-        return (msg.sender == erc.owner() ||
-            msg.sender == erc.admin() ||
-            isIdentityWallet(erc.getIdentity(), msg.sender));
+        return ICxipERC(address(this)).isOwner(msg.sender);
     }
 
     /**

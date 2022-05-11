@@ -14,7 +14,6 @@ pragma solidity 0.8.12;
 
 import "./external/OpenSea.sol";
 import "./interface/ICxipERC721.sol";
-import "./interface/ICxipIdentity.sol";
 import "./interface/ICxipProvenance.sol";
 import "./interface/ICxipRegistry.sol";
 import "./interface/IPA1D.sol";
@@ -126,14 +125,6 @@ contract CxipERC721 {
     event ApprovalForAll(address indexed wallet, address indexed operator, bool approved);
 
     /**
-     * @notice Event emitted to signal to OpenSea that a permanent URI was created.
-     * @dev Even though OpenSea advertises support for this, they do not listen to this event, and do not respond to it.
-     * @param uri The permanent/static URL of the NFT. Cannot ever be changed again.
-     * @param id Token id of the NFT.
-     */
-    event PermanentURI(string uri, uint256 indexed id);
-
-    /**
      * @notice Constructor is empty and not utilised.
      * @dev To make exact CREATE2 deployment possible, constructor is left empty. We utilize the "init" function instead.
      */
@@ -148,12 +139,9 @@ contract CxipERC721 {
     }
 
     /**
-     * @notice Enables royaltiy functionality at the ERC721 level when ether is sent with no calldata.
-     * @dev See implementation of _royaltiesFallback.
+     * @notice Receive is purposefully left blank to not have any out-of-gas errors.
      */
-    receive() external payable {
-        _royaltiesFallback();
-    }
+    receive() external payable {}
 
     /**
      * @notice Enables royaltiy functionality at the ERC721 level no other function matches the call.
@@ -173,7 +161,7 @@ contract CxipERC721 {
         return
             string(
                 abi.encodePacked(
-                    "https://arweave.net/",
+                    "https://arweave.cxip.dev/",
                     _tokenData[tokenId].arweave,
                     _tokenData[tokenId].arweave2
                 )
@@ -182,13 +170,13 @@ contract CxipERC721 {
 
     /**
      * @notice Gets the URI of the NFT backup from CXIP.
-     * @dev Concatenates to https://nft.cxip.io/.
+     * @dev Concatenates to https://nft.cxip.dev/.
      * @return string The URI.
      */
     function contractURI() external view returns (string memory) {
         return
             string(
-                abi.encodePacked("https://nft.cxip.io/", Strings.toHexString(address(this)), "/")
+                abi.encodePacked("https://nft.cxip.dev/", Strings.toHexString(address(this)), "/")
             );
     }
 
@@ -221,7 +209,7 @@ contract CxipERC721 {
         return
             string(
                 abi.encodePacked(
-                    "https://ipfs.io/ipfs/",
+                    "https://ipfs.cxip.dev/",
                     _tokenData[tokenId].ipfs,
                     _tokenData[tokenId].ipfs2
                 )
@@ -314,7 +302,7 @@ contract CxipERC721 {
         return
             string(
                 abi.encodePacked(
-                    "https://arweave.net/",
+                    "https://arweave.cxip.dev/",
                     _tokenData[tokenId].arweave,
                     _tokenData[tokenId].arweave2
                 )
@@ -490,15 +478,13 @@ contract CxipERC721 {
      */
     function cxipMint(uint256 id, TokenData calldata tokenData) public onlyOwner returns (uint256) {
         if (id == 0) {
-            _currentTokenId += 1;
+            while (_exists(_currentTokenId)) {
+                _currentTokenId += 1;
+            }
             id = _currentTokenId;
         }
         _mint(tokenData.creator, id);
         _tokenData[id] = tokenData;
-        emit PermanentURI(
-            string(abi.encodePacked("https://arweave.net/", tokenData.arweave, tokenData.arweave2)),
-            id
-        );
         return id;
     }
 
@@ -523,17 +509,6 @@ contract CxipERC721 {
     }
 
     /**
-     * @notice Transfers ownership of the collection.
-     * @dev Can't be the zero address.
-     * @param newOwner Address of new owner.
-     */
-    function transferOwnership(address newOwner) public onlyOwner {
-        if (!Address.isZero(newOwner)) {
-            _owner = newOwner;
-        }
-    }
-
-    /**
      * @notice Get total number of tokens owned by wallet.
      * @dev Used to see total amount of tokens owned by a specific wallet.
      * @param wallet Address for which to get token balance.
@@ -549,7 +524,7 @@ contract CxipERC721 {
      * @return string the token URI.
      */
     function baseURI() public view returns (string memory) {
-        return string(abi.encodePacked("https://cxip.io/nft/", Strings.toHexString(address(this))));
+        return string(abi.encodePacked("https://cxip.dev/nft/", Strings.toHexString(address(this))));
     }
 
     /**
@@ -563,15 +538,6 @@ contract CxipERC721 {
     }
 
     /**
-     * @notice Get the associated identity for the collection.
-     * @dev Goes up the chain to read from the registry.
-     * @return address Identity contract address.
-     */
-    function getIdentity() public view returns (address) {
-        return ICxipProvenance(getRegistry().getProvenance()).getWalletIdentity(_owner);
-    }
-
-    /**
      * @notice Checks if the address is approved.
      * @dev Includes references to OpenSea and Rarible marketplace proxies.
      * @param wallet Address of the wallet.
@@ -581,10 +547,10 @@ contract CxipERC721 {
     function isApprovedForAll(address wallet, address operator) public view returns (bool) {
         return (_operatorApprovals[wallet][operator] ||
             // Rarible Transfer Proxy
-            0x4feE7B061C97C9c496b01DbcE9CDb10c02f0a0Be == operator ||
+            0x72617269626C655472616E7366657250726F7879 == operator ||
             // OpenSea Transfer Proxy
             address(
-                OpenSeaProxyRegistry(0xa5409ec958C83C3f309868babACA7c86DCB077c1).proxies(wallet)
+                OpenSeaProxyRegistry(0x6f70656E5365615472616E7366657250726F7879).proxies(wallet)
             ) ==
             operator);
     }
@@ -595,7 +561,16 @@ contract CxipERC721 {
      * @return bool True if owner.
      */
     function isOwner() public view returns (bool) {
-        return (msg.sender == _owner || msg.sender == _admin || isIdentityWallet(msg.sender));
+        return (msg.sender == _owner || msg.sender == _admin);
+    }
+
+    /**
+     * @notice Check if the address is the owner.
+     * @dev The owner could also be the admin or identity contract of the owner.
+     * @return bool True if owner.
+     */
+    function isOwner(address wallet) public view returns (bool) {
+        return (wallet == _owner || wallet == _admin);
     }
 
     /**
@@ -690,25 +665,11 @@ contract CxipERC721 {
     }
 
     /**
-     * @notice Checks if an address is an identity contract.
-     * @dev It must also be registred.
-     * @param sender Address to check if registered to identity.
-     * @return bool True if registred identity.
-     */
-    function isIdentityWallet(address sender) internal view returns (bool) {
-        address identity = getIdentity();
-        if (Address.isZero(identity)) {
-            return false;
-        }
-        return ICxipIdentity(identity).isWalletRegistered(sender);
-    }
-
-    /**
      * @dev Get the top-level CXIP Registry smart contract. Function must always be internal to prevent miss-use/abuse through bad programming practices.
      * @return ICxipRegistry The address of the top-level CXIP Registry smart contract.
      */
     function getRegistry() internal pure returns (ICxipRegistry) {
-        return ICxipRegistry(0xC267d41f81308D7773ecB3BDd863a902ACC01Ade);
+        return ICxipRegistry(0x5FbDB2315678afecb367f032d93F642f64180aa3);
     }
 
     /**
