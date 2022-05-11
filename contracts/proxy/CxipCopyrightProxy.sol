@@ -16,7 +16,7 @@ import "../interface/ICxipRegistry.sol";
 
 contract CxipCopyrightProxy {
     fallback() external payable {
-        address _target = ICxipRegistry(0x5FbDB2315678afecb367f032d93F642f64180aa3)
+        address _target = ICxipRegistry(0xC267d41f81308D7773ecB3BDd863a902ACC01Ade)
             .getCopyrightSource();
         assembly {
             calldatacopy(0, 0, calldatasize())
