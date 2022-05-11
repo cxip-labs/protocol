@@ -546,7 +546,7 @@ describe('CXIP', () => {
       expect(payoutAccounts[1]).to.equal(user4.address);
     });
   });
-
+/*
   describe.only('Daniel Arsham: Eroding and Reforming Cars', async () => {
     const tokenId = 10001;
     const nonExistentTokenId = 0;
@@ -1246,4 +1246,5 @@ describe('CXIP', () => {
 
     });
   });
+*/
 });
