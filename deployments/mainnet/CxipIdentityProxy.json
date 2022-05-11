@@ -1,0 +1,45 @@
+{
+  "address": "0x0000000000000000000000000000000000000000",
+  "abi": [
+    {
+      "stateMutability": "payable",
+      "type": "fallback"
+    }
+  ],
+  "transactionHash": "0x15bf4e1897d0b086936c99eef7a0bb61de62c39b19fd26abbb0c2d1a8f9fb973",
+  "receipt": {
+    "to": null,
+    "from": "0x9E22aA58Bf2F5E60801b90FDD3b51B65d38eA20b",
+    "contractAddress": "0xc91118E7dF4006568a5d44B0AE4EEDbd70852235",
+    "transactionIndex": 1,
+    "gasUsed": "106503",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x730ac6654f8cdefa7d68ab3318d49a70b296098b78cf43e0f3ba1c84e6d486b9",
+    "transactionHash": "0x15bf4e1897d0b086936c99eef7a0bb61de62c39b19fd26abbb0c2d1a8f9fb973",
+    "logs": [],
+    "blockNumber": 10533416,
+    "cumulativeGasUsed": "135952",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "numDeployments": 3,
+  "solcInputHash": "0d18f41678e5bb00326a68765bdce346",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.12+commit.f00d7308\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"stateMutability\":\"payable\",\"type\":\"fallback\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/proxy/CxipIdentityProxy.sol\":\"CxipIdentityProxy\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":100},\"remappings\":[]},\"sources\":{\"contracts/interface/ICxipRegistry.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\n/*______/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\_______/\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\n _____/\\\\\\\\\\\\////////__\\\\///\\\\\\\\\\\\___/\\\\\\\\\\\\/__\\\\/////\\\\\\\\\\\\///__\\\\/\\\\\\\\\\\\/////////\\\\\\\\\\\\_\\n  ___/\\\\\\\\\\\\/_____________\\\\///\\\\\\\\\\\\\\\\\\\\\\\\/________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_\\n   __/\\\\\\\\\\\\_________________\\\\//\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\n    _\\\\/\\\\\\\\\\\\__________________\\\\/\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\/////////____\\n     _\\\\//\\\\\\\\\\\\_________________/\\\\\\\\\\\\\\\\\\\\\\\\_________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n      __\\\\///\\\\\\\\\\\\_____________/\\\\\\\\\\\\////\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n       ____\\\\////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\/___\\\\///\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\\\/\\\\\\\\\\\\_____________\\n        _______\\\\/////////__\\\\///_______\\\\///__\\\\///////////__\\\\///____________*/\\n\\ninterface ICxipRegistry {\\n    function getAsset() external view returns (address);\\n\\n    function getAssetSigner() external view returns (address);\\n\\n    function getAssetSource() external view returns (address);\\n\\n    function getCopyright() external view returns (address);\\n\\n    function getCopyrightSource() external view returns (address);\\n\\n    function getCustomSource(bytes32 name) external view returns (address);\\n\\n    function getCustomSourceFromString(string memory name) external view returns (address);\\n\\n    function getERC1155CollectionSource() external view returns (address);\\n\\n    function getERC721CollectionSource() external view returns (address);\\n\\n    function getIdentitySource() external view returns (address);\\n\\n    function getPA1D() external view returns (address);\\n\\n    function getPA1DSource() external view returns (address);\\n\\n    function getProvenance() external view returns (address);\\n\\n    function getProvenanceSource() external view returns (address);\\n\\n    function owner() external view returns (address);\\n\\n    function setAsset(address proxy) external;\\n\\n    function setAssetSigner(address source) external;\\n\\n    function setAssetSource(address source) external;\\n\\n    function setCopyright(address proxy) external;\\n\\n    function setCopyrightSource(address source) external;\\n\\n    function setCustomSource(string memory name, address source) external;\\n\\n    function setERC1155CollectionSource(address source) external;\\n\\n    function setERC721CollectionSource(address source) external;\\n\\n    function setIdentitySource(address source) external;\\n\\n    function setPA1D(address proxy) external;\\n\\n    function setPA1DSource(address source) external;\\n\\n    function setProvenance(address proxy) external;\\n\\n    function setProvenanceSource(address source) external;\\n}\\n\",\"keccak256\":\"0x955bdf21dd441b5f52524655fec5b24a580ab498cf746e736f6a1b92ff36a959\",\"license\":\"MIT\"},\"contracts/proxy/CxipIdentityProxy.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\n/*______/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\_______/\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\n _____/\\\\\\\\\\\\////////__\\\\///\\\\\\\\\\\\___/\\\\\\\\\\\\/__\\\\/////\\\\\\\\\\\\///__\\\\/\\\\\\\\\\\\/////////\\\\\\\\\\\\_\\n  ___/\\\\\\\\\\\\/_____________\\\\///\\\\\\\\\\\\\\\\\\\\\\\\/________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_\\n   __/\\\\\\\\\\\\_________________\\\\//\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\n    _\\\\/\\\\\\\\\\\\__________________\\\\/\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\/////////____\\n     _\\\\//\\\\\\\\\\\\_________________/\\\\\\\\\\\\\\\\\\\\\\\\_________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n      __\\\\///\\\\\\\\\\\\_____________/\\\\\\\\\\\\////\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n       ____\\\\////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\/___\\\\///\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\\\/\\\\\\\\\\\\_____________\\n        _______\\\\/////////__\\\\///_______\\\\///__\\\\///////////__\\\\///____________*/\\n\\nimport \\\"../interface/ICxipRegistry.sol\\\";\\n\\ncontract CxipIdentityProxy {\\n    fallback() external payable {\\n        address _target = ICxipRegistry(0x415225c0d082CB195AeE69f490c218def30966da)\\n            .getIdentitySource();\\n        assembly {\\n            calldatacopy(0, 0, calldatasize())\\n            let result := delegatecall(gas(), _target, 0, calldatasize(), 0, 0)\\n            returndatacopy(0, 0, returndatasize())\\n            switch result\\n            case 0 {\\n                revert(0, returndatasize())\\n            }\\n            default {\\n                return(0, returndatasize())\\n            }\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0xc73f6cf7c25916e4efef4415db4b19f1e545fc0877756924a696aec2ceee806c\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5060f68061001f6000396000f3fe6080604081905263071b938d60e31b815260009073415225c0d082cb195aee69f490c218def30966da906338dc9c6890608490602090600481865afa158015604b573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190606d91906092565b90503660008037600080366000845af43d6000803e808015608d573d6000f35b3d6000fd5b60006020828403121560a357600080fd5b81516001600160a01b038116811460b957600080fd5b939250505056fea264697066735822122088614c1d19b0172d3d226fd5737c95a7d0c916655475ad47c8a1a2604a2e75be64736f6c634300080c0033",
+  "deployedBytecode": "0x6080604081905263071b938d60e31b815260009073415225c0d082cb195aee69f490c218def30966da906338dc9c6890608490602090600481865afa158015604b573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190606d91906092565b90503660008037600080366000845af43d6000803e808015608d573d6000f35b3d6000fd5b60006020828403121560a357600080fd5b81516001600160a01b038116811460b957600080fd5b939250505056fea264697066735822122088614c1d19b0172d3d226fd5737c95a7d0c916655475ad47c8a1a2604a2e75be64736f6c634300080c0033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [],
+    "types": null
+  }
+}

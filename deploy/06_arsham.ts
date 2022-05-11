@@ -2,10 +2,10 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { DeployFunction } from 'hardhat-deploy/types';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+/*
   const { deployments, getNamedAccounts } = hre;
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
-
   const danielArshamErosions = await deploy('DanielArshamErodingAndReformingCars', {
     from: deployer,
     args: [],
@@ -17,7 +17,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     args: [],
     log: true,
   });
+*/
 };
 export default func;
-func.tags = ['DanielArshamErodingAndReformingCars', 'DanielArshamErodingAndReformingCarsProxy'];
+func.tags = []; // ['DanielArshamErodingAndReformingCars', 'DanielArshamErodingAndReformingCarsProxy'];
 func.dependencies = ['CxipFactory', 'CxipRegistry'];

@@ -8,12 +8,14 @@ import axios from 'axios';
 import Web3 from 'web3';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+  /*
   const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
   const network = hre.network.name;
   const { deployments, getNamedAccounts } = hre;
   const accounts = await ethers.getSigners();
-  const deployer: SignerWithAddress = accounts[5];
-  let totalGas = 0;
+  const deployer: SignerWithAddress = accounts[(network == 'hardhat' ? 5 : 0)];
+
+  const wallet = deployer.address;
 
   const salt: BytesLike =
     deployer.address + '0x000000000000000000000000'.substring(2);
@@ -143,7 +145,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       rotations[3],
     ]);
 
-  const wallet = deployer.address;
   let payload: BytesLike;
   const arweave: string = 'https://arweave.net/';
   const arHashes: Array<string> = [
@@ -548,10 +549,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   await collection.connect(deployer).batchMint(wallet, 40101, 50, niftygateway);
 
   await collection.connect(deployer).setMintingClosed();
-
-  console.log(`Total gas used: ${totalGas}`);
+*/
 };
 
 export default func;
-func.tags = ['ArshamMint'];
+func.tags = []; // ['ArshamMint'];
 func.dependencies = ['CxipRegistry'];
