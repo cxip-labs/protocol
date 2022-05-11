@@ -14,7 +14,6 @@ pragma solidity 0.8.12;
 
 import "./external/OpenSea.sol";
 import "./interface/ICxipERC721.sol";
-import "./interface/ICxipIdentity.sol";
 import "./interface/ICxipProvenance.sol";
 import "./interface/ICxipRegistry.sol";
 import "./interface/IPA1D.sol";
@@ -126,14 +125,6 @@ contract CxipERC721 {
     event ApprovalForAll(address indexed wallet, address indexed operator, bool approved);
 
     /**
-     * @notice Event emitted to signal to OpenSea that a permanent URI was created.
-     * @dev Even though OpenSea advertises support for this, they do not listen to this event, and do not respond to it.
-     * @param uri The permanent/static URL of the NFT. Cannot ever be changed again.
-     * @param id Token id of the NFT.
-     */
-    event PermanentURI(string uri, uint256 indexed id);
-
-    /**
      * @notice Constructor is empty and not utilised.
      * @dev To make exact CREATE2 deployment possible, constructor is left empty. We utilize the "init" function instead.
      */
@@ -148,12 +139,9 @@ contract CxipERC721 {
     }
 
     /**
-     * @notice Enables royaltiy functionality at the ERC721 level when ether is sent with no calldata.
-     * @dev See implementation of _royaltiesFallback.
+     * @notice Receive is purposefully left blank to not have any out-of-gas errors.
      */
-    receive() external payable {
-        _royaltiesFallback();
-    }
+    receive() external payable {}
 
     /**
      * @notice Enables royaltiy functionality at the ERC721 level no other function matches the call.
@@ -490,15 +478,13 @@ contract CxipERC721 {
      */
     function cxipMint(uint256 id, TokenData calldata tokenData) public onlyOwner returns (uint256) {
         if (id == 0) {
-            _currentTokenId += 1;
+            while (_exists(_currentTokenId)) {
+                _currentTokenId += 1;
+            }
             id = _currentTokenId;
         }
         _mint(tokenData.creator, id);
         _tokenData[id] = tokenData;
-        emit PermanentURI(
-            string(abi.encodePacked("ARWEAVE_DOMAIN_NAME", tokenData.arweave, tokenData.arweave2)),
-            id
-        );
         return id;
     }
 
@@ -520,17 +506,6 @@ contract CxipERC721 {
      */
     function setSymbol(bytes32 newSymbol) public onlyOwner {
         _collectionData.symbol = newSymbol;
-    }
-
-    /**
-     * @notice Transfers ownership of the collection.
-     * @dev Can't be the zero address.
-     * @param newOwner Address of new owner.
-     */
-    function transferOwnership(address newOwner) public onlyOwner {
-        if (!Address.isZero(newOwner)) {
-            _owner = newOwner;
-        }
     }
 
     /**
@@ -563,15 +538,6 @@ contract CxipERC721 {
     }
 
     /**
-     * @notice Get the associated identity for the collection.
-     * @dev Goes up the chain to read from the registry.
-     * @return address Identity contract address.
-     */
-    function getIdentity() public view returns (address) {
-        return ICxipProvenance(getRegistry().getProvenance()).getWalletIdentity(_owner);
-    }
-
-    /**
      * @notice Checks if the address is approved.
      * @dev Includes references to OpenSea and Rarible marketplace proxies.
      * @param wallet Address of the wallet.
@@ -595,7 +561,16 @@ contract CxipERC721 {
      * @return bool True if owner.
      */
     function isOwner() public view returns (bool) {
-        return (msg.sender == _owner || msg.sender == _admin || isIdentityWallet(msg.sender));
+        return (msg.sender == _owner || msg.sender == _admin);
+    }
+
+    /**
+     * @notice Check if the address is the owner.
+     * @dev The owner could also be the admin or identity contract of the owner.
+     * @return bool True if owner.
+     */
+    function isOwner(address wallet) public view returns (bool) {
+        return (wallet == _owner || wallet == _admin);
     }
 
     /**
@@ -687,20 +662,6 @@ contract CxipERC721 {
                 return(0, returndatasize())
             }
         }
-    }
-
-    /**
-     * @notice Checks if an address is an identity contract.
-     * @dev It must also be registred.
-     * @param sender Address to check if registered to identity.
-     * @return bool True if registred identity.
-     */
-    function isIdentityWallet(address sender) internal view returns (bool) {
-        address identity = getIdentity();
-        if (Address.isZero(identity)) {
-            return false;
-        }
-        return ICxipIdentity(identity).isWalletRegistered(sender);
     }
 
     /**

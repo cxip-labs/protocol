@@ -30,13 +30,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
      */
     config.registry = cxipRegistry.address;
 
-    const cxipIdentityProxy = await deploy('CxipIdentityProxy', {
-      from: deployer,
-      args: [],
-      log: true,
-    });
-    config.identityProxyBytecode = cxipIdentityProxy?.bytecode?.substring(2); // remove 0x;
-
     const erc721Proxy = await deploy('CxipERC721Proxy', {
       from: deployer,
       args: [],
