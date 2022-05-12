@@ -8,11 +8,7 @@ import axios from 'axios';
 import Web3 from 'web3';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-<<<<<<< HEAD:deploy/09_arsham_mint.ts
 /*
-=======
-  /*
->>>>>>> a92d26ee5603ff064b13f1790a59f9fbee11c12b:deploy/12_arsham_mint.ts
   const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
   const network = hre.network.name;
   const { deployments, getNamedAccounts } = hre;

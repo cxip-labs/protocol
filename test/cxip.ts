@@ -64,23 +64,15 @@ describe('CXIP', () => {
 
     await deployments.fixture([
       'CxipRegistry',
-      'CxipAssetProxy',
-      'CxipCopyrightProxy',
       'CxipERC721Proxy',
       'CxipERC1155Proxy',
-      'CxipIdentityProxy',
       'CxipProvenanceProxy',
       'PA1DProxy',
-      'DanielArshamErodingAndReformingCarsProxy',
 
       'CxipProvenance',
-      'CxipIdentity',
       'CxipERC721',
       'CxipERC1155',
-      'CxipCopyright',
-      'CxipAsset',
       'PA1D',
-      'DanielArshamErodingAndReformingCars',
 
       'MockERC721Receiver',
 
@@ -238,7 +230,7 @@ describe('CXIP', () => {
 
       result.wait();
 
-      const collectionAddress = await p.getCollectionById(0);
+      const collectionAddress = await p.getCollectionById(1);
       const collectionType = await p.getCollectionType(collectionAddress);
       expect(collectionAddress).not.to.equal(ZERO_ADDRESS);
       expect(collectionType).not.to.equal(ZERO_ADDRESS);
@@ -335,7 +327,6 @@ describe('CXIP', () => {
       expect(payoutAccounts[1]).to.equal(user4.address);
     });
   });
-<<<<<<< HEAD
 /*
   describe.only('Daniel Arsham: Eroding and Reforming Cars', async () => {
     const tokenId = 10001;
@@ -1037,6 +1028,4 @@ describe('CXIP', () => {
     });
   });
 */
-=======
->>>>>>> a92d26ee5603ff064b13f1790a59f9fbee11c12b
 });
