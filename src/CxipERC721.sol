@@ -159,13 +159,7 @@ contract CxipERC721 {
      */
     function arweaveURI(uint256 tokenId) external view returns (string memory) {
         return
-            string(
-                abi.encodePacked(
-                    "ARWEAVE_DOMAIN_NAME",
-                    _tokenData[tokenId].arweave,
-                    _tokenData[tokenId].arweave2
-                )
-            );
+            string(abi.encodePacked("ARWEAVE_DOMAIN_NAME", _tokenData[tokenId].arweave, _tokenData[tokenId].arweave2));
     }
 
     /**
@@ -174,10 +168,7 @@ contract CxipERC721 {
      * @return string The URI.
      */
     function contractURI() external view returns (string memory) {
-        return
-            string(
-                abi.encodePacked("CXIP_NFT_DOMAIN_NAME", Strings.toHexString(address(this)), "/")
-            );
+        return string(abi.encodePacked("CXIP_NFT_DOMAIN_NAME", Strings.toHexString(address(this)), "/"));
     }
 
     /**
@@ -206,14 +197,7 @@ contract CxipERC721 {
      * @return string The URI.
      */
     function ipfsURI(uint256 tokenId) external view returns (string memory) {
-        return
-            string(
-                abi.encodePacked(
-                    "IPFS_DOMAIN_NAME",
-                    _tokenData[tokenId].ipfs,
-                    _tokenData[tokenId].ipfs2
-                )
-            );
+        return string(abi.encodePacked("IPFS_DOMAIN_NAME", _tokenData[tokenId].ipfs, _tokenData[tokenId].ipfs2));
     }
 
     /**
@@ -222,13 +206,7 @@ contract CxipERC721 {
      * @return string The collection name.
      */
     function name() external view returns (string memory) {
-        return
-            string(
-                abi.encodePacked(
-                    Bytes.trim(_collectionData.name),
-                    Bytes.trim(_collectionData.name2)
-                )
-            );
+        return string(abi.encodePacked(Bytes.trim(_collectionData.name), Bytes.trim(_collectionData.name2)));
     }
 
     /**
@@ -300,13 +278,7 @@ contract CxipERC721 {
      */
     function tokenURI(uint256 tokenId) external view returns (string memory) {
         return
-            string(
-                abi.encodePacked(
-                    "ARWEAVE_DOMAIN_NAME",
-                    _tokenData[tokenId].arweave,
-                    _tokenData[tokenId].arweave2
-                )
-            );
+            string(abi.encodePacked("ARWEAVE_DOMAIN_NAME", _tokenData[tokenId].arweave, _tokenData[tokenId].arweave2));
     }
 
     /**
@@ -549,10 +521,7 @@ contract CxipERC721 {
             // Rarible Transfer Proxy
             0x72617269626C655472616E7366657250726F7879 == operator ||
             // OpenSea Transfer Proxy
-            address(
-                OpenSeaProxyRegistry(0x6f70656E5365615472616E7366657250726F7879).proxies(wallet)
-            ) ==
-            operator);
+            address(OpenSeaProxyRegistry(0x6f70656E5365615472616E7366657250726F7879).proxies(wallet)) == operator);
     }
 
     /**
@@ -773,8 +742,6 @@ contract CxipERC721 {
     function _isApproved(address spender, uint256 tokenId) private view returns (bool) {
         require(_exists(tokenId));
         address tokenOwner = _tokenOwner[tokenId];
-        return (spender == tokenOwner ||
-            getApproved(tokenId) == spender ||
-            isApprovedForAll(tokenOwner, spender));
+        return (spender == tokenOwner || getApproved(tokenId) == spender || isApprovedForAll(tokenOwner, spender));
     }
 }
