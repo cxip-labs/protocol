@@ -39,6 +39,6 @@ func.tags = [
   // 'CxipERC721Proxy',
   'CxipERC1155Proxy',
   'CxipProvenanceProxy',
-  'PA1DProxy'
+  'PA1DProxy',
 ];
 func.dependencies = ['CxipRegistry'];

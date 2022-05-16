@@ -31,13 +31,8 @@ describe('CXIP', () => {
   let testWallet: SignerWithAddress;
   let testWallet2: SignerWithAddress;
   let testWallet3: SignerWithAddress;
-
-  let niftygateway: string;
-
   let registry: CxipRegistry;
 
-  let erc721Proxy: CxipERC721Proxy;
-  let erc1155Proxy: CxipERC1155Proxy;
   let provenanceProxy: CxipProvenanceProxy;
   let royaltiesProxy: PA1DProxy;
 
@@ -46,8 +41,6 @@ describe('CXIP', () => {
   let royalties: PA1D;
 
   let mockErc721Receiver: MockERC721Receiver;
-
-  let factory: CxipFactory;
 
   before(async () => {
     const accounts = await ethers.getSigners();
@@ -60,7 +53,6 @@ describe('CXIP', () => {
     testWallet = accounts[6];
     testWallet2 = accounts[7];
     testWallet3 = accounts[8];
-    niftygateway = testWallet.address;
 
     await deployments.fixture([
       'CxipRegistry',
@@ -722,7 +714,7 @@ describe('CXIP', () => {
             }
           );
 
-          context.skip('when querying the zero address', function () {
+          context('when querying the zero address', function () {
             it('throws', async function () {
               await expect(c.balanceOf(ZERO_ADDRESS)).to.be.revertedWith(
                 'CXIP: zero address'
