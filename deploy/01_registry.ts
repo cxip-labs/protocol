@@ -60,42 +60,42 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   //   console.log('Injecting code into build contracts');
   // }
 
-   const replaceValues = function (data: any) {
-     Object.keys(buildConfig).forEach(function (key, index) {
-       data = data.replace(new RegExp(buildConfig[key], 'gi'), config[key]);
-     });
-     return data;
-   };
+  const replaceValues = function (data: any) {
+    Object.keys(buildConfig).forEach(function (key, index) {
+      data = data.replace(new RegExp(buildConfig[key], 'gi'), config[key]);
+    });
+    return data;
+  };
 
-   const recursiveBuild = function (buildDir: any, deployDir: any) {
-     let files: any = fs.readdirSync(buildDir);
-     for (let i = 0; i < files.length; i++) {
-       let file: any = files[i];
-       let stats: any = fs.statSync(buildDir + '/' + file);
-       if (stats.isDirectory()) {
-         // we go into it
-         try {
-           fs.mkdirSync(deployDir + '/' + file);
-         } catch (ex) {
-           // we ignore this error on purpose
-         }
-         recursiveBuild(buildDir + '/' + file, deployDir + '/' + file);
-       } else {
-         if (file.endsWith('.sol')) {
-           // console.log(file);
-           let data: any = fs.readFileSync(buildDir + '/' + file, 'utf8');
-           fs.writeFileSync(deployDir + '/' + file, replaceValues(data), 'utf8');
-         }
-       }
-     }
-   };
+  const recursiveBuild = function (buildDir: any, deployDir: any) {
+    let files: any = fs.readdirSync(buildDir);
+    for (let i = 0; i < files.length; i++) {
+      let file: any = files[i];
+      let stats: any = fs.statSync(buildDir + '/' + file);
+      if (stats.isDirectory()) {
+        // we go into it
+        try {
+          fs.mkdirSync(deployDir + '/' + file);
+        } catch (ex) {
+          // we ignore this error on purpose
+        }
+        recursiveBuild(buildDir + '/' + file, deployDir + '/' + file);
+      } else {
+        if (file.endsWith('.sol')) {
+          console.log(file);
+          let data: any = fs.readFileSync(buildDir + '/' + file, 'utf8');
+          fs.writeFileSync(deployDir + '/' + file, replaceValues(data), 'utf8');
+        }
+      }
+    }
+  };
 
-   try {
-     fs.mkdirSync(deployDir);
-   } catch (ex) {
-     // we ignore this error on purpose
-   }
-   await recursiveBuild(buildDir, deployDir);
+  try {
+    fs.mkdirSync(deployDir);
+  } catch (ex) {
+    // we ignore this error on purpose
+  }
+  await recursiveBuild(buildDir, deployDir);
 };
 
 export default func;

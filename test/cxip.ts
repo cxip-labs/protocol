@@ -33,6 +33,7 @@ describe('CXIP', () => {
   let testWallet3: SignerWithAddress;
   let registry: CxipRegistry;
 
+  let erc721Proxy: CxipERC721Proxy;
   let provenanceProxy: CxipProvenanceProxy;
   let royaltiesProxy: PA1DProxy;
 
@@ -715,10 +716,8 @@ describe('CXIP', () => {
           );
 
           context('when querying the zero address', function () {
-            it('throws', async function () {
-              await expect(c.balanceOf(ZERO_ADDRESS)).to.be.revertedWith(
-                'CXIP: zero address'
-              );
+            it('returns zero', async function () {
+              expect(await c.balanceOf(ZERO_ADDRESS)).to.be.equal('0');
             });
           });
 
@@ -763,7 +762,7 @@ describe('CXIP', () => {
             });
           });
 
-          describe.skip('tokenByIndex', function () {
+          describe('tokenByIndex', function () {
             context(
               'get token by index, within totalSupply limit',
               function () {
