@@ -1,0 +1,150 @@
+{
+  "address": "0xCA73b2B26F32964922121565a394155bd0125902",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "name": "onERC721Received",
+      "outputs": [
+        {
+          "internalType": "bytes4",
+          "name": "",
+          "type": "bytes4"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "interfaceID",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bool",
+          "name": "active",
+          "type": "bool"
+        }
+      ],
+      "name": "toggleWorks",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address payable",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        }
+      ],
+      "name": "transferNFT",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x16bfb08521442064e1e368c6bff4c4ac2fb5b9b8ddf13553eec96409c54d16bf",
+  "receipt": {
+    "to": null,
+    "from": "0x9E22aA58Bf2F5E60801b90FDD3b51B65d38eA20b",
+    "contractAddress": "0xCA73b2B26F32964922121565a394155bd0125902",
+    "transactionIndex": 0,
+    "gasUsed": "253148",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x311e0a2028a4b8c8906236f949c706335fc1b27f0800c79506714b308158fc06",
+    "transactionHash": "0x16bfb08521442064e1e368c6bff4c4ac2fb5b9b8ddf13553eec96409c54d16bf",
+    "logs": [],
+    "blockNumber": 10665224,
+    "cumulativeGasUsed": "253148",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "numDeployments": 1,
+  "solcInputHash": "5b82fc80ee4fcb56e58c513cca4d43db",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.12+commit.f00d7308\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"onERC721Received\",\"outputs\":[{\"internalType\":\"bytes4\",\"name\":\"\",\"type\":\"bytes4\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceID\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"active\",\"type\":\"bool\"}],\"name\":\"toggleWorks\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address payable\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"transferNFT\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/external/MockERC721Receiver.sol\":\"MockERC721Receiver\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":100},\"remappings\":[]},\"sources\":{\"contracts/external/MockERC721Receiver.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\nimport \\\"../interface/ICxipERC721.sol\\\";\\nimport \\\"../interface/IERC165.sol\\\";\\nimport \\\"../interface/IERC721Receiver.sol\\\";\\n\\ncontract MockERC721Receiver is IERC165, IERC721Receiver {\\n\\n    bool private _works;\\n\\n    constructor () {\\n        _works = true;\\n    }\\n\\n    function toggleWorks(bool active) external {\\n        _works = active;\\n    }\\n\\n    function supportsInterface(bytes4 interfaceID) external pure returns (bool) {\\n        if (interfaceID == 0x01ffc9a7 || interfaceID == 0x150b7a02) {\\n            return true;\\n        } else {\\n            return false;\\n        }\\n    }\\n\\n    function onERC721Received(\\n        address /*operator*/,\\n        address /*from*/,\\n        uint256 /*tokenId*/,\\n        bytes calldata /*data*/\\n    ) external view returns (bytes4) {\\n        if (_works) {\\n            return 0x150b7a02;\\n        } else {\\n            return 0x00000000;\\n        }\\n    }\\n\\n    function transferNFT(address payable token, uint256 tokenId, address to) external {\\n        ICxipERC721(token).safeTransferFrom(address(this), to, tokenId);\\n    }\\n\\n}\\n\",\"keccak256\":\"0xebd60c8d656fab46ebd377193cf46d801820582d34c2f9183fc26e0da2447d7c\",\"license\":\"MIT\"},\"contracts/interface/ICxipERC721.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\n/*______/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\_______/\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\n _____/\\\\\\\\\\\\////////__\\\\///\\\\\\\\\\\\___/\\\\\\\\\\\\/__\\\\/////\\\\\\\\\\\\///__\\\\/\\\\\\\\\\\\/////////\\\\\\\\\\\\_\\n  ___/\\\\\\\\\\\\/_____________\\\\///\\\\\\\\\\\\\\\\\\\\\\\\/________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_\\n   __/\\\\\\\\\\\\_________________\\\\//\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\n    _\\\\/\\\\\\\\\\\\__________________\\\\/\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\/////////____\\n     _\\\\//\\\\\\\\\\\\_________________/\\\\\\\\\\\\\\\\\\\\\\\\_________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n      __\\\\///\\\\\\\\\\\\_____________/\\\\\\\\\\\\////\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n       ____\\\\////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\/___\\\\///\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\\\/\\\\\\\\\\\\_____________\\n        _______\\\\/////////__\\\\///_______\\\\///__\\\\///////////__\\\\///____________*/\\n\\nimport \\\"../struct/CollectionData.sol\\\";\\nimport \\\"../struct/TokenData.sol\\\";\\nimport \\\"../struct/Verification.sol\\\";\\n\\ninterface ICxipERC721 {\\n    function arweaveURI(uint256 tokenId) external view returns (string memory);\\n\\n    function contractURI() external view returns (string memory);\\n\\n    function creator(uint256 tokenId) external view returns (address);\\n\\n    function httpURI(uint256 tokenId) external view returns (string memory);\\n\\n    function ipfsURI(uint256 tokenId) external view returns (string memory);\\n\\n    function name() external view returns (string memory);\\n\\n    function payloadHash(uint256 tokenId) external view returns (bytes32);\\n\\n    function payloadSignature(uint256 tokenId) external view returns (Verification memory);\\n\\n    function payloadSigner(uint256 tokenId) external view returns (address);\\n\\n    function supportsInterface(bytes4 interfaceId) external view returns (bool);\\n\\n    function symbol() external view returns (string memory);\\n\\n    function tokenURI(uint256 tokenId) external view returns (string memory);\\n\\n    function tokensOfOwner(address wallet) external view returns (uint256[] memory);\\n\\n    function verifySHA256(bytes32 hash, bytes calldata payload) external pure returns (bool);\\n\\n    function approve(address to, uint256 tokenId) external;\\n\\n    function burn(uint256 tokenId) external;\\n\\n    function init(address newOwner, CollectionData calldata collectionData) external;\\n\\n    function safeTransferFrom(\\n        address from,\\n        address to,\\n        uint256 tokenId\\n    ) external payable;\\n\\n    function safeTransferFrom(\\n        address from,\\n        address to,\\n        uint256 tokenId,\\n        bytes memory data\\n    ) external payable;\\n\\n    function setApprovalForAll(address to, bool approved) external;\\n\\n    function transferFrom(\\n        address from,\\n        address to,\\n        uint256 tokenId\\n    ) external payable;\\n\\n    function transferFrom(\\n        address from,\\n        address to,\\n        uint256 tokenId,\\n        bytes memory data\\n    ) external payable;\\n\\n    function cxipMint(uint256 id, TokenData calldata tokenData) external returns (uint256);\\n\\n    function setApprovalForAll(\\n        address from,\\n        address to,\\n        bool approved\\n    ) external;\\n\\n    function setName(bytes32 newName, bytes32 newName2) external;\\n\\n    function setSymbol(bytes32 newSymbol) external;\\n\\n    function transferOwnership(address newOwner) external;\\n\\n    function balanceOf(address wallet) external view returns (uint256);\\n\\n    function baseURI() external view returns (string memory);\\n\\n    function getApproved(uint256 tokenId) external view returns (address);\\n\\n    function isApprovedForAll(address wallet, address operator) external view returns (bool);\\n\\n    function isOwner() external view returns (bool);\\n\\n    function isOwner(address wallet) external view returns (bool);\\n\\n    function owner() external view returns (address);\\n\\n    function ownerOf(uint256 tokenId) external view returns (address);\\n\\n    function tokenByIndex(uint256 index) external view returns (uint256);\\n\\n    function tokenOfOwnerByIndex(address wallet, uint256 index) external view returns (uint256);\\n\\n    function totalSupply() external view returns (uint256);\\n\\n    function onERC721Received(\\n        address operator,\\n        address from,\\n        uint256 tokenId,\\n        bytes calldata data\\n    ) external pure returns (bytes4);\\n}\\n\",\"keccak256\":\"0xab469ea2eff4b8c15d0af2128a6529658d23cb157d521f3af41702d3e1f821c6\",\"license\":\"MIT\"},\"contracts/interface/IERC165.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\n/*______/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\_______/\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\n _____/\\\\\\\\\\\\////////__\\\\///\\\\\\\\\\\\___/\\\\\\\\\\\\/__\\\\/////\\\\\\\\\\\\///__\\\\/\\\\\\\\\\\\/////////\\\\\\\\\\\\_\\n  ___/\\\\\\\\\\\\/_____________\\\\///\\\\\\\\\\\\\\\\\\\\\\\\/________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_\\n   __/\\\\\\\\\\\\_________________\\\\//\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\n    _\\\\/\\\\\\\\\\\\__________________\\\\/\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\/////////____\\n     _\\\\//\\\\\\\\\\\\_________________/\\\\\\\\\\\\\\\\\\\\\\\\_________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n      __\\\\///\\\\\\\\\\\\_____________/\\\\\\\\\\\\////\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n       ____\\\\////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\/___\\\\///\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\\\/\\\\\\\\\\\\_____________\\n        _______\\\\/////////__\\\\///_______\\\\///__\\\\///////////__\\\\///____________*/\\n\\ninterface IERC165 {\\n    function supportsInterface(bytes4 interfaceID) external view returns (bool);\\n}\\n\",\"keccak256\":\"0xef051967d1848e9eb3117e8cb45b7a2d7a54c0aac715c7bcbaf56d8fb85f39e7\",\"license\":\"MIT\"},\"contracts/interface/IERC721Receiver.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\ninterface IERC721Receiver {\\n    function onERC721Received(\\n        address operator,\\n        address from,\\n        uint256 tokenId,\\n        bytes calldata data\\n    ) external returns (bytes4);\\n}\\n\",\"keccak256\":\"0x27e02e0037d215ebd0b4eb4b8fa8210b34426646bddbd99a3b2629925772d2a0\",\"license\":\"MIT\"},\"contracts/struct/CollectionData.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\n/*______/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\_______/\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\n _____/\\\\\\\\\\\\////////__\\\\///\\\\\\\\\\\\___/\\\\\\\\\\\\/__\\\\/////\\\\\\\\\\\\///__\\\\/\\\\\\\\\\\\/////////\\\\\\\\\\\\_\\n  ___/\\\\\\\\\\\\/_____________\\\\///\\\\\\\\\\\\\\\\\\\\\\\\/________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_\\n   __/\\\\\\\\\\\\_________________\\\\//\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\n    _\\\\/\\\\\\\\\\\\__________________\\\\/\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\/////////____\\n     _\\\\//\\\\\\\\\\\\_________________/\\\\\\\\\\\\\\\\\\\\\\\\_________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n      __\\\\///\\\\\\\\\\\\_____________/\\\\\\\\\\\\////\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n       ____\\\\////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\/___\\\\///\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\\\/\\\\\\\\\\\\_____________\\n        _______\\\\/////////__\\\\///_______\\\\///__\\\\///////////__\\\\///____________*/\\n\\nimport \\\"./UriType.sol\\\";\\n\\nstruct CollectionData {\\n    bytes32 name;\\n    bytes32 name2;\\n    bytes32 symbol;\\n    address royalties;\\n    uint96 bps;\\n}\\n\",\"keccak256\":\"0x328167148d845d1945ef8b77f710750d10cd38d2c8510e22ca52ec67781e3b8f\",\"license\":\"MIT\"},\"contracts/struct/TokenData.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\n/*______/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\_______/\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\n _____/\\\\\\\\\\\\////////__\\\\///\\\\\\\\\\\\___/\\\\\\\\\\\\/__\\\\/////\\\\\\\\\\\\///__\\\\/\\\\\\\\\\\\/////////\\\\\\\\\\\\_\\n  ___/\\\\\\\\\\\\/_____________\\\\///\\\\\\\\\\\\\\\\\\\\\\\\/________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_\\n   __/\\\\\\\\\\\\_________________\\\\//\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\n    _\\\\/\\\\\\\\\\\\__________________\\\\/\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\/////////____\\n     _\\\\//\\\\\\\\\\\\_________________/\\\\\\\\\\\\\\\\\\\\\\\\_________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n      __\\\\///\\\\\\\\\\\\_____________/\\\\\\\\\\\\////\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n       ____\\\\////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\/___\\\\///\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\\\/\\\\\\\\\\\\_____________\\n        _______\\\\/////////__\\\\///_______\\\\///__\\\\///////////__\\\\///____________*/\\n\\nimport \\\"./Verification.sol\\\";\\n\\nstruct TokenData {\\n    bytes32 payloadHash;\\n    Verification payloadSignature;\\n    address creator;\\n    bytes32 arweave;\\n    bytes11 arweave2;\\n    bytes32 ipfs;\\n    bytes14 ipfs2;\\n}\\n\",\"keccak256\":\"0xd7288c705f3247427487e4491a7cddb84a42af2a32720a16f75c8950380a717d\",\"license\":\"MIT\"},\"contracts/struct/UriType.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\n/*______/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\_______/\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\n _____/\\\\\\\\\\\\////////__\\\\///\\\\\\\\\\\\___/\\\\\\\\\\\\/__\\\\/////\\\\\\\\\\\\///__\\\\/\\\\\\\\\\\\/////////\\\\\\\\\\\\_\\n  ___/\\\\\\\\\\\\/_____________\\\\///\\\\\\\\\\\\\\\\\\\\\\\\/________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_\\n   __/\\\\\\\\\\\\_________________\\\\//\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\n    _\\\\/\\\\\\\\\\\\__________________\\\\/\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\/////////____\\n     _\\\\//\\\\\\\\\\\\_________________/\\\\\\\\\\\\\\\\\\\\\\\\_________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n      __\\\\///\\\\\\\\\\\\_____________/\\\\\\\\\\\\////\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n       ____\\\\////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\/___\\\\///\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\\\/\\\\\\\\\\\\_____________\\n        _______\\\\/////////__\\\\///_______\\\\///__\\\\///////////__\\\\///____________*/\\n\\n// This is a 256 value limit (uint8)\\nenum UriType {\\n    ARWEAVE, // 0\\n    IPFS, // 1\\n    HTTP // 2\\n}\\n\",\"keccak256\":\"0xe64f56b37ab2043dd80ae3b06abb928151837a546653ea0bd350d9078ccb29a6\",\"license\":\"MIT\"},\"contracts/struct/Verification.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity 0.8.12;\\n\\n/*______/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\_______/\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\___\\n _____/\\\\\\\\\\\\////////__\\\\///\\\\\\\\\\\\___/\\\\\\\\\\\\/__\\\\/////\\\\\\\\\\\\///__\\\\/\\\\\\\\\\\\/////////\\\\\\\\\\\\_\\n  ___/\\\\\\\\\\\\/_____________\\\\///\\\\\\\\\\\\\\\\\\\\\\\\/________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_\\n   __/\\\\\\\\\\\\_________________\\\\//\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\n    _\\\\/\\\\\\\\\\\\__________________\\\\/\\\\\\\\\\\\\\\\__________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\/////////____\\n     _\\\\//\\\\\\\\\\\\_________________/\\\\\\\\\\\\\\\\\\\\\\\\_________\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n      __\\\\///\\\\\\\\\\\\_____________/\\\\\\\\\\\\////\\\\\\\\\\\\_______\\\\/\\\\\\\\\\\\_____\\\\/\\\\\\\\\\\\_____________\\n       ____\\\\////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\/___\\\\///\\\\\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\\\/\\\\\\\\\\\\_____________\\n        _______\\\\/////////__\\\\///_______\\\\///__\\\\///////////__\\\\///____________*/\\n\\nstruct Verification {\\n    bytes32 r;\\n    bytes32 s;\\n    uint8 v;\\n}\\n\",\"keccak256\":\"0x56a68601446e86e6a5d8bc4dc66df60fb6fb1518c4cc4fd0e9a87d50386a8652\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b506000805460ff191660011790556103378061002d6000396000f3fe608060405234801561001057600080fd5b506004361061004c5760003560e01c806301ffc9a714610051578063150b7a021461007957806392ed8e1c146100a5578063d2f0922a146100c8575b600080fd5b61006461005f3660046101b5565b6100db565b60405190151581526020015b60405180910390f35b61008c6100873660046101fe565b610121565b6040516001600160e01b03199091168152602001610070565b6100c66100b336600461029d565b6000805460ff1916911515919091179055565b005b6100c66100d63660046102bf565b610148565b60006301ffc9a760e01b6001600160e01b03198316148061010c5750630a85bd0160e11b6001600160e01b03198316145b1561011957506001919050565b506000919050565b6000805460ff161561013b5750630a85bd0160e11b61013f565b5060005b95945050505050565b604051632142170760e11b81523060048201526001600160a01b038281166024830152604482018490528416906342842e0e90606401600060405180830381600087803b15801561019857600080fd5b505af11580156101ac573d6000803e3d6000fd5b50505050505050565b6000602082840312156101c757600080fd5b81356001600160e01b0319811681146101df57600080fd5b9392505050565b6001600160a01b03811681146101fb57600080fd5b50565b60008060008060006080868803121561021657600080fd5b8535610221816101e6565b94506020860135610231816101e6565b935060408601359250606086013567ffffffffffffffff8082111561025557600080fd5b818801915088601f83011261026957600080fd5b81358181111561027857600080fd5b89602082850101111561028a57600080fd5b9699959850939650602001949392505050565b6000602082840312156102af57600080fd5b813580151581146101df57600080fd5b6000806000606084860312156102d457600080fd5b83356102df816101e6565b92506020840135915060408401356102f6816101e6565b80915050925092509256fea26469706673582212201521a8165a1baea33fb8b70efa635b56328f4b1043a10c89c657adaf57b2028964736f6c634300080c0033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061004c5760003560e01c806301ffc9a714610051578063150b7a021461007957806392ed8e1c146100a5578063d2f0922a146100c8575b600080fd5b61006461005f3660046101b5565b6100db565b60405190151581526020015b60405180910390f35b61008c6100873660046101fe565b610121565b6040516001600160e01b03199091168152602001610070565b6100c66100b336600461029d565b6000805460ff1916911515919091179055565b005b6100c66100d63660046102bf565b610148565b60006301ffc9a760e01b6001600160e01b03198316148061010c5750630a85bd0160e11b6001600160e01b03198316145b1561011957506001919050565b506000919050565b6000805460ff161561013b5750630a85bd0160e11b61013f565b5060005b95945050505050565b604051632142170760e11b81523060048201526001600160a01b038281166024830152604482018490528416906342842e0e90606401600060405180830381600087803b15801561019857600080fd5b505af11580156101ac573d6000803e3d6000fd5b50505050505050565b6000602082840312156101c757600080fd5b81356001600160e01b0319811681146101df57600080fd5b9392505050565b6001600160a01b03811681146101fb57600080fd5b50565b60008060008060006080868803121561021657600080fd5b8535610221816101e6565b94506020860135610231816101e6565b935060408601359250606086013567ffffffffffffffff8082111561025557600080fd5b818801915088601f83011261026957600080fd5b81358181111561027857600080fd5b89602082850101111561028a57600080fd5b9699959850939650602001949392505050565b6000602082840312156102af57600080fd5b813580151581146101df57600080fd5b6000806000606084860312156102d457600080fd5b83356102df816101e6565b92506020840135915060408401356102f6816101e6565b80915050925092509256fea26469706673582212201521a8165a1baea33fb8b70efa635b56328f4b1043a10c89c657adaf57b2028964736f6c634300080c0033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 3626,
+        "contract": "contracts/external/MockERC721Receiver.sol:MockERC721Receiver",
+        "label": "_works",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_bool"
+      }
+    ],
+    "types": {
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      }
+    }
+  }
+}
