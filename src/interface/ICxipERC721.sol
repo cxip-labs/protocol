@@ -99,11 +99,11 @@ interface ICxipERC721 {
 
     function getApproved(uint256 tokenId) external view returns (address);
 
-    function getIdentity() external view returns (address);
-
     function isApprovedForAll(address wallet, address operator) external view returns (bool);
 
     function isOwner() external view returns (bool);
+
+    function isOwner(address wallet) external view returns (bool);
 
     function owner() external view returns (address);
 

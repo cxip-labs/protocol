@@ -1,26 +1,19 @@
 import { expect, assert } from 'chai';
 import { ethers } from 'hardhat';
 import Web3 from 'web3';
-import { deployments, getNamedAccounts } from 'hardhat';
+import { deployments } from 'hardhat';
 import { BigNumberish, BytesLike, ContractFactory } from 'ethers';
 
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
   CxipRegistry,
-  CxipAssetProxy,
-  CxipCopyrightProxy,
   CxipERC721Proxy,
   CxipERC1155Proxy,
-  CxipIdentityProxy,
   CxipProvenanceProxy,
   PA1DProxy,
-  DanielArshamErodingAndReformingCarsProxy,
   CxipProvenance,
-  CxipIdentity,
   CxipERC721,
-  CxipAsset,
   PA1D,
-  DanielArshamErodingAndReformingCars,
   MockERC721Receiver,
   CxipFactory,
 } from '../typechain-types';
@@ -38,31 +31,17 @@ describe('CXIP', () => {
   let testWallet: SignerWithAddress;
   let testWallet2: SignerWithAddress;
   let testWallet3: SignerWithAddress;
-
-  let niftygateway: string;
-
   let registry: CxipRegistry;
 
-  let assetProxy: CxipAssetProxy;
-  let copyrightProxy: CxipCopyrightProxy;
   let erc721Proxy: CxipERC721Proxy;
-  let erc1155Proxy: CxipERC1155Proxy;
-  let identityProxy: CxipIdentityProxy;
   let provenanceProxy: CxipProvenanceProxy;
   let royaltiesProxy: PA1DProxy;
-  let danielArshamErosionsProxy: DanielArshamErodingAndReformingCarsProxy;
 
-  let asset: CxipAsset;
   let erc721: CxipERC721;
-  let identity: CxipIdentity;
   let provenance: CxipProvenance;
   let royalties: PA1D;
-  let danielArshamErosions: DanielArshamErodingAndReformingCars;
-  let danielArshamErosionsProxyBytecode: string;
 
   let mockErc721Receiver: MockERC721Receiver;
-
-  let factory: CxipFactory;
 
   before(async () => {
     const accounts = await ethers.getSigners();
@@ -75,27 +54,18 @@ describe('CXIP', () => {
     testWallet = accounts[6];
     testWallet2 = accounts[7];
     testWallet3 = accounts[8];
-    niftygateway = testWallet.address;
 
     await deployments.fixture([
       'CxipRegistry',
-      'CxipAssetProxy',
-      'CxipCopyrightProxy',
       'CxipERC721Proxy',
       'CxipERC1155Proxy',
-      'CxipIdentityProxy',
       'CxipProvenanceProxy',
       'PA1DProxy',
-      'DanielArshamErodingAndReformingCarsProxy',
 
       'CxipProvenance',
-      'CxipIdentity',
       'CxipERC721',
       'CxipERC1155',
-      'CxipCopyright',
-      'CxipAsset',
       'PA1D',
-      'DanielArshamErodingAndReformingCars',
 
       'MockERC721Receiver',
 
@@ -103,46 +73,18 @@ describe('CXIP', () => {
     ]);
     registry = (await ethers.getContract('CxipRegistry')) as CxipRegistry;
 
-    copyrightProxy = (await ethers.getContract(
-      'CxipCopyrightProxy'
-    )) as CxipCopyrightProxy;
-    erc1155Proxy = (await ethers.getContract(
-      'CxipERC1155Proxy'
-    )) as CxipERC1155Proxy;
-
     provenanceProxy = (await ethers.getContract(
       'CxipProvenanceProxy'
     )) as CxipProvenanceProxy;
     provenance = (await ethers.getContract('CxipProvenance')) as CxipProvenance;
-
-    identityProxy = (await ethers.getContract(
-      'CxipIdentityProxy'
-    )) as CxipIdentityProxy;
-    identity = (await ethers.getContract('CxipIdentity')) as CxipIdentity;
 
     erc721Proxy = (await ethers.getContract(
       'CxipERC721Proxy'
     )) as CxipERC721Proxy;
     erc721 = (await ethers.getContract('CxipERC721')) as CxipERC721;
 
-    assetProxy = (await ethers.getContract('CxipAssetProxy')) as CxipAssetProxy;
-    asset = (await ethers.getContract('CxipAsset')) as CxipAsset;
-
     royaltiesProxy = (await ethers.getContract('PA1DProxy')) as PA1DProxy;
     royalties = (await ethers.getContract('PA1D')) as PA1D as PA1D;
-
-    danielArshamErosionsProxy = (await ethers.getContract(
-      'DanielArshamErodingAndReformingCarsProxy'
-    )) as DanielArshamErodingAndReformingCarsProxy;
-    danielArshamErosions = await ethers.getContract(
-      'DanielArshamErodingAndReformingCars'
-    );
-
-    danielArshamErosionsProxyBytecode = (
-      (await ethers.getContractFactory(
-        'DanielArshamErodingAndReformingCarsProxy'
-      )) as ContractFactory
-    ).bytecode;
 
     mockErc721Receiver = (await ethers.getContract(
       'MockERC721Receiver'
@@ -154,32 +96,11 @@ describe('CXIP', () => {
   afterEach(async () => {});
 
   describe('Registry', async () => {
-    it('should set and get asset source', async () => {
-      const assetTx = await registry.setAssetSource(asset.address);
-      await assetTx.wait();
-      const assetSourceAddress = await registry.getAssetSource();
-      expect(assetSourceAddress).to.equal(asset.address);
-    });
-
-    it('should set and get asset proxy', async () => {
-      const assetProxyTx = await registry.setAsset(assetProxy.address);
-      await assetProxyTx.wait();
-      const assetProxyAddress = await registry.getAsset();
-      expect(assetProxyAddress).to.equal(assetProxy.address);
-    });
-
     it('should set and get ERC721', async () => {
       const erc721Tx = await registry.setERC721CollectionSource(erc721.address);
       await erc721Tx.wait();
       const erc721Address = await registry.getERC721CollectionSource();
       expect(erc721Address).to.equal(erc721.address);
-    });
-
-    it('should set and get identity', async () => {
-      const identityTx = await registry.setIdentitySource(identity.address);
-      await identityTx.wait();
-      const identitySourceAddress = await registry.getIdentitySource();
-      expect(identitySourceAddress).to.equal(identity.address);
     });
 
     it('should set and get provenance', async () => {
@@ -213,120 +134,6 @@ describe('CXIP', () => {
       const royaltiesProxyAddress = await registry.getPA1D();
       expect(royaltiesProxyAddress).to.equal(royaltiesProxy.address);
     });
-
-    it('should set and get Daniel Arsham Erosions', async () => {
-      const danielArshamErosionsTx = await registry.setCustomSource(
-        '0x748042799f1a8ea5aa2ae183edddb216f96c3c6ada37066aa2ce51a56438ede7',
-        danielArshamErosions.address
-      );
-      await danielArshamErosionsTx.wait();
-      const danielArshamErosionsAddress = await registry.getCustomSource(
-        '0x748042799f1a8ea5aa2ae183edddb216f96c3c6ada37066aa2ce51a56438ede7'
-      );
-      expect(danielArshamErosionsAddress).to.equal(
-        danielArshamErosions.address
-      );
-    });
-
-    it('should set and get Daniel Arsham Erosions proxy', async () => {
-      const danielArshamErosionsProxyTx = await registry.setCustomSource(
-        '0x34614b2160c4ad0a9004a062b1210e491f551c3b3eb86397949dc0279cf60c0d',
-        danielArshamErosionsProxy.address
-      );
-      await danielArshamErosionsProxyTx.wait();
-      const danielArshamErosionsProxyAddress = await registry.getCustomSource(
-        '0x34614b2160c4ad0a9004a062b1210e491f551c3b3eb86397949dc0279cf60c0d'
-      );
-      expect(danielArshamErosionsProxyAddress).to.equal(
-        danielArshamErosionsProxy.address
-      );
-    });
-  });
-
-  describe('Identity', async () => {
-    it('should create an identity', async () => {
-      const salt = deployer.address + '0x000000000000000000000000'.substring(2);
-      const tx = await provenance.createIdentity(
-        salt,
-        '0x' + '00'.repeat(20), // zero address
-        [
-          '0x0000000000000000000000000000000000000000000000000000000000000000',
-          '0x0000000000000000000000000000000000000000000000000000000000000000',
-          '0x0',
-        ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish }
-      );
-
-      const receipt = await tx.wait();
-      const events = receipt.events?.filter((x: any) => {
-        return x.event == 'IdentityCreated';
-      });
-
-      const identityAddress = await provenance.getIdentity();
-      expect(identityAddress).not.to.equal(ZERO_ADDRESS);
-      expect(identityAddress).to.equal(events?.[0].args?.[0]);
-      expect(identityAddress).to.equal(events?.[0].args?.identityAddress);
-    });
-
-    it('should not allow duplicate identities', async () => {
-      const salt = deployer.address + '0x000000000000000000000000'.substring(2);
-
-      await expect(
-        provenance.createIdentity(
-          salt,
-          '0x' + '00'.repeat(20), // zero address
-          [
-            '0x0000000000000000000000000000000000000000000000000000000000000000',
-            '0x0000000000000000000000000000000000000000000000000000000000000000',
-            '0x0',
-          ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish }
-        )
-      ).to.be.revertedWith('CXIP: wallet already used');
-    });
-
-    it.skip('should create an identity with a secondary wallet', async () => {
-      // TODO: Come back to this and use signatures for second address
-      // Not supported currently
-    });
-
-    it('should be a valid identity', async () => {
-      const salt = user.address + '0x000000000000000000000000'.substring(2);
-      const tx = await provenance.connect(user).createIdentity(
-        salt,
-        '0x' + '00'.repeat(20), // zero address
-        [
-          `0x000000000000000000000000${user.address.substring(2)}`,
-          `0x000000000000000000000000${user.address.substring(2)}`,
-          '0x0',
-        ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish }
-      );
-
-      const receipt = await tx.wait();
-      const identityAddress = await provenance.getIdentity();
-      expect(identityAddress).not.to.equal(ZERO_ADDRESS);
-
-      const isValid = await provenance.isIdentityValid(identityAddress);
-      expect(isValid).to.equal(true);
-    });
-
-    it('should not be a blacklisted identity', async () => {
-      const salt = user2.address + '0x000000000000000000000000'.substring(2);
-      const tx = await provenance.connect(user2).createIdentity(
-        salt,
-        '0x' + '00'.repeat(20), // zero address
-        [
-          `0x000000000000000000000000${user2.address.substring(2)}`,
-          `0x000000000000000000000000${user2.address.substring(2)}`,
-          '0x0',
-        ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish }
-      );
-
-      const receipt = await tx.wait();
-      const identityAddress = await provenance.getIdentity();
-      expect(identityAddress).not.to.equal(ZERO_ADDRESS);
-
-      const isValid = await provenance.isIdentityBlacklisted(identityAddress);
-      expect(isValid).to.equal(false);
-    });
   });
 
   describe('Collection', async () => {
@@ -335,23 +142,8 @@ describe('CXIP', () => {
 
       // Attach the provenance implementation ABI to provenance proxy
       const p = await provenance.attach(provenanceProxy.address);
-      const tx = await p.connect(user3).createIdentity(
-        salt,
-        '0x' + '00'.repeat(20), // zero address
-        [
-          `0x000000000000000000000000${user.address.substring(2)}`,
-          `0x000000000000000000000000${user3.address.substring(2)}`,
-          '0x0',
-        ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish }
-      );
 
-      const receipt = await tx.wait();
-      const identityAddress = await p.connect(user3).getIdentity();
-
-      // // Attach the identity implementation ABI to the newly created identity proxy
-      const i = await identity.attach(identityAddress);
-
-      const result = await i.connect(user3).createERC721Collection(
+      const result = await p.connect(user3).createERC721Collection(
         salt,
         user3.address,
         [
@@ -376,13 +168,13 @@ describe('CXIP', () => {
 
       result.wait();
 
-      const collectionAddress = await i.getCollectionById(0);
-      const collectionType = await i.getCollectionType(collectionAddress);
+      const collectionAddress = await p.getCollectionById(0);
+      const collectionType = await p.getCollectionType(collectionAddress);
       const c = erc721.attach(collectionAddress);
 
       expect(collectionAddress).not.to.equal(ZERO_ADDRESS);
       expect(collectionType).not.to.equal(ZERO_ADDRESS);
-      expect(await c.connect(user3).isOwner()).to.equal(true);
+      expect(await c.connect(user3)['isOwner()']()).to.equal(true); // TODO: isOwner() is overloaded
       expect(await c.connect(user3).owner()).to.equal(user3.address);
       expect(await c.connect(user3).name()).to.equal('Collection name');
       expect(await c.connect(user3).symbol()).to.equal('Collection symbol');
@@ -392,10 +184,6 @@ describe('CXIP', () => {
       expect(await c.connect(user3).contractURI()).to.equal(
         `https://nft.cxip.dev/${collectionAddress.toLowerCase()}/`
       );
-    });
-
-    it.skip('should create a collection using a different wallet in the identity', async () => {
-      // TODO: Not supported currently
     });
   });
 
@@ -407,25 +195,10 @@ describe('CXIP', () => {
         '0x0000000000000000000000000000000000000000000000000000000000000001';
 
       // Attach the provenance implementation ABI to provenance proxy
-      const p = await provenance.attach(provenanceProxy.address);
-      const tx = await p.connect(user4).createIdentity(
-        salt,
-        '0x' + '00'.repeat(20), // zero address
-        [
-          `0x000000000000000000000000${user4.address.substring(2)}`,
-          `0x000000000000000000000000${user4.address.substring(2)}`,
-          '0x0',
-        ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish }
-      );
-
-      const receipt = await tx.wait();
-      const identityAddress = await p.connect(user4).getIdentity();
-
-      // Attach the identity implementation ABI to the newly created identity proxy
-      const i = await identity.attach(identityAddress);
+      const p = provenance.attach(provenanceProxy.address);
 
       // Then create the collection
-      const result = await i.connect(user4).createERC721Collection(
+      const result = await p.connect(user4).createERC721Collection(
         salt,
         user4.address,
         [
@@ -450,10 +223,12 @@ describe('CXIP', () => {
 
       result.wait();
 
-      const collectionAddress = await i.getCollectionById(0);
-      const collectionType = await i.getCollectionType(collectionAddress);
+      const collectionAddress = await p.getCollectionById(1);
+      const collectionType = await p.getCollectionType(collectionAddress);
       expect(collectionAddress).not.to.equal(ZERO_ADDRESS);
       expect(collectionType).not.to.equal(ZERO_ADDRESS);
+
+      const c = erc721.attach(collectionAddress);
 
       // Finally create a new ERC721 NFT in the collection
       const payload =
@@ -471,9 +246,9 @@ describe('CXIP', () => {
       // The arweave and ipfs hashes are split into two variables to pack into slots
       const arHash = 'd3dStWPKvAsticf1YqNT3FQCzT2nYlAw' + 'RVNFVlKmonc';
       const ipfsHash = 'QmX3UFC6GeqnmBbthWQhxRW6WgTmWWVd' + 'ist3TL59UbTZYx';
-      const nftTx = await i
+      const nftTx = await c
         .connect(user4)
-        .createERC721Token(collectionAddress, tokenId, [
+        .cxipMint(tokenId, [
           payload,
           [signature.r, signature.s, signature.v],
           wallet,
@@ -493,7 +268,6 @@ describe('CXIP', () => {
 
       await nftTx.wait();
 
-      const c = erc721.attach(collectionAddress);
       expect(await c.connect(user4).payloadHash(tokenId)).to.equal(payload);
       expect(await c.connect(user4).payloadSigner(tokenId)).to.equal(
         user4.address
@@ -547,50 +321,25 @@ describe('CXIP', () => {
     });
   });
 
-  describe.only('Daniel Arsham: Eroding and Reforming Cars', async () => {
-    const tokenId = 10001;
-    const nonExistentTokenId = 0;
-
-    // This is the custodial wallet that Nifty Gateway uses to hold all of their NFTs that they have listed on their platform.
-    // const niftygateway = '0xE052113bd7D7700d623414a0a4585BCaE754E9d5';
-    // we are using a test wallet in this case, to be able to do tests without access to private key
-    //    const niftygateway = testWallet.address;
-
-    it('should create a ERC721 NFT in the Arsham collection', async () => {
-      // First create a new identity
+  describe('Daniel Arsham: Eroding and Reforming Cars', async () => {
+    it('should create and test an ERC721 NFT in a new collection', async () => {
+      const tokenId = 1;
+      const nonExistentTokenId = 999;
+      const totalSupply = 2;
       const salt = user5.address + '0x000000000000000000000000'.substring(2);
 
       // Attach the provenance implementation ABI to provenance proxy
       const p = provenance.attach(provenanceProxy.address);
-      const tx = await p.connect(user5).createIdentity(
-        salt,
-        '0x' + '00'.repeat(20), // zero address
-        [
-          `0x000000000000000000000000${user5.address.substring(2)}`,
-          `0x000000000000000000000000${user5.address.substring(2)}`,
-          '0x0',
-        ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish }
-      );
-
-      const receipt = await tx.wait();
-      const identityAddress = await p.connect(user5).getIdentity();
-
-      // Attach the identity implementation ABI to the newly created identity proxy
-      const i = identity.attach(identityAddress);
 
       // Then create the collection
-      const result = await i.connect(user5).createCustomERC721Collection(
+      const result = await p.connect(user5).createERC721Collection(
         salt,
         user5.address,
         [
           `0x0000000000000000000000000000000000000000000000000000000000000000`,
           `0x0000000000000000000000000000000000000000000000000000000000000000`,
-          '0x0',
-        ] as unknown as {
-          r: BytesLike;
-          s: BytesLike;
-          v: BigNumberish;
-        },
+          '0x00',
+        ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish },
         [
           `${utf8ToBytes32('Daniel Arsham: Eroding and Refor')}`, // Collection name
           `${utf8ToBytes32('ming Cars')}`, // Collection name 2
@@ -603,19 +352,17 @@ describe('CXIP', () => {
           symbol: BytesLike;
           royalties: string;
           bps: BigNumberish;
-        },
-        sha256('eip1967.CxipRegistry.DanielArshamErodingAndReformingCarsProxy'), // Daniel Arsham Erosions Proxy - Registry storage slot
-        danielArshamErosionsProxyBytecode // proxy contract byte code
+        }
       );
 
       result.wait();
 
-      const collectionAddress = await i.getCollectionById(0);
-      const collectionType = await i.getCollectionType(collectionAddress);
+      const collectionAddress = await p.getCollectionById(2);
+      const collectionType = await p.getCollectionType(collectionAddress);
       expect(collectionAddress).not.to.equal(ZERO_ADDRESS);
       expect(collectionType).not.to.equal(ZERO_ADDRESS);
 
-      const c = danielArshamErosions.attach(collectionAddress);
+      const c = erc721.attach(collectionAddress);
       const collectionName = await c.name();
       const collectionSymbol = await c.symbol();
 
@@ -632,60 +379,20 @@ describe('CXIP', () => {
           '" instead.'
       );
 
-      let startTime = Math.floor (Date.now() / 1000);
-      const rotations: Array<number> = [
-        Math.round((113 * 60) / 2),
-        Math.round((116 * 60) / 2),
-        Math.round((103 * 60) / 2),
-        Math.round((126 * 60) / 2)
-      ];
-      await c.connect(user5).setStartTimestamp('0x' + startTime.toString(16));
-      await c.connect(user5).setTokenSeparator(10000);
-      const totalSupply: number = 50 + 100 + 100 + 150;
-      await c.connect(user5).setTokenLimit(totalSupply);
-      await c
-        .connect(user5)
-        .setIntervalConfig([rotations[0], rotations[1], rotations[2], rotations[3]]);
-
       const wallet = user5.address;
-      let payload: BytesLike;
-      const arweave: string = 'https://arweave.net/';
-      const arHashes: Array<string> = [
-        'k6Dej-c5ga1TkKlJ5vjxtCyY6W6Ipc2ds7gzHAZKir0',
-        '3hBx7NynGoLPctHG8oS5uYKYdJNDj7A_IwTos9K-bUA',
-        'tbkb5xO694ktcSTGn7WVIwm8Y_7cucgoN6bduo9kZDA',
-        'KLBvdyxNunXuNhCyrDkPyEuJUA9frtKNa-bjFAEusB4',
-        'veEDJpGhtGpA4bac62nyhY3HTbWDAV_bTtAkj6vi4dc',
-        '_XAoDq-i3N7bwMNeNoUwCDVLvasCh46Fnhl9wKoaF88',
-        'WYDKFYbl6sbJP5LENzwAIlbtH0enQx_HDde0_kD5QAE',
-        'ucbj933WwVHVTQZP2yupmfEatLqoFYnWCQr1xXKbKdg'
-      ];
-      let arHash: BytesLike;
-      const ipfsHashes: Array<string> = [
-        'QmVLY9uE6quyCumNg4CqhAPh8Q8Kn4Hw5FTE6wKPMxKK9w',
-        'QmYpYw7pk3pJqeLF7GNCP6QD7WjST3JK8zzG4cmDMM4RiU',
-        'QmeZEHUkaXhRBUQhCVSJ3wrqjpAiGjySoeWq8aHufFX87e',
-        'QmXXtXd943CP6fx2ZMgX4iPvZpzzW9a4FbpFCs1GMeeMof',
-        'QmfX685GuEWkeLtPyyXm4DSRpHXXUsgAYDCEShrHY7GHej',
-        'QmQpH5cm3CDCBGUEJ9Lo1aZc6afRdpy4jUbb9R7yfZLHxX',
-        'QmYQWLJgq9zVMfkqUwDpGrP31jaobVqRMvgzzch9K1J25Y',
-        'QmNs7Fvu81wDuWE2oG7D3SdSpDRmS5aDzFQHDGXdXzz8AU'
-      ];
-      let ipfsHash: BytesLike;
-      let sig: any;
-      let signature: { r: BytesLike; s: BytesLike; v: BigNumberish };
+      const arweave: string = 'https://arweave.cxip.dev/';
 
-      // Mustang (State 1)
-      arHash = arHashes[0];
-      ipfsHash = ipfsHashes[0];
-      payload = '0x' + '00'.repeat(32);
-      sig = await user5.signMessage(payload);
-      signature = {
+      // Mustang
+      const arHash: BytesLike = 'k6Dej-c5ga1TkKlJ5vjxtCyY6W6Ipc2ds7gzHAZKir0';
+      const ipfsHash: BytesLike = 'QmVLY9uE6quyCumNg4CqhAPh8Q8Kn4Hw5FTE6wKPMxKK9w';
+      const payload: BytesLike = '0x' + '00'.repeat(32);
+      const sig = await user5.signMessage(payload);
+      const signature: { r: BytesLike; s: BytesLike; v: BigNumberish } = {
         r: '0x' + sig.substring(2, 66),
         s: '0x' + sig.substring(66, 130),
         v: '0x' + (parseInt('0x' + sig.substring(130, 132)) + 27).toString(16),
       };
-      const mustang1 = [
+      const mustang = [
         payload,
         [signature.r, signature.s, signature.v],
         wallet,
@@ -702,315 +409,17 @@ describe('CXIP', () => {
         ipfs: BytesLike;
         ipfs2: BytesLike;
       };
-
-      // Mustang (State 2)
-      arHash = arHashes[1];
-      ipfsHash = ipfsHashes[1];
-      payload = '0x' + '00'.repeat(32);
-      sig = await user5.signMessage(payload);
-      signature = {
-        r: '0x' + sig.substring(2, 66),
-        s: '0x' + sig.substring(66, 130),
-        v: '0x' + (parseInt('0x' + sig.substring(130, 132)) + 27).toString(16),
-      };
-      const mustang2 = [
-        payload,
-        [signature.r, signature.s, signature.v],
-        wallet,
-        web3.utils.asciiToHex(arHash.substring(0, 32)),
-        web3.utils.asciiToHex(arHash.substring(32, 43)),
-        web3.utils.asciiToHex(ipfsHash.substring(0, 32)),
-        web3.utils.asciiToHex(ipfsHash.substring(32, 46)),
-      ] as unknown as {
-        payloadHash: BytesLike;
-        payloadSignature: { r: BytesLike; s: BytesLike; v: BigNumberish };
-        creator: string;
-        arweave: BytesLike;
-        arweave2: BytesLike;
-        ipfs: BytesLike;
-        ipfs2: BytesLike;
-      };
-
-      // mustang
-      const mustangTx = await c
-        .connect(user5)
-        .prepareMintDataBatch([2, 3], [mustang1, mustang2]);
-
-      await mustangTx.wait();
-
-      // DeLorean (State 1)
-      arHash = arHashes[2];
-      ipfsHash = ipfsHashes[2];
-      payload = '0x' + '00'.repeat(32);
-      sig = await user5.signMessage(payload);
-      signature = {
-        r: '0x' + sig.substring(2, 66),
-        s: '0x' + sig.substring(66, 130),
-        v: '0x' + (parseInt('0x' + sig.substring(130, 132)) + 27).toString(16),
-      };
-      const delorean1 = [
-        payload,
-        [signature.r, signature.s, signature.v],
-        wallet,
-        web3.utils.asciiToHex(arHash.substring(0, 32)),
-        web3.utils.asciiToHex(arHash.substring(32, 43)),
-        web3.utils.asciiToHex(ipfsHash.substring(0, 32)),
-        web3.utils.asciiToHex(ipfsHash.substring(32, 46)),
-      ] as unknown as {
-        payloadHash: BytesLike;
-        payloadSignature: { r: BytesLike; s: BytesLike; v: BigNumberish };
-        creator: string;
-        arweave: BytesLike;
-        arweave2: BytesLike;
-        ipfs: BytesLike;
-        ipfs2: BytesLike;
-      };
-
-      // DeLorean (State 2)
-      arHash = arHashes[3];
-      ipfsHash = ipfsHashes[3];
-      payload = '0x' + '00'.repeat(32);
-      sig = await user5.signMessage(payload);
-      signature = {
-        r: '0x' + sig.substring(2, 66),
-        s: '0x' + sig.substring(66, 130),
-        v: '0x' + (parseInt('0x' + sig.substring(130, 132)) + 27).toString(16),
-      };
-      const delorean2 = [
-        payload,
-        [signature.r, signature.s, signature.v],
-        wallet,
-        web3.utils.asciiToHex(arHash.substring(0, 32)),
-        web3.utils.asciiToHex(arHash.substring(32, 43)),
-        web3.utils.asciiToHex(ipfsHash.substring(0, 32)),
-        web3.utils.asciiToHex(ipfsHash.substring(32, 46)),
-      ] as unknown as {
-        payloadHash: BytesLike;
-        payloadSignature: { r: BytesLike; s: BytesLike; v: BigNumberish };
-        creator: string;
-        arweave: BytesLike;
-        arweave2: BytesLike;
-        ipfs: BytesLike;
-        ipfs2: BytesLike;
-      };
-
-      // delorean
-      const deloreanTx = await c
-        .connect(user5)
-        .prepareMintDataBatch([4, 5], [delorean1, delorean2]);
-
-      await deloreanTx.wait();
-
-      // California (State 1)
-      arHash = arHashes[4];
-      ipfsHash = ipfsHashes[4];
-      payload = '0x' + '00'.repeat(32);
-      sig = await user5.signMessage(payload);
-      signature = {
-        r: '0x' + sig.substring(2, 66),
-        s: '0x' + sig.substring(66, 130),
-        v: '0x' + (parseInt('0x' + sig.substring(130, 132)) + 27).toString(16),
-      };
-      const california1 = [
-        payload,
-        [signature.r, signature.s, signature.v],
-        wallet,
-        web3.utils.asciiToHex(arHash.substring(0, 32)),
-        web3.utils.asciiToHex(arHash.substring(32, 43)),
-        web3.utils.asciiToHex(ipfsHash.substring(0, 32)),
-        web3.utils.asciiToHex(ipfsHash.substring(32, 46)),
-      ] as unknown as {
-        payloadHash: BytesLike;
-        payloadSignature: { r: BytesLike; s: BytesLike; v: BigNumberish };
-        creator: string;
-        arweave: BytesLike;
-        arweave2: BytesLike;
-        ipfs: BytesLike;
-        ipfs2: BytesLike;
-      };
-
-      // California (State 2)
-      arHash = arHashes[5];
-      ipfsHash = ipfsHashes[5];
-      payload = '0x' + '00'.repeat(32);
-      sig = await user5.signMessage(payload);
-      signature = {
-        r: '0x' + sig.substring(2, 66),
-        s: '0x' + sig.substring(66, 130),
-        v: '0x' + (parseInt('0x' + sig.substring(130, 132)) + 27).toString(16),
-      };
-      const california2 = [
-        payload,
-        [signature.r, signature.s, signature.v],
-        wallet,
-        web3.utils.asciiToHex(arHash.substring(0, 32)),
-        web3.utils.asciiToHex(arHash.substring(32, 43)),
-        web3.utils.asciiToHex(ipfsHash.substring(0, 32)),
-        web3.utils.asciiToHex(ipfsHash.substring(32, 46)),
-      ] as unknown as {
-        payloadHash: BytesLike;
-        payloadSignature: { r: BytesLike; s: BytesLike; v: BigNumberish };
-        creator: string;
-        arweave: BytesLike;
-        arweave2: BytesLike;
-        ipfs: BytesLike;
-        ipfs2: BytesLike;
-      };
-
-      // california
-      const californiaTx = await c
-        .connect(user5)
-        .prepareMintDataBatch([6, 7], [california1, california2]);
-
-      await californiaTx.wait();
-
-      // E30 (State 1)
-      arHash = arHashes[6];
-      ipfsHash = ipfsHashes[6];
-      payload = '0x' + '00'.repeat(32);
-      sig = await user5.signMessage(payload);
-      signature = {
-        r: '0x' + sig.substring(2, 66),
-        s: '0x' + sig.substring(66, 130),
-        v: '0x' + (parseInt('0x' + sig.substring(130, 132)) + 27).toString(16),
-      };
-      const e301 = [
-        payload,
-        [signature.r, signature.s, signature.v],
-        wallet,
-        web3.utils.asciiToHex(arHash.substring(0, 32)),
-        web3.utils.asciiToHex(arHash.substring(32, 43)),
-        web3.utils.asciiToHex(ipfsHash.substring(0, 32)),
-        web3.utils.asciiToHex(ipfsHash.substring(32, 46)),
-      ] as unknown as {
-        payloadHash: BytesLike;
-        payloadSignature: { r: BytesLike; s: BytesLike; v: BigNumberish };
-        creator: string;
-        arweave: BytesLike;
-        arweave2: BytesLike;
-        ipfs: BytesLike;
-        ipfs2: BytesLike;
-      };
-
-      // E30 (State 2)
-      arHash = arHashes[7];
-      ipfsHash = ipfsHashes[7];
-      payload = '0x' + '00'.repeat(32);
-      sig = await user5.signMessage(payload);
-      signature = {
-        r: '0x' + sig.substring(2, 66),
-        s: '0x' + sig.substring(66, 130),
-        v: '0x' + (parseInt('0x' + sig.substring(130, 132)) + 27).toString(16),
-      };
-      const e302 = [
-        payload,
-        [signature.r, signature.s, signature.v],
-        wallet,
-        web3.utils.asciiToHex(arHash.substring(0, 32)),
-        web3.utils.asciiToHex(arHash.substring(32, 43)),
-        web3.utils.asciiToHex(ipfsHash.substring(0, 32)),
-        web3.utils.asciiToHex(ipfsHash.substring(32, 46)),
-      ] as unknown as {
-        payloadHash: BytesLike;
-        payloadSignature: { r: BytesLike; s: BytesLike; v: BigNumberish };
-        creator: string;
-        arweave: BytesLike;
-        arweave2: BytesLike;
-        ipfs: BytesLike;
-        ipfs2: BytesLike;
-      };
-
-      // e30
-      const e30Tx = await c
-        .connect(user5)
-        .prepareMintDataBatch([8, 9], [e301, e302]);
-
-      await e30Tx.wait();
-
-      // mustang #50
-      await c.connect(user5).batchMint(wallet, 10001, 50, niftygateway);
-
-      // delorean #100
-      await c.connect(user5).batchMint(wallet, 20001, 50, niftygateway);
-      await c.connect(user5).batchMint(wallet, 20051, 50, niftygateway);
-
-      // california #100
-      await c.connect(user5).batchMint(wallet, 30001, 50, niftygateway);
-      await c.connect(user5).batchMint(wallet, 30051, 50, niftygateway);
-
-      // e30 #150
-      await c.connect(user5).batchMint(wallet, 40001, 50, niftygateway);
-      await c.connect(user5).batchMint(wallet, 40051, 50, niftygateway);
-      await c.connect(user5).batchMint(wallet, 40101, 50, niftygateway);
-
-      await c.connect(user5).setMintingClosed();
+      const mustangtx = await c.connect(user5).cxipMint(1, mustang);
+      await mustangtx.wait();
+      const mustangtx2 = await c.connect(user5).cxipMint(2, mustang);
+      await mustangtx2.wait();
 
       describe('tokenURI', function () {
-        context('when getting State 1 tokenURIs', function () {
-          it('returns correct Arweave URI for 10001-10050', async function () {
-            await c.connect(user5).setStartTimestamp('0x' + (startTime).toString(16));
-            const firstToken = 10001;
-            const lastToken = 10050;
-            expect(await c.tokenURI(firstToken)).to.be.equal(arweave + arHashes[0]);
-            expect(await c.tokenURI(lastToken)).to.be.equal(arweave + arHashes[0]);
-          });
-
-          it('returns correct Arweave URI for 20001-20100', async function () {
-            await c.connect(user5).setStartTimestamp('0x' + (startTime).toString(16));
-            const firstToken = 20001;
-            const lastToken = 20100;
-            expect(await c.tokenURI(firstToken)).to.be.equal(arweave + arHashes[2]);
-            expect(await c.tokenURI(lastToken)).to.be.equal(arweave + arHashes[2]);
-          });
-
-          it('returns correct Arweave URI for 30001-30100', async function () {
-            await c.connect(user5).setStartTimestamp('0x' + (startTime).toString(16));
-            const firstToken = 30001;
-            const lastToken = 30100;
-            expect(await c.tokenURI(firstToken)).to.be.equal(arweave + arHashes[4]);
-            expect(await c.tokenURI(lastToken)).to.be.equal(arweave + arHashes[4]);
-          });
-
-          it('returns correct Arweave URI for 40001-40150', async function () {
-            await c.connect(user5).setStartTimestamp('0x' + (startTime).toString(16));
-            const firstToken = 40001;
-            const lastToken = 40150;
-            expect(await c.tokenURI(firstToken)).to.be.equal(arweave + arHashes[6]);
-            expect(await c.tokenURI(lastToken)).to.be.equal(arweave + arHashes[6]);
-          });
-        });
-
-        context('when getting State 2 tokenURIs', function () {
-          it('returns correct Arweave URI for 10001-10050', async function () {
-            await c.connect(user5).setStartTimestamp('0x' + (startTime - rotations[0]).toString(16));
-            const firstToken = 10001;
-            const lastToken = 10050;
-            expect(await c.tokenURI(firstToken)).to.be.equal(arweave + arHashes[1]);
-            expect(await c.tokenURI(lastToken)).to.be.equal(arweave + arHashes[1]);
-          });
-
-          it('returns correct Arweave URI for 20001-20100', async function () {
-            await c.connect(user5).setStartTimestamp('0x' + (startTime - rotations[1]).toString(16));
-            const firstToken = 20001;
-            const lastToken = 20100;
-            expect(await c.tokenURI(firstToken)).to.be.equal(arweave + arHashes[3]);
-            expect(await c.tokenURI(lastToken)).to.be.equal(arweave + arHashes[3]);
-          });
-
-          it('returns correct Arweave URI for 30001-30100', async function () {
-            await c.connect(user5).setStartTimestamp('0x' + (startTime - rotations[2]).toString(16));
-            const firstToken = 30001;
-            const lastToken = 30100;
-            expect(await c.tokenURI(firstToken)).to.be.equal(arweave + arHashes[5]);
-            expect(await c.tokenURI(lastToken)).to.be.equal(arweave + arHashes[5]);
-          });
-
-          it('returns correct Arweave URI for 40001-40150', async function () {
-            await c.connect(user5).setStartTimestamp('0x' + (startTime - rotations[3]).toString(16));
-            const firstToken = 40001;
-            const lastToken = 40150;
-            expect(await c.tokenURI(firstToken)).to.be.equal(arweave + arHashes[7]);
-            expect(await c.tokenURI(lastToken)).to.be.equal(arweave + arHashes[7]);
+        context('when getting tokenURI', async function () {
+          it('returns ' + arweave + arHash + ' for tokenURI', async function () {
+            expect(await c.tokenURI(tokenId)).to.be.equal(
+              arweave + arHash
+            );
           });
         });
       });
@@ -1019,21 +428,22 @@ describe('CXIP', () => {
       describe('balanceOf', function () {
         context('when the given address owns some tokens', function () {
           it('returns the amount of tokens owned by the given address', async function () {
-            expect(await c.balanceOf(niftygateway)).to.be.equal('400');
+            expect(await c.balanceOf(user5.address)).to.be.equal(totalSupply);
           });
         });
 
-        context('when the given address does not own any tokens', function () {
-          it('returns 0', async function () {
-            expect(await c.balanceOf(user.address)).to.be.equal('0');
-          });
-        });
+        context(
+          'when the given address does not own any tokens',
+          function () {
+            it('returns 0', async function () {
+              expect(await c.balanceOf(user.address)).to.be.equal('0');
+            });
+          }
+        );
 
         context('when querying the zero address', function () {
-          it('throws', async function () {
-            await expect(c.balanceOf(ZERO_ADDRESS)).to.be.revertedWith(
-              'CXIP: zero address'
-            );
+          it('returns zero', async function () {
+            expect(await c.balanceOf(ZERO_ADDRESS)).to.be.equal('0');
           });
         });
       });
@@ -1043,7 +453,7 @@ describe('CXIP', () => {
           'when the given token ID was tracked by this token',
           function () {
             it('returns the owner of the given token ID', async function () {
-              expect(await c.ownerOf(tokenId)).to.be.equal(niftygateway);
+              expect(await c.ownerOf(tokenId)).to.be.equal(user5.address);
             });
           }
         );
@@ -1051,10 +461,8 @@ describe('CXIP', () => {
         context(
           'when the given token ID was not tracked by this token',
           function () {
-            const tokenId = nonExistentTokenId;
-
             it('reverts', async function () {
-              await expect(c.ownerOf(tokenId)).to.be.revertedWith(
+              await expect(c.ownerOf(nonExistentTokenId)).to.be.revertedWith(
                 'ERC721: token does not exist'
               );
             });
@@ -1064,9 +472,14 @@ describe('CXIP', () => {
 
       describe('balanceOf', function () {
         context('get total owned tokens for wallet', function () {
-          it('returns ' + totalSupply.toString() + ' for wallet', async function () {
-            expect(await c.balanceOf(testWallet.address)).to.be.equal(totalSupply);
-          });
+          it(
+            'returns ' + totalSupply.toString() + ' for wallet',
+            async function () {
+              expect(await c.balanceOf(user5.address)).to.be.equal(
+                totalSupply
+              );
+            }
+          );
 
           it('returns 0 for test wallet', async function () {
             expect(await c.balanceOf(testWallet2.address)).to.be.equal(0);
@@ -1075,38 +488,51 @@ describe('CXIP', () => {
       });
 
       describe('tokenByIndex', function () {
-        context('get token by index, within totalSupply limit', function () {
-          it('returns tokenId for valid index', async function () {
-            expect(await c.tokenByIndex(0)).to.be.above(0);
-          });
+        context(
+          'get token by index, within totalSupply limit',
+          function () {
+            it('returns tokenId for valid index', async function () {
+              expect(await c.tokenByIndex(0)).to.be.above(0);
+            });
 
-          it('fails for index out of range', async function () {
-            await expect(c.tokenByIndex(await c.totalSupply())).to.be.revertedWith('CXIP: index out of bounds');
-          });
-        });
+            it('fails for index out of range', async function () {
+              await expect(c.tokenByIndex(await c.totalSupply())).to.be
+                .revertedWith('CXIP: index out of bounds');
+            });
+          }
+        );
       });
 
       describe('tokenOfOwnerByIndex', function () {
         context('get token of owner by index', function () {
           it('returns tokenId for valid index', async function () {
-            expect(await c.tokenOfOwnerByIndex(testWallet.address, 0)).to.be.above(0);
+            expect(
+              await c.tokenOfOwnerByIndex(user5.address, 0)
+            ).to.be.above(0);
           });
 
           it('fails for index out of range', async function () {
-            await expect(c.tokenOfOwnerByIndex(testWallet.address, await c.balanceOf(testWallet.address))).to.be.revertedWith('CXIP: index out of bounds');
+            await expect(
+              c.tokenOfOwnerByIndex(
+                user5.address,
+                await c.balanceOf(user5.address)
+              )
+            ).to.be.revertedWith('CXIP: index out of bounds');
           });
 
           it('fails for wallet with no tokens', async function () {
-            await expect(c.tokenOfOwnerByIndex(testWallet2.address, 0)).to.be.revertedWith('CXIP: index out of bounds');
+            await expect(
+              c.tokenOfOwnerByIndex(testWallet2.address, 0)
+            ).to.be.revertedWith('CXIP: index out of bounds');
           });
         });
       });
 
       describe('approve', function () {
         context('approving address for tokenId', function () {
-          const tokenId = 10001;
+          const tokenId = 1;
           it('returns correct wallet as approved', async function () {
-            await c.connect(testWallet).approve(testWallet2.address, tokenId);
+            await c.connect(user5).approve(testWallet2.address, tokenId);
             expect(await c.getApproved(tokenId)).to.be.equal(
               testWallet2.address
             );
@@ -1117,7 +543,7 @@ describe('CXIP', () => {
               c
                 .connect(testWallet3)
                 ['transferFrom(address,address,uint256)'](
-                  testWallet.address,
+                  user5.address,
                   testWallet3.address,
                   tokenId
                 )
@@ -1125,12 +551,12 @@ describe('CXIP', () => {
           });
 
           it('reverts for not approved tokenId transfer', async function () {
-            const wrongTokendId = 10002;
+            const wrongTokendId = 2;
             await expect(
               c
                 .connect(testWallet2)
                 ['transferFrom(address,address,uint256)'](
-                  testWallet.address,
+                  user5.address,
                   testWallet3.address,
                   wrongTokendId
                 )
@@ -1141,7 +567,7 @@ describe('CXIP', () => {
             await c
               .connect(testWallet2)
               ['transferFrom(address,address,uint256)'](
-                testWallet.address,
+                user5.address,
                 testWallet3.address,
                 tokenId
               );
@@ -1152,23 +578,26 @@ describe('CXIP', () => {
 
       describe('approveForAll', function () {
         context('approving operator for all owned tokens', function () {
-          const tokenId = 10001;
+          const tokenId = 1;
           it('returns operator as approvedForAll', async function () {
             await c
               .connect(testWallet3)
               .setApprovalForAll(testWallet2.address, true);
             expect(
-              await c.isApprovedForAll(testWallet3.address, testWallet2.address)
+              await c.isApprovedForAll(
+                testWallet3.address,
+                testWallet2.address
+              )
             ).to.be.equal(true);
           });
 
           it('reverts for not approvedForAll wallet', async function () {
             await expect(
               c
-                .connect(testWallet)
+                .connect(user5)
                 ['transferFrom(address,address,uint256)'](
                   testWallet3.address,
-                  testWallet.address,
+                  user5.address,
                   tokenId
                 )
             ).to.be.revertedWith('CXIP: not approved sender');
@@ -1179,10 +608,10 @@ describe('CXIP', () => {
               .connect(testWallet2)
               ['transferFrom(address,address,uint256)'](
                 testWallet3.address,
-                testWallet.address,
+                user5.address,
                 tokenId
               );
-            expect(await c.ownerOf(tokenId)).to.be.equal(testWallet.address);
+            expect(await c.ownerOf(tokenId)).to.be.equal(user5.address);
           });
         });
       });
@@ -1192,7 +621,7 @@ describe('CXIP', () => {
           'using MockErc721Receiver to test safeTransferFrom functionality',
           function () {
             const r = mockErc721Receiver.attach(mockErc721Receiver.address);
-            const tokenId = 10001;
+            const tokenId = 1;
 
             it('reverts for safeTransferFrom on unsupported ERC721 Receiver smart contract', async function () {
               // we disable support first
@@ -1200,9 +629,9 @@ describe('CXIP', () => {
               // we try a transfer
               await expect(
                 c
-                  .connect(testWallet)
+                  .connect(user5)
                   ['safeTransferFrom(address,address,uint256)'](
-                    testWallet.address,
+                    user5.address,
                     r.address,
                     tokenId
                   )
@@ -1214,9 +643,9 @@ describe('CXIP', () => {
               await r.toggleWorks(true);
               // we try a safeTransferFrom
               await c
-                .connect(testWallet)
+                .connect(user5)
                 ['safeTransferFrom(address,address,uint256)'](
-                  testWallet.address,
+                  user5.address,
                   r.address,
                   tokenId
                 );
@@ -1224,8 +653,8 @@ describe('CXIP', () => {
             });
 
             it('transfers token out of ERC721 Receiver smart contract', async function () {
-                await r.transferNFT(c.address, tokenId, testWallet.address);
-                expect(await c.ownerOf(tokenId)).to.be.equal(testWallet.address);
+              await r.transferNFT(c.address, tokenId, user5.address);
+              expect(await c.ownerOf(tokenId)).to.be.equal(user5.address);
             });
           }
         );
@@ -1234,16 +663,19 @@ describe('CXIP', () => {
       describe('burn', function () {
         context('burn owned token', function () {
           it('fails to burn not owned/approved token', async function () {
-            await expect(c.connect(testWallet2).burn(tokenId)).to.be.revertedWith('CXIP: not approved sender');
+            await expect(
+              c.connect(testWallet2).burn(tokenId)
+            ).to.be.revertedWith('CXIP: not approved sender');
           });
 
           it('burns owned token', async function () {
-            await c.connect(testWallet).burn(tokenId);
-            await expect(c.ownerOf(tokenId)).to.be.revertedWith('ERC721: token does not exist');
+            await c.connect(user5).burn(tokenId);
+            await expect(c.ownerOf(tokenId)).to.be.revertedWith(
+              'ERC721: token does not exist'
+            );
           });
         });
       });
-
     });
   });
 });

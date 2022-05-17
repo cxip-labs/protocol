@@ -6,18 +6,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  const cxipAssetProxy = await deploy('CxipAssetProxy', {
-    from: deployer,
-    args: [],
-    log: true,
-  });
-
-  const cxipCopyrightProxy = await deploy('CxipCopyrightProxy', {
-    from: deployer,
-    args: [],
-    log: true,
-  });
-
   const cxipERC1155Proxy = await deploy('CxipERC1155Proxy', {
     from: deployer,
     args: [],
@@ -28,12 +16,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   // with the correct registry address
 
   // const cxipERC721Proxy = await deploy('CxipERC721Proxy', {
-  //   from: deployer,
-  //   args: [],
-  //   log: true,
-  // });
-
-  // const cxipIdentityProxy = await deploy('CxipIdentityProxy', {
   //   from: deployer,
   //   args: [],
   //   log: true,
@@ -54,12 +36,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
 export default func;
 func.tags = [
-  'CxipAssetProxy',
-  'CxipCopyrightProxy',
   // 'CxipERC721Proxy',
   'CxipERC1155Proxy',
-  // 'CxipIdentityProxy',
   'CxipProvenanceProxy',
-  'PA1DProxy'
+  'PA1DProxy',
 ];
 func.dependencies = ['CxipRegistry'];

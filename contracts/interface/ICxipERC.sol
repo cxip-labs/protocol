@@ -15,11 +15,11 @@ pragma solidity 0.8.12;
 interface ICxipERC {
     function admin() external view returns (address);
 
-    function getIdentity() external view returns (address);
-
     function isAdmin() external view returns (bool);
 
     function isOwner() external view returns (bool);
+
+    function isOwner(address wallet) external view returns (bool);
 
     function name() external view returns (string memory);
 

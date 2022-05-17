@@ -13,8 +13,8 @@ pragma solidity 0.8.12;
         _______\/////////__\///_______\///__\///////////__\///____________*/
 
 import "./external/OpenSea.sol";
+import "./interface/IERC165.sol";
 import "./interface/ICxipERC721.sol";
-import "./interface/ICxipIdentity.sol";
 import "./interface/ICxipProvenance.sol";
 import "./interface/ICxipRegistry.sol";
 import "./interface/IPA1D.sol";
@@ -126,14 +126,6 @@ contract CxipERC721 {
     event ApprovalForAll(address indexed wallet, address indexed operator, bool approved);
 
     /**
-     * @notice Event emitted to signal to OpenSea that a permanent URI was created.
-     * @dev Even though OpenSea advertises support for this, they do not listen to this event, and do not respond to it.
-     * @param uri The permanent/static URL of the NFT. Cannot ever be changed again.
-     * @param id Token id of the NFT.
-     */
-    event PermanentURI(string uri, uint256 indexed id);
-
-    /**
      * @notice Constructor is empty and not utilised.
      * @dev To make exact CREATE2 deployment possible, constructor is left empty. We utilize the "init" function instead.
      */
@@ -148,12 +140,9 @@ contract CxipERC721 {
     }
 
     /**
-     * @notice Enables royaltiy functionality at the ERC721 level when ether is sent with no calldata.
-     * @dev See implementation of _royaltiesFallback.
+     * @notice Receive is purposefully left blank to not have any out-of-gas errors.
      */
-    receive() external payable {
-        _royaltiesFallback();
-    }
+    receive() external payable {}
 
     /**
      * @notice Enables royaltiy functionality at the ERC721 level no other function matches the call.
@@ -171,13 +160,7 @@ contract CxipERC721 {
      */
     function arweaveURI(uint256 tokenId) external view returns (string memory) {
         return
-            string(
-                abi.encodePacked(
-                    "https://arweave.cxip.dev/",
-                    _tokenData[tokenId].arweave,
-                    _tokenData[tokenId].arweave2
-                )
-            );
+            string(abi.encodePacked("https://arweave.cxip.dev/", _tokenData[tokenId].arweave, _tokenData[tokenId].arweave2));
     }
 
     /**
@@ -186,10 +169,7 @@ contract CxipERC721 {
      * @return string The URI.
      */
     function contractURI() external view returns (string memory) {
-        return
-            string(
-                abi.encodePacked("https://nft.cxip.dev/", Strings.toHexString(address(this)), "/")
-            );
+        return string(abi.encodePacked("https://nft.cxip.dev/", Strings.toHexString(address(this)), "/"));
     }
 
     /**
@@ -218,14 +198,7 @@ contract CxipERC721 {
      * @return string The URI.
      */
     function ipfsURI(uint256 tokenId) external view returns (string memory) {
-        return
-            string(
-                abi.encodePacked(
-                    "https://ipfs.cxip.dev/",
-                    _tokenData[tokenId].ipfs,
-                    _tokenData[tokenId].ipfs2
-                )
-            );
+        return string(abi.encodePacked("https://ipfs.cxip.dev/", _tokenData[tokenId].ipfs, _tokenData[tokenId].ipfs2));
     }
 
     /**
@@ -234,13 +207,7 @@ contract CxipERC721 {
      * @return string The collection name.
      */
     function name() external view returns (string memory) {
-        return
-            string(
-                abi.encodePacked(
-                    Bytes.trim(_collectionData.name),
-                    Bytes.trim(_collectionData.name2)
-                )
-            );
+        return string(abi.encodePacked(Bytes.trim(_collectionData.name), Bytes.trim(_collectionData.name2)));
     }
 
     /**
@@ -312,13 +279,7 @@ contract CxipERC721 {
      */
     function tokenURI(uint256 tokenId) external view returns (string memory) {
         return
-            string(
-                abi.encodePacked(
-                    "https://arweave.cxip.dev/",
-                    _tokenData[tokenId].arweave,
-                    _tokenData[tokenId].arweave2
-                )
-            );
+            string(abi.encodePacked("https://arweave.cxip.dev/", _tokenData[tokenId].arweave, _tokenData[tokenId].arweave2));
     }
 
     /**
@@ -362,23 +323,12 @@ contract CxipERC721 {
      * @param tokenId The token to burn.
      */
     function burn(uint256 tokenId) public {
-        if (_isApproved(msg.sender, tokenId)) {
-            address wallet = _tokenOwner[tokenId];
-            require(!Address.isZero(wallet));
-            _clearApproval(tokenId);
-            _tokenOwner[tokenId] = address(0);
-            emit Transfer(wallet, address(0), tokenId);
-            _removeTokenFromOwnerEnumeration(wallet, tokenId);
-            uint256 index = _allTokens.length;
-            index--;
-            if (index == 0) {
-                delete _allTokens;
-            } else {
-                delete _allTokens[index];
-            }
-            _totalTokens -= 1;
-            delete _tokenData[tokenId];
-        }
+        require(_isApproved(msg.sender, tokenId), "CXIP: not approved sender");
+        address wallet = _tokenOwner[tokenId];
+        _clearApproval(tokenId);
+        _tokenOwner[tokenId] = address(0);
+        emit Transfer(wallet, address(0), tokenId);
+        _removeTokenFromOwnerEnumeration(wallet, tokenId);
     }
 
     /**
@@ -415,7 +365,6 @@ contract CxipERC721 {
 
     /**
      * @notice Safely transfers `tokenId` token from `from` to `to`, checking first that contract recipients
-     * @dev Since it's not being used, the _data variable is commented out to avoid compiler warnings.
      * are aware of the ERC721 protocol to prevent tokens from being forever locked.
      * @param from cannot be the zero address.
      * @param to cannot be the zero address.
@@ -425,10 +374,17 @@ contract CxipERC721 {
         address from,
         address to,
         uint256 tokenId,
-        bytes memory /*_data*/
+        bytes memory data
     ) public payable {
-        if (_isApproved(msg.sender, tokenId)) {
-            _transferFrom(from, to, tokenId);
+        require(_isApproved(msg.sender, tokenId), "CXIP: not approved sender");
+        _transferFrom(from, to, tokenId);
+        if (Address.isContract(to)) {
+            require(
+                IERC165(to).supportsInterface(0x01ffc9a7) &&
+                    IERC165(to).supportsInterface(0x150b7a02) &&
+                    ICxipERC721(to).onERC721Received(address(this), from, tokenId, data) == 0x150b7a02,
+                "CXIP: onERC721Received fail"
+            );
         }
     }
 
@@ -439,12 +395,9 @@ contract CxipERC721 {
      * @param approved Turn on or off approval status.
      */
     function setApprovalForAll(address to, bool approved) public {
-        if (to != msg.sender) {
-            _operatorApprovals[msg.sender][to] = approved;
-            emit ApprovalForAll(msg.sender, to, approved);
-        } else {
-            assert(false);
-        }
+        require(to != msg.sender, "CXIP: can't approve self");
+        _operatorApprovals[msg.sender][to] = approved;
+        emit ApprovalForAll(msg.sender, to, approved);
     }
 
     /**
@@ -476,9 +429,8 @@ contract CxipERC721 {
         uint256 tokenId,
         bytes memory /*_data*/
     ) public payable {
-        if (_isApproved(msg.sender, tokenId)) {
-            _transferFrom(from, to, tokenId);
-        }
+        require(_isApproved(msg.sender, tokenId), "CXIP: not approved sender");
+        _transferFrom(from, to, tokenId);
     }
 
     /**
@@ -490,15 +442,13 @@ contract CxipERC721 {
      */
     function cxipMint(uint256 id, TokenData calldata tokenData) public onlyOwner returns (uint256) {
         if (id == 0) {
-            _currentTokenId += 1;
+            while (_exists(_currentTokenId)) {
+                _currentTokenId += 1;
+            }
             id = _currentTokenId;
         }
         _mint(tokenData.creator, id);
         _tokenData[id] = tokenData;
-        emit PermanentURI(
-            string(abi.encodePacked("https://arweave.cxip.dev/", tokenData.arweave, tokenData.arweave2)),
-            id
-        );
         return id;
     }
 
@@ -520,17 +470,6 @@ contract CxipERC721 {
      */
     function setSymbol(bytes32 newSymbol) public onlyOwner {
         _collectionData.symbol = newSymbol;
-    }
-
-    /**
-     * @notice Transfers ownership of the collection.
-     * @dev Can't be the zero address.
-     * @param newOwner Address of new owner.
-     */
-    function transferOwnership(address newOwner) public onlyOwner {
-        if (!Address.isZero(newOwner)) {
-            _owner = newOwner;
-        }
     }
 
     /**
@@ -563,15 +502,6 @@ contract CxipERC721 {
     }
 
     /**
-     * @notice Get the associated identity for the collection.
-     * @dev Goes up the chain to read from the registry.
-     * @return address Identity contract address.
-     */
-    function getIdentity() public view returns (address) {
-        return ICxipProvenance(getRegistry().getProvenance()).getWalletIdentity(_owner);
-    }
-
-    /**
      * @notice Checks if the address is approved.
      * @dev Includes references to OpenSea and Rarible marketplace proxies.
      * @param wallet Address of the wallet.
@@ -579,14 +509,7 @@ contract CxipERC721 {
      * @return bool True if approved.
      */
     function isApprovedForAll(address wallet, address operator) public view returns (bool) {
-        return (_operatorApprovals[wallet][operator] ||
-            // Rarible Transfer Proxy
-            0x72617269626C655472616E7366657250726F7879 == operator ||
-            // OpenSea Transfer Proxy
-            address(
-                OpenSeaProxyRegistry(0x6f70656E5365615472616E7366657250726F7879).proxies(wallet)
-            ) ==
-            operator);
+        return _operatorApprovals[wallet][operator];
     }
 
     /**
@@ -595,7 +518,16 @@ contract CxipERC721 {
      * @return bool True if owner.
      */
     function isOwner() public view returns (bool) {
-        return (msg.sender == _owner || msg.sender == _admin || isIdentityWallet(msg.sender));
+        return (msg.sender == _owner || msg.sender == _admin);
+    }
+
+    /**
+     * @notice Check if the address is the owner.
+     * @dev The owner could also be the admin or identity contract of the owner.
+     * @return bool True if owner.
+     */
+    function isOwner(address wallet) public view returns (bool) {
+        return (wallet == _owner || wallet == _admin);
     }
 
     /**
@@ -626,7 +558,7 @@ contract CxipERC721 {
      * @return uint256 Returns the token id of token located at that index.
      */
     function tokenByIndex(uint256 index) public view returns (uint256) {
-        require(index < totalSupply());
+        require(index < totalSupply(), "CXIP: index out of bounds");
         return _allTokens[index];
     }
 
@@ -638,7 +570,7 @@ contract CxipERC721 {
      * @return uint256 Returns the token id of token located at that index in specified wallet.
      */
     function tokenOfOwnerByIndex(address wallet, uint256 index) public view returns (uint256) {
-        require(index < balanceOf(wallet));
+        require(index < balanceOf(wallet), "CXIP: index out of bounds");
         return _ownedTokens[wallet][index];
     }
 
@@ -687,20 +619,6 @@ contract CxipERC721 {
                 return(0, returndatasize())
             }
         }
-    }
-
-    /**
-     * @notice Checks if an address is an identity contract.
-     * @dev It must also be registred.
-     * @param sender Address to check if registered to identity.
-     * @return bool True if registred identity.
-     */
-    function isIdentityWallet(address sender) internal view returns (bool) {
-        address identity = getIdentity();
-        if (Address.isZero(identity)) {
-            return false;
-        }
-        return ICxipIdentity(identity).isWalletRegistered(sender);
     }
 
     /**
@@ -812,8 +730,6 @@ contract CxipERC721 {
     function _isApproved(address spender, uint256 tokenId) private view returns (bool) {
         require(_exists(tokenId));
         address tokenOwner = _tokenOwner[tokenId];
-        return (spender == tokenOwner ||
-            getApproved(tokenId) == spender ||
-            isApprovedForAll(tokenOwner, spender));
+        return (spender == tokenOwner || getApproved(tokenId) == spender || isApprovedForAll(tokenOwner, spender));
     }
 }

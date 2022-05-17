@@ -12,29 +12,53 @@ pragma solidity 0.8.12;
        ____\////\\\\\\\\\__/\\\/___\///\\\__/\\\\\\\\\\\_\/\\\_____________
         _______\/////////__\///_______\///__\///////////__\///____________*/
 
+import "../struct/CollectionData.sol";
+import "../struct/InterfaceType.sol";
+import "../struct/Token.sol";
+import "../struct/TokenData.sol";
+
 interface ICxipProvenance {
-    function createIdentity(
+    function createERC721Token(
+        address collection,
+        uint256 id,
+        TokenData calldata tokenData,
+        Verification calldata verification
+    ) external returns (uint256);
+
+    function createERC721Collection(
         bytes32 saltHash,
-        address wallet,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external returns (uint256, address);
+        address collectionCreator,
+        Verification calldata verification,
+        CollectionData calldata collectionData
+    ) external returns (address);
 
-    function createIdentityBatch(
+    function createCustomERC721Collection(
         bytes32 saltHash,
-        address[] memory wallets,
-        uint8[] memory V,
-        bytes32[] memory RS
-    ) external returns (uint256, address);
+        address collectionCreator,
+        Verification calldata verification,
+        CollectionData calldata collectionData,
+        bytes32 slot,
+        bytes memory bytecode
+    ) external returns (address);
 
-    function getIdentity() external view returns (address);
+    function getCollectionById(uint256 index) external view returns (address);
 
-    function getWalletIdentity(address wallet) external view returns (address);
+    function getCollectionType(address collection) external view returns (InterfaceType);
 
-    function informAboutNewWallet(address newWallet) external;
+    function isCollectionCertified(address collection) external view returns (bool);
 
-    function isIdentityValid(address identity) external view returns (bool);
+    function isCollectionRegistered(address collection) external view returns (bool);
 
-    function nextNonce(address wallet) external view returns (uint256);
+    function isTokenCertified(address collection, uint256 tokenId) external view returns (bool);
+
+    function isTokenRegistered(address collection, uint256 tokenId) external view returns (bool);
+
+    function listCollections(uint256 offset, uint256 length)
+        external
+        view
+        returns (address[] memory);
+
+    function totalCollections() external view returns (uint256);
+
+    function isCollectionOpen(address collection) external pure returns (bool);
 }

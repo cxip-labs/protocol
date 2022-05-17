@@ -13,16 +13,6 @@ pragma solidity 0.8.12;
         _______\/////////__\///_______\///__\///////////__\///____________*/
 
 interface ICxipRegistry {
-    function getAsset() external view returns (address);
-
-    function getAssetSigner() external view returns (address);
-
-    function getAssetSource() external view returns (address);
-
-    function getCopyright() external view returns (address);
-
-    function getCopyrightSource() external view returns (address);
-
     function getCustomSource(bytes32 name) external view returns (address);
 
     function getCustomSourceFromString(string memory name) external view returns (address);
@@ -30,8 +20,6 @@ interface ICxipRegistry {
     function getERC1155CollectionSource() external view returns (address);
 
     function getERC721CollectionSource() external view returns (address);
-
-    function getIdentitySource() external view returns (address);
 
     function getPA1D() external view returns (address);
 
@@ -43,23 +31,11 @@ interface ICxipRegistry {
 
     function owner() external view returns (address);
 
-    function setAsset(address proxy) external;
-
-    function setAssetSigner(address source) external;
-
-    function setAssetSource(address source) external;
-
-    function setCopyright(address proxy) external;
-
-    function setCopyrightSource(address source) external;
-
     function setCustomSource(string memory name, address source) external;
 
     function setERC1155CollectionSource(address source) external;
 
     function setERC721CollectionSource(address source) external;
-
-    function setIdentitySource(address source) external;
 
     function setPA1D(address proxy) external;
 

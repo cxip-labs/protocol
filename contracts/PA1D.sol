@@ -17,7 +17,6 @@ import "./library/Zora.sol";
 import "./interface/IERC20.sol";
 import "./interface/ICxipRegistry.sol";
 import "./interface/ICxipERC.sol";
-import "./interface/ICxipIdentity.sol";
 
 /**
  * @title PA1D (CXIP)
@@ -94,39 +93,12 @@ contract PA1D {
     }
 
     /**
-     * @notice Check if the underlying identity has sender as registered wallet.
-     * @dev Check the overlying smart contract's identity for wallet registration.
-     * @param sender Address which should be checked against the identity.
-     * @return Returns true if the sender is a valid wallet of the identity.
-     */
-    function isIdentityWallet(address sender) internal view returns (bool) {
-        return isIdentityWallet(ICxipERC(address(this)).getIdentity(), sender);
-    }
-
-    /**
-     * @notice Check if a specific identity has sender as registered wallet.
-     * @dev Don't use this function directly unless you know what you're doing.
-     * @param identity Address of the identity smart contract.
-     * @param sender Address which should be checked against the identity.
-     * @return Returns true if the sender is a valid wallet of the identity.
-     */
-    function isIdentityWallet(address identity, address sender) internal view returns (bool) {
-        if (Address.isZero(identity)) {
-            return false;
-        }
-        return ICxipIdentity(identity).isWalletRegistered(sender);
-    }
-
-    /**
      * @notice Check if message sender is a legitimate owner of the smart contract
      * @dev We check owner, admin, and identity for a more comprehensive coverage.
      * @return Returns true is message sender is an owner.
      */
     function isOwner() internal view returns (bool) {
-        ICxipERC erc = ICxipERC(address(this));
-        return (msg.sender == erc.owner() ||
-            msg.sender == erc.admin() ||
-            isIdentityWallet(erc.getIdentity(), msg.sender));
+        return ICxipERC(address(this)).isOwner(msg.sender);
     }
 
     /**
