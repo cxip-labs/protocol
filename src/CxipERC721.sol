@@ -13,6 +13,7 @@ pragma solidity 0.8.12;
         _______\/////////__\///_______\///__\///////////__\///____________*/
 
 import "./external/OpenSea.sol";
+import "./interface/IERC165.sol";
 import "./interface/ICxipERC721.sol";
 import "./interface/ICxipProvenance.sol";
 import "./interface/ICxipRegistry.sol";
@@ -322,23 +323,12 @@ contract CxipERC721 {
      * @param tokenId The token to burn.
      */
     function burn(uint256 tokenId) public {
-        if (_isApproved(msg.sender, tokenId)) {
-            address wallet = _tokenOwner[tokenId];
-            require(!Address.isZero(wallet));
-            _clearApproval(tokenId);
-            _tokenOwner[tokenId] = address(0);
-            emit Transfer(wallet, address(0), tokenId);
-            _removeTokenFromOwnerEnumeration(wallet, tokenId);
-            uint256 index = _allTokens.length;
-            index--;
-            if (index == 0) {
-                delete _allTokens;
-            } else {
-                delete _allTokens[index];
-            }
-            _totalTokens -= 1;
-            delete _tokenData[tokenId];
-        }
+        require(_isApproved(msg.sender, tokenId), "CXIP: not approved sender");
+        address wallet = _tokenOwner[tokenId];
+        _clearApproval(tokenId);
+        _tokenOwner[tokenId] = address(0);
+        emit Transfer(wallet, address(0), tokenId);
+        _removeTokenFromOwnerEnumeration(wallet, tokenId);
     }
 
     /**
@@ -375,7 +365,6 @@ contract CxipERC721 {
 
     /**
      * @notice Safely transfers `tokenId` token from `from` to `to`, checking first that contract recipients
-     * @dev Since it's not being used, the _data variable is commented out to avoid compiler warnings.
      * are aware of the ERC721 protocol to prevent tokens from being forever locked.
      * @param from cannot be the zero address.
      * @param to cannot be the zero address.
@@ -385,10 +374,17 @@ contract CxipERC721 {
         address from,
         address to,
         uint256 tokenId,
-        bytes memory /*_data*/
+        bytes memory data
     ) public payable {
-        if (_isApproved(msg.sender, tokenId)) {
-            _transferFrom(from, to, tokenId);
+        require(_isApproved(msg.sender, tokenId), "CXIP: not approved sender");
+        _transferFrom(from, to, tokenId);
+        if (Address.isContract(to)) {
+            require(
+                IERC165(to).supportsInterface(0x01ffc9a7) &&
+                    IERC165(to).supportsInterface(0x150b7a02) &&
+                    ICxipERC721(to).onERC721Received(address(this), from, tokenId, data) == 0x150b7a02,
+                "CXIP: onERC721Received fail"
+            );
         }
     }
 
@@ -399,12 +395,9 @@ contract CxipERC721 {
      * @param approved Turn on or off approval status.
      */
     function setApprovalForAll(address to, bool approved) public {
-        if (to != msg.sender) {
-            _operatorApprovals[msg.sender][to] = approved;
-            emit ApprovalForAll(msg.sender, to, approved);
-        } else {
-            assert(false);
-        }
+        require(to != msg.sender, "CXIP: can't approve self");
+        _operatorApprovals[msg.sender][to] = approved;
+        emit ApprovalForAll(msg.sender, to, approved);
     }
 
     /**
@@ -436,9 +429,8 @@ contract CxipERC721 {
         uint256 tokenId,
         bytes memory /*_data*/
     ) public payable {
-        if (_isApproved(msg.sender, tokenId)) {
-            _transferFrom(from, to, tokenId);
-        }
+        require(_isApproved(msg.sender, tokenId), "CXIP: not approved sender");
+        _transferFrom(from, to, tokenId);
     }
 
     /**
@@ -517,11 +509,7 @@ contract CxipERC721 {
      * @return bool True if approved.
      */
     function isApprovedForAll(address wallet, address operator) public view returns (bool) {
-        return (_operatorApprovals[wallet][operator] ||
-            // Rarible Transfer Proxy
-            0x72617269626C655472616E7366657250726F7879 == operator ||
-            // OpenSea Transfer Proxy
-            address(OpenSeaProxyRegistry(0x6f70656E5365615472616E7366657250726F7879).proxies(wallet)) == operator);
+        return _operatorApprovals[wallet][operator];
     }
 
     /**
@@ -570,7 +558,7 @@ contract CxipERC721 {
      * @return uint256 Returns the token id of token located at that index.
      */
     function tokenByIndex(uint256 index) public view returns (uint256) {
-        require(index < totalSupply());
+        require(index < totalSupply(), "CXIP: index out of bounds");
         return _allTokens[index];
     }
 
@@ -582,7 +570,7 @@ contract CxipERC721 {
      * @return uint256 Returns the token id of token located at that index in specified wallet.
      */
     function tokenOfOwnerByIndex(address wallet, uint256 index) public view returns (uint256) {
-        require(index < balanceOf(wallet));
+        require(index < balanceOf(wallet), "CXIP: index out of bounds");
         return _ownedTokens[wallet][index];
     }
 
