@@ -92,10 +92,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   try {
     fs.mkdirSync(deployDir);
-  } catch (ex) {
+  } catch (error) {
     // we ignore this error on purpose
+    console.log(error);
   }
-  await recursiveBuild(buildDir, deployDir);
+  recursiveBuild(buildDir, deployDir);
 };
 
 export default func;
