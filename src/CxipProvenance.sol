@@ -78,37 +78,13 @@ contract CxipProvenance {
      * @notice Create an ERC721 collection.
      * @dev Creates and associates the ERC721 collection with the identity.
      * @param saltHash A salt used for deploying a collection to a specific address.
-     * @param collectionCreator Specific wallet, associated with the identity, that will be marked as the creator of this collection.
-     * @param verification Signature created by the collectionCreator wallet to validate the integrity of the collection data.
      * @param collectionData The collection data struct, with all the default collection info.
      * @return address Returns the address of the newly created collection.
      */
     function createERC721Collection(
         bytes32 saltHash,
-        address collectionCreator,
-        Verification calldata verification,
         CollectionData calldata collectionData
     ) public nonReentrant returns (address) {
-        if(collectionCreator != msg.sender) {
-            require(
-                Signature.Valid(
-                    collectionCreator,
-                    verification.r,
-                    verification.s,
-                    verification.v,
-                    abi.encodePacked(
-                        address(this),
-                        collectionCreator,
-                        collectionData.name,
-                        collectionData.name2,
-                        collectionData.symbol,
-                        collectionData.royalties,
-                        collectionData.bps
-                    )
-                ),
-                "CXIP: invalid signature"
-            );
-        }
         bytes memory bytecode = hex"ERC721_PROXY_BYTECODE";
         address cxipAddress;
         assembly {
@@ -119,7 +95,7 @@ contract CxipProvenance {
                 saltHash
             )
         }
-        ICxipERC721(cxipAddress).init(collectionCreator, collectionData);
+        ICxipERC721(cxipAddress).init(msg.sender, collectionData);
         _addCollectionToEnumeration(cxipAddress, InterfaceType.ERC721);
         return(cxipAddress);
     }
@@ -128,8 +104,6 @@ contract CxipProvenance {
      * @notice Create a custom ERC721 collection.
      * @dev Creates and associates the custom ERC721 collection with the identity.
      * @param saltHash A salt used for deploying a collection to a specific address.
-     * @param collectionCreator Specific wallet, associated with the identity, that will be marked as the creator of this collection.
-     * @param verification Signature created by the collectionCreator wallet to validate the integrity of the collection data.
      * @param collectionData The collection data struct, with all the default collection info.
      * @param slot Hash of proxy contract slot where the source is saved in registry.
      * @param bytecode The bytecode used for deployment. Validated against slot code for abuse prevention.
@@ -137,32 +111,10 @@ contract CxipProvenance {
      */
     function createCustomERC721Collection(
         bytes32 saltHash,
-        address collectionCreator,
-        Verification calldata verification,
         CollectionData calldata collectionData,
         bytes32 slot,
         bytes memory bytecode
     ) public nonReentrant returns (address) {
-        if(collectionCreator != msg.sender) {
-            require(
-                Signature.Valid(
-                    collectionCreator,
-                    verification.r,
-                    verification.s,
-                    verification.v,
-                    abi.encodePacked(
-                        address(this),
-                        collectionCreator,
-                        collectionData.name,
-                        collectionData.name2,
-                        collectionData.symbol,
-                        collectionData.royalties,
-                        collectionData.bps
-                    )
-                ),
-                "CXIP: invalid signature"
-            );
-        }
         address cxipAddress;
         assembly {
             cxipAddress := create2(
@@ -176,7 +128,7 @@ contract CxipProvenance {
             keccak256(cxipAddress.code) == keccak256(ICxipRegistry(0xdeaDDeADDEaDdeaDdEAddEADDEAdDeadDEADDEaD).getCustomSource(slot).code),
             "CXIP: byte code missmatch"
         );
-        ICxipERC721(cxipAddress).init(collectionCreator, collectionData);
+        ICxipERC721(cxipAddress).init(mgs.sender, collectionData);
         _addCollectionToEnumeration(cxipAddress, InterfaceType.ERC721);
         return(cxipAddress);
     }
