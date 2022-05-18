@@ -334,12 +334,6 @@ describe('CXIP', () => {
       // Then create the collection
       const result = await p.connect(user5).createERC721Collection(
         salt,
-        user5.address,
-        [
-          `0x0000000000000000000000000000000000000000000000000000000000000000`,
-          `0x0000000000000000000000000000000000000000000000000000000000000000`,
-          '0x00',
-        ] as unknown as { r: BytesLike; s: BytesLike; v: BigNumberish },
         [
           `${utf8ToBytes32('Daniel Arsham: Eroding and Refor')}`, // Collection name
           `${utf8ToBytes32('ming Cars')}`, // Collection name 2
