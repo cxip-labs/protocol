@@ -45,6 +45,15 @@ contract CxipProvenance {
     mapping(address => InterfaceType) private _additionalInfo;
 
     /**
+     * @notice Event emitted when a collection is created.
+     * @dev Allows off-chain services to index the newly deployed collection address.
+     * @param collectionCreator Address of the collection creator (msg.sender).
+     * @param collectionAddress Address of the newly created collection.
+     * @param salt A salt used for deploying a collection to a specific address.
+     */
+    event CollectionCreated(address indexed collectionCreator, address indexed collectionAddress, bytes32 indexed salt);
+
+    /**
      * @notice Constructor is empty and only reentrancy guard is implemented.
      * @dev There is no data that needs to be set on first time deployment.
      */
@@ -109,7 +118,7 @@ contract CxipProvenance {
                 "CXIP: invalid signature"
             );
         }
-        bytes memory bytecode = hex"608060405234801561001057600080fd5b5060f68061001f6000396000f3fe60806040819052632c5feccb60e11b815260009073415225c0d082cb195aee69f490c218def30966da906358bfd99690608490602090600481865afa158015604b573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190606d91906092565b90503660008037600080366000845af43d6000803e808015608d573d6000f35b3d6000fd5b60006020828403121560a357600080fd5b81516001600160a01b038116811460b957600080fd5b939250505056fea26469706673582212207e3850d5f5eaab2151a5f3470e98fd3411f6eec0c0f906020ffeecad3294dabd64736f6c634300080c0033";
+        bytes memory bytecode = hex"608060405234801561001057600080fd5b5060f68061001f6000396000f3fe60806040819052632c5feccb60e11b8152600090735fbdb2315678afecb367f032d93f642f64180aa3906358bfd99690608490602090600481865afa158015604b573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190606d91906092565b90503660008037600080366000845af43d6000803e808015608d573d6000f35b3d6000fd5b60006020828403121560a357600080fd5b81516001600160a01b038116811460b957600080fd5b939250505056fea26469706673582212200ccd0771ef68a12b3c78ffcaf88afcf10e0d0f2a51e9296249fb5a9282c0b42664736f6c634300080c0033";
         address cxipAddress;
         assembly {
             cxipAddress := create2(
@@ -121,6 +130,7 @@ contract CxipProvenance {
         }
         ICxipERC721(cxipAddress).init(collectionCreator, collectionData);
         _addCollectionToEnumeration(cxipAddress, InterfaceType.ERC721);
+        emit CollectionCreated(collectionCreator, cxipAddress, saltHash);
         return(cxipAddress);
     }
 
@@ -173,11 +183,12 @@ contract CxipProvenance {
             )
         }
         require(
-            keccak256(cxipAddress.code) == keccak256(ICxipRegistry(0x415225c0d082CB195AeE69f490c218def30966da).getCustomSource(slot).code),
+            keccak256(cxipAddress.code) == keccak256(ICxipRegistry(0x5FbDB2315678afecb367f032d93F642f64180aa3).getCustomSource(slot).code),
             "CXIP: byte code missmatch"
         );
         ICxipERC721(cxipAddress).init(collectionCreator, collectionData);
         _addCollectionToEnumeration(cxipAddress, InterfaceType.ERC721);
+        emit CollectionCreated(collectionCreator, cxipAddress, saltHash);
         return(cxipAddress);
     }
 
@@ -349,6 +360,6 @@ contract CxipProvenance {
      * @return ICxipRegistry The address of the top-level CXIP Registry smart contract.
      */
     function getRegistry() internal pure returns (ICxipRegistry) {
-        return ICxipRegistry(0x415225c0d082CB195AeE69f490c218def30966da);
+        return ICxipRegistry(0x5FbDB2315678afecb367f032d93F642f64180aa3);
     }
 }
