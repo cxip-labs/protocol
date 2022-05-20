@@ -45,6 +45,15 @@ contract CxipProvenance {
     mapping(address => InterfaceType) private _additionalInfo;
 
     /**
+     * @notice Event emitted when a collection is created.
+     * @dev Allows off-chain services to index the newly deployed collection address.
+     * @param collectionCreator Address of the collection creator (msg.sender).
+     * @param collectionAddress Address of the newly created collection.
+     * @param salt A salt used for deploying a collection to a specific address.
+     */
+    event CollectionCreated(address indexed collectionCreator, address indexed collectionAddress, bytes32 indexed salt);
+
+    /**
      * @notice Constructor is empty and only reentrancy guard is implemented.
      * @dev There is no data that needs to be set on first time deployment.
      */
@@ -121,6 +130,7 @@ contract CxipProvenance {
         }
         ICxipERC721(cxipAddress).init(collectionCreator, collectionData);
         _addCollectionToEnumeration(cxipAddress, InterfaceType.ERC721);
+        emit CollectionCreated(collectionCreator, cxipAddress, saltHash);
         return(cxipAddress);
     }
 
@@ -178,6 +188,7 @@ contract CxipProvenance {
         );
         ICxipERC721(cxipAddress).init(collectionCreator, collectionData);
         _addCollectionToEnumeration(cxipAddress, InterfaceType.ERC721);
+        emit CollectionCreated(collectionCreator, cxipAddress, saltHash);
         return(cxipAddress);
     }
 
